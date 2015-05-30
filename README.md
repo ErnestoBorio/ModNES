@@ -1,2 +1,0 @@
-# ModNES
-Modding NES emulator.
