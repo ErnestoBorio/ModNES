@@ -1,6 +1,6 @@
 
 #import "NametablesView.h"
-#include <OpenGL/gl.h>
+#import <OpenGL/gl.h>
 
 @implementation NametablesView
 

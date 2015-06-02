@@ -16,6 +16,9 @@
 {
    glClear(GL_COLOR_BUFFER_BIT );
    
+   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+   glPixelStorei(GL_PACK_ALIGNMENT, 1);
+
    glTexImage2D( GL_TEXTURE_2D, 0, 3, self->width, self->height, 0,GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*) self->pixels );
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
