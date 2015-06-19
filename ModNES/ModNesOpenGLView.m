@@ -15,6 +15,7 @@
 -(void) drawRect: (NSRect) bounds
 {
    glClear(GL_COLOR_BUFFER_BIT );
+   glClearColor( 1.0f, 0.0f, 1.0f, 1.0f);
    
    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
    glPixelStorei(GL_PACK_ALIGNMENT, 1);
@@ -58,7 +59,7 @@
    // glOrtho( 0, self->width, self->height, 0, 1, -1 );
    glOrtho( 0, 1, 1, 0, 1, -1 );
    // glMatrixMode( GL_MODELVIEW );
-   // glClearColor(0.0f, 0.0f, 0.0f, 1.0f);   
+   // glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 -(void) free {

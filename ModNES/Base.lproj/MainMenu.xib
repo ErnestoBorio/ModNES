@@ -18,6 +18,9 @@
                 <outlet property="CHR_ROM_1" destination="TsQ-7I-NBx" id="gfu-ZB-uFb"/>
                 <outlet property="Nametables" destination="PFJ-5b-eft" id="kFg-1b-UJu"/>
                 <outlet property="Palettes" destination="owI-Lj-1ao" id="i5q-WH-gCI"/>
+                <outlet property="Screen" destination="xkZ-Yj-sIq" id="5yV-W2-oiI"/>
+                <outlet property="Sprites" destination="eqy-Zk-znj" id="odc-2x-Rgz"/>
+                <outlet property="mainView" destination="EiT-Mj-1SZ" id="zbq-vH-F0C"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="gIp-Ho-8D9"/>
             </connections>
         </customObject>
@@ -673,12 +676,12 @@
         </menu>
         <window title="ModNES" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="QvC-M9-y7g">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
-            <rect key="contentRect" x="428" y="135" width="1347" height="824"/>
+            <rect key="contentRect" x="401" y="180" width="1080" height="824"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1058"/>
             <value key="minSize" type="size" width="1072" height="784"/>
             <value key="maxSize" type="size" width="1072" height="789"/>
-            <view key="contentView" id="EiT-Mj-1SZ">
-                <rect key="frame" x="0.0" y="0.0" width="1347" height="824"/>
+            <view key="contentView" id="EiT-Mj-1SZ" customClass="MainView">
+                <rect key="frame" x="0.0" y="0.0" width="1080" height="824"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
                     <openGLView fixedFrame="YES" useAuxiliaryDepthBufferStencil="NO" allowOffline="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Mph-ZM-gby" userLabel="CHR_ROM_0" customClass="ModNesOpenGLView">
@@ -705,16 +708,32 @@
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
                     </openGLView>
-                    <openGLView fixedFrame="YES" useAuxiliaryDepthBufferStencil="NO" allowOffline="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eqy-Zk-znj" userLabel="Sprites">
+                    <openGLView fixedFrame="YES" useAuxiliaryDepthBufferStencil="NO" allowOffline="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eqy-Zk-znj" userLabel="Sprites" customClass="ModNesOpenGLView">
                         <rect key="frame" x="548" y="20" width="256" height="256"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="width">
+                                <integer key="value" value="128"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="height">
+                                <integer key="value" value="128"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
                     </openGLView>
-                    <openGLView fixedFrame="YES" useAuxiliaryDepthBufferStencil="NO" allowOffline="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xkZ-Yj-sIq" userLabel="MainScreen">
+                    <openGLView fixedFrame="YES" useAuxiliaryDepthBufferStencil="NO" allowOffline="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xkZ-Yj-sIq" userLabel="MainScreen" customClass="ModNesOpenGLView">
                         <rect key="frame" x="20" y="309" width="512" height="480"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="width">
+                                <integer key="value" value="256"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="height">
+                                <integer key="value" value="240"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
                     </openGLView>
                     <openGLView fixedFrame="YES" useAuxiliaryDepthBufferStencil="NO" allowOffline="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PFJ-5b-eft" userLabel="Nametables" customClass="NametablesView">
-                        <rect key="frame" x="540" y="309" width="512" height="480"/>
+                        <rect key="frame" x="548" y="309" width="512" height="480"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="number" keyPath="width">
@@ -782,7 +801,7 @@
                         </connections>
                     </button>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Mu-EZ-vmJ">
-                        <rect key="frame" x="830" y="284" width="93" height="17"/>
+                        <rect key="frame" x="808" y="284" width="93" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Palettes" id="3gh-Ii-Ax8">
                             <font key="font" metaFont="system"/>

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		381D1DAA1B1252E30075AC2C /* MemoryAccess.c in Sources */ = {isa = PBXBuildFile; fileRef = 38E3ADBA1B092D88004C7A2A /* MemoryAccess.c */; };
+		384D9AAD1B34163C0014CE4A /* MainView.m in Sources */ = {isa = PBXBuildFile; fileRef = 384D9AAC1B34163C0014CE4A /* MainView.m */; };
 		38752FAD1B07EE6100AC7CF4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38752FAC1B07EE6100AC7CF4 /* Cocoa.framework */; };
 		38752FB71B07EE6100AC7CF4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 38752FB51B07EE6100AC7CF4 /* InfoPlist.strings */; };
 		38752FB91B07EE6100AC7CF4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 38752FB81B07EE6100AC7CF4 /* main.m */; };
@@ -39,6 +40,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		384D9AAB1B34163C0014CE4A /* MainView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainView.h; sourceTree = "<group>"; };
+		384D9AAC1B34163C0014CE4A /* MainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainView.m; sourceTree = "<group>"; };
 		38752FA91B07EE6100AC7CF4 /* ModNES.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ModNES.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		38752FAC1B07EE6100AC7CF4 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		38752FAF1B07EE6100AC7CF4 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -143,6 +146,8 @@
 				38E3ADB91B092D60004C7A2A /* Nes */,
 				38752FBE1B07EE6100AC7CF4 /* AppDelegate.h */,
 				38752FBF1B07EE6100AC7CF4 /* AppDelegate.m */,
+				384D9AAB1B34163C0014CE4A /* MainView.h */,
+				384D9AAC1B34163C0014CE4A /* MainView.m */,
 				38752FE21B07EF7000AC7CF4 /* ModNesOpenGLView.h */,
 				38752FE31B07EF7000AC7CF4 /* ModNesOpenGLView.m */,
 				38752FC11B07EE6100AC7CF4 /* MainMenu.xib */,
@@ -312,6 +317,7 @@
 				38E3ADCE1B092DAF004C7A2A /* nestest_disasm.c in Sources */,
 				381D1DAA1B1252E30075AC2C /* MemoryAccess.c in Sources */,
 				38E3ADBE1B092D88004C7A2A /* Nes.c in Sources */,
+				384D9AAD1B34163C0014CE4A /* MainView.m in Sources */,
 				38752FB91B07EE6100AC7CF4 /* main.m in Sources */,
 				38E3ADCA1B092DAF004C7A2A /* Cpu6502.c in Sources */,
 				38752FE41B07EF7000AC7CF4 /* ModNesOpenGLView.m in Sources */,
