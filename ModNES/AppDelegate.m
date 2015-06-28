@@ -75,7 +75,9 @@ char *roms[] = {
    "Wild Gunman (W) (PRG1) [!]", // 62
    "Wrecking Crew (U) [!]", // 63
    "Xevious (U) [!]", // 64   
-   "/Volumes/Archive/Source/NES ROMS/Zelda title screen demo/Zelda.nes" // 65
+   "/Volumes/Archive/Source/NES ROMS/Zelda title screen demo/Zelda.nes", // 65
+   
+   "\0" // null terminator
 };
 
 -(IBAction) onResetButton: (id)sender {
@@ -84,14 +86,14 @@ char *roms[] = {
 
 - (void) applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-//   NSLog( @"\nStarting ModNES\n" );
    self->nes = Nes_Create();
    assert( self->nes );
    
    _mainView->nes = self->nes;
    
    // Mario Bros. 37 - Super Mario Bros. 57 - Lode Runner 31 - Spy Vs Spy 54 - Donkey Kong 12
-   int romn = 12
+   // Pac-Man 43
+   int romn = 51
    ;
    
    char rom_filename[1024];
