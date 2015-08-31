@@ -1,4 +1,17 @@
 
+>> 2015-08-30
+
+Bueno el evento más importante de ModNES fue tan impactante que no escribí nada acá.
+Finalmente el emu dibuja fondos y sprites, y agregué input de modo que se pueden jugar algunos juegos.
+Acá está la entrada en git del 19/6:
+
+Added Sprites and Screen views.
+Added input handling for gamepad #0.
+It's Alive!!! this commit is the first minimum viable emulator of ModNES that ever worked, it has minimal screen output and gamepad input so you can actually play some games.
+
+Ahora unifiqué los tres repositorios Cpu6502, Nes y ModNES en uno solo: ModNES.
+También dejé Cocoa y me pasé a SDL2, que permite manejar varias ventanas, y además testeando descubrí que con superficies de 8 bpp puedo cambiarles los colores de la paleta efectivamente haciendo palette swaps igual que la NES, o sea que puedo guardar los nametables como surfaces y blitearlas en la pantalla con palette swaps sin necesidad de recalcular los colores pixel por pixel.
+
 >> 2015-05-10 Miércoles
 
 Bueno finalmente arreglé unos addressings erróneos, y le agregué addressing mode a los NOP ilegales, para poder skipearlos y seguir ejecutando.
