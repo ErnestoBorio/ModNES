@@ -7,13 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		381D1DAA1B1252E30075AC2C /* MemoryAccess.c in Sources */ = {isa = PBXBuildFile; fileRef = 38E3ADBA1B092D88004C7A2A /* MemoryAccess.c */; };
-		384D9AAD1B34163C0014CE4A /* MainView.m in Sources */ = {isa = PBXBuildFile; fileRef = 384D9AAC1B34163C0014CE4A /* MainView.m */; };
 		38752FAD1B07EE6100AC7CF4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38752FAC1B07EE6100AC7CF4 /* Cocoa.framework */; };
 		38752FB71B07EE6100AC7CF4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 38752FB51B07EE6100AC7CF4 /* InfoPlist.strings */; };
 		38752FB91B07EE6100AC7CF4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 38752FB81B07EE6100AC7CF4 /* main.m */; };
 		38752FBD1B07EE6100AC7CF4 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 38752FBB1B07EE6100AC7CF4 /* Credits.rtf */; };
-		38752FC01B07EE6100AC7CF4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 38752FBF1B07EE6100AC7CF4 /* AppDelegate.m */; };
 		38752FC31B07EE6100AC7CF4 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 38752FC11B07EE6100AC7CF4 /* MainMenu.xib */; };
 		38752FC51B07EE6100AC7CF4 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 38752FC41B07EE6100AC7CF4 /* Images.xcassets */; };
 		38752FCC1B07EE6100AC7CF4 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38752FCB1B07EE6100AC7CF4 /* XCTest.framework */; };
@@ -21,12 +18,14 @@
 		38752FD51B07EE6100AC7CF4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 38752FD31B07EE6100AC7CF4 /* InfoPlist.strings */; };
 		38752FD71B07EE6100AC7CF4 /* ModNESTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 38752FD61B07EE6100AC7CF4 /* ModNESTests.m */; };
 		38752FE11B07EEFC00AC7CF4 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38752FE01B07EEFC00AC7CF4 /* OpenGL.framework */; };
-		38752FE41B07EF7000AC7CF4 /* ModNesOpenGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 38752FE31B07EF7000AC7CF4 /* ModNesOpenGLView.m */; };
-		38E3ADBE1B092D88004C7A2A /* Nes.c in Sources */ = {isa = PBXBuildFile; fileRef = 38E3ADBB1B092D88004C7A2A /* Nes.c */; };
-		38E3ADCA1B092DAF004C7A2A /* Cpu6502.c in Sources */ = {isa = PBXBuildFile; fileRef = 38E3ADC11B092DAF004C7A2A /* Cpu6502.c */; };
-		38E3ADCB1B092DAF004C7A2A /* CpuStep.c in Sources */ = {isa = PBXBuildFile; fileRef = 38E3ADC31B092DAF004C7A2A /* CpuStep.c */; };
-		38E3ADCE1B092DAF004C7A2A /* nestest_disasm.c in Sources */ = {isa = PBXBuildFile; fileRef = 38E3ADC71B092DAF004C7A2A /* nestest_disasm.c */; };
-		38F8B9991B19F8E000722F05 /* NametablesView.m in Sources */ = {isa = PBXBuildFile; fileRef = 38F8B9981B19F8E000722F05 /* NametablesView.m */; };
+		38873EB11B48A85900CD51A1 /* Addressing.c in Sources */ = {isa = PBXBuildFile; fileRef = 38873EA41B48A85900CD51A1 /* Addressing.c */; };
+		38873EB21B48A85900CD51A1 /* Cpu6502.c in Sources */ = {isa = PBXBuildFile; fileRef = 38873EA51B48A85900CD51A1 /* Cpu6502.c */; };
+		38873EB31B48A85900CD51A1 /* CpuStep.c in Sources */ = {isa = PBXBuildFile; fileRef = 38873EA71B48A85900CD51A1 /* CpuStep.c */; };
+		38873EB41B48A85900CD51A1 /* Instructions.c in Sources */ = {isa = PBXBuildFile; fileRef = 38873EA81B48A85900CD51A1 /* Instructions.c */; };
+		38873EB51B48A85900CD51A1 /* ModNES Cpu6502 status.txt in Resources */ = {isa = PBXBuildFile; fileRef = 38873EA91B48A85900CD51A1 /* ModNES Cpu6502 status.txt */; };
+		38873EB61B48A85900CD51A1 /* nestest_disasm.c in Sources */ = {isa = PBXBuildFile; fileRef = 38873EAA1B48A85900CD51A1 /* nestest_disasm.c */; };
+		38873EB71B48A85900CD51A1 /* MemoryAccess.c in Sources */ = {isa = PBXBuildFile; fileRef = 38873EAD1B48A85900CD51A1 /* MemoryAccess.c */; };
+		38873EB81B48A85900CD51A1 /* Nes.c in Sources */ = {isa = PBXBuildFile; fileRef = 38873EAF1B48A85900CD51A1 /* Nes.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,8 +39,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		384D9AAB1B34163C0014CE4A /* MainView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainView.h; sourceTree = "<group>"; };
-		384D9AAC1B34163C0014CE4A /* MainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainView.m; sourceTree = "<group>"; };
 		38752FA91B07EE6100AC7CF4 /* ModNES.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ModNES.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		38752FAC1B07EE6100AC7CF4 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		38752FAF1B07EE6100AC7CF4 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -52,30 +49,27 @@
 		38752FB81B07EE6100AC7CF4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		38752FBA1B07EE6100AC7CF4 /* ModNES-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ModNES-Prefix.pch"; sourceTree = "<group>"; };
 		38752FBC1B07EE6100AC7CF4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
-		38752FBE1B07EE6100AC7CF4 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		38752FBF1B07EE6100AC7CF4 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		38752FC21B07EE6100AC7CF4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		38752FC41B07EE6100AC7CF4 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		38752FC41B07EE6100AC7CF4 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = ModNES/Images.xcassets; sourceTree = "<group>"; };
 		38752FCA1B07EE6100AC7CF4 /* ModNESTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ModNESTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		38752FCB1B07EE6100AC7CF4 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		38752FD21B07EE6100AC7CF4 /* ModNESTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ModNESTests-Info.plist"; sourceTree = "<group>"; };
+		38752FD21B07EE6100AC7CF4 /* ModNESTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ModNESTests-Info.plist"; path = "ModNESTests/ModNESTests-Info.plist"; sourceTree = SOURCE_ROOT; };
 		38752FD41B07EE6100AC7CF4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		38752FD61B07EE6100AC7CF4 /* ModNESTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ModNESTests.m; sourceTree = "<group>"; };
 		38752FE01B07EEFC00AC7CF4 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
-		38752FE21B07EF7000AC7CF4 /* ModNesOpenGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModNesOpenGLView.h; sourceTree = "<group>"; };
-		38752FE31B07EF7000AC7CF4 /* ModNesOpenGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ModNesOpenGLView.m; sourceTree = "<group>"; };
-		38E3ADBA1B092D88004C7A2A /* MemoryAccess.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = MemoryAccess.c; path = ../../Nes/MemoryAccess.c; sourceTree = "<group>"; };
-		38E3ADBB1B092D88004C7A2A /* Nes.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Nes.c; path = ../../Nes/Nes.c; sourceTree = "<group>"; };
-		38E3ADBC1B092D88004C7A2A /* Nes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Nes.h; path = ../../Nes/Nes.h; sourceTree = "<group>"; };
-		38E3ADC01B092DAF004C7A2A /* Addressing.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Addressing.c; path = ../../Cpu6502/Addressing.c; sourceTree = "<group>"; };
-		38E3ADC11B092DAF004C7A2A /* Cpu6502.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Cpu6502.c; path = ../../Cpu6502/Cpu6502.c; sourceTree = "<group>"; };
-		38E3ADC21B092DAF004C7A2A /* Cpu6502.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Cpu6502.h; path = ../../Cpu6502/Cpu6502.h; sourceTree = "<group>"; };
-		38E3ADC31B092DAF004C7A2A /* CpuStep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = CpuStep.c; path = ../../Cpu6502/CpuStep.c; sourceTree = "<group>"; };
-		38E3ADC61B092DAF004C7A2A /* Instructions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Instructions.c; path = ../../Cpu6502/Instructions.c; sourceTree = "<group>"; };
-		38E3ADC71B092DAF004C7A2A /* nestest_disasm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = nestest_disasm.c; path = ../../Cpu6502/nestest_disasm.c; sourceTree = "<group>"; };
-		38E3ADC81B092DAF004C7A2A /* Opcodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Opcodes.h; path = ../../Cpu6502/Opcodes.h; sourceTree = "<group>"; };
-		38F8B9971B19F8E000722F05 /* NametablesView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NametablesView.h; sourceTree = "<group>"; };
-		38F8B9981B19F8E000722F05 /* NametablesView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NametablesView.m; sourceTree = "<group>"; };
+		38873EA41B48A85900CD51A1 /* Addressing.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Addressing.c; sourceTree = "<group>"; };
+		38873EA51B48A85900CD51A1 /* Cpu6502.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Cpu6502.c; sourceTree = "<group>"; };
+		38873EA61B48A85900CD51A1 /* Cpu6502.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cpu6502.h; sourceTree = "<group>"; };
+		38873EA71B48A85900CD51A1 /* CpuStep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = CpuStep.c; sourceTree = "<group>"; };
+		38873EA81B48A85900CD51A1 /* Instructions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Instructions.c; sourceTree = "<group>"; };
+		38873EA91B48A85900CD51A1 /* ModNES Cpu6502 status.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "ModNES Cpu6502 status.txt"; sourceTree = "<group>"; };
+		38873EAA1B48A85900CD51A1 /* nestest_disasm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nestest_disasm.c; sourceTree = "<group>"; };
+		38873EAB1B48A85900CD51A1 /* Opcodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Opcodes.h; sourceTree = "<group>"; };
+		38873EAC1B48A85900CD51A1 /* symbols.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = symbols.h; sourceTree = "<group>"; };
+		38873EAD1B48A85900CD51A1 /* MemoryAccess.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MemoryAccess.c; sourceTree = "<group>"; };
+		38873EAE1B48A85900CD51A1 /* MemoryAccess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemoryAccess.h; sourceTree = "<group>"; };
+		38873EAF1B48A85900CD51A1 /* Nes.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Nes.c; sourceTree = "<group>"; };
+		38873EB01B48A85900CD51A1 /* Nes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Nes.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,10 +97,14 @@
 		38752FA01B07EE6000AC7CF4 = {
 			isa = PBXGroup;
 			children = (
-				38752FB21B07EE6100AC7CF4 /* ModNES */,
+				38873EA11B48A85900CD51A1 /* source */,
 				38752FD01B07EE6100AC7CF4 /* ModNESTests */,
 				38752FAB1B07EE6100AC7CF4 /* Frameworks */,
 				38752FAA1B07EE6100AC7CF4 /* Products */,
+				38752FD11B07EE6100AC7CF4 /* Supporting Files */,
+				38752FC41B07EE6100AC7CF4 /* Images.xcassets */,
+				38752FC11B07EE6100AC7CF4 /* MainMenu.xib */,
+				38752FB31B07EE6100AC7CF4 /* Supporting Files */,
 			);
 			sourceTree = "<group>";
 		};
@@ -140,28 +138,11 @@
 			name = "Other Frameworks";
 			sourceTree = "<group>";
 		};
-		38752FB21B07EE6100AC7CF4 /* ModNES */ = {
-			isa = PBXGroup;
-			children = (
-				38E3ADB91B092D60004C7A2A /* Nes */,
-				38752FBE1B07EE6100AC7CF4 /* AppDelegate.h */,
-				38752FBF1B07EE6100AC7CF4 /* AppDelegate.m */,
-				384D9AAB1B34163C0014CE4A /* MainView.h */,
-				384D9AAC1B34163C0014CE4A /* MainView.m */,
-				38752FE21B07EF7000AC7CF4 /* ModNesOpenGLView.h */,
-				38752FE31B07EF7000AC7CF4 /* ModNesOpenGLView.m */,
-				38752FC11B07EE6100AC7CF4 /* MainMenu.xib */,
-				38F8B9971B19F8E000722F05 /* NametablesView.h */,
-				38F8B9981B19F8E000722F05 /* NametablesView.m */,
-				38752FB31B07EE6100AC7CF4 /* Supporting Files */,
-				38752FC41B07EE6100AC7CF4 /* Images.xcassets */,
-			);
-			path = ModNES;
-			sourceTree = "<group>";
-		};
 		38752FB31B07EE6100AC7CF4 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				38752FD21B07EE6100AC7CF4 /* ModNESTests-Info.plist */,
+				38752FD31B07EE6100AC7CF4 /* InfoPlist.strings */,
 				38752FB41B07EE6100AC7CF4 /* ModNES-Info.plist */,
 				38752FB51B07EE6100AC7CF4 /* InfoPlist.strings */,
 				38752FB81B07EE6100AC7CF4 /* main.m */,
@@ -169,13 +150,13 @@
 				38752FBB1B07EE6100AC7CF4 /* Credits.rtf */,
 			);
 			name = "Supporting Files";
+			path = ModNES;
 			sourceTree = "<group>";
 		};
 		38752FD01B07EE6100AC7CF4 /* ModNESTests */ = {
 			isa = PBXGroup;
 			children = (
 				38752FD61B07EE6100AC7CF4 /* ModNESTests.m */,
-				38752FD11B07EE6100AC7CF4 /* Supporting Files */,
 			);
 			path = ModNESTests;
 			sourceTree = "<group>";
@@ -183,35 +164,45 @@
 		38752FD11B07EE6100AC7CF4 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				38752FD21B07EE6100AC7CF4 /* ModNESTests-Info.plist */,
-				38752FD31B07EE6100AC7CF4 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			path = ModNESTests;
 			sourceTree = "<group>";
 		};
-		38E3ADB91B092D60004C7A2A /* Nes */ = {
+		38873EA11B48A85900CD51A1 /* source */ = {
 			isa = PBXGroup;
 			children = (
-				38E3ADBF1B092D9D004C7A2A /* Cpu6502 */,
-				38E3ADBA1B092D88004C7A2A /* MemoryAccess.c */,
-				38E3ADBB1B092D88004C7A2A /* Nes.c */,
-				38E3ADBC1B092D88004C7A2A /* Nes.h */,
+				38873EA21B48A85900CD51A1 /* Nes */,
 			);
-			name = Nes;
+			path = source;
 			sourceTree = "<group>";
 		};
-		38E3ADBF1B092D9D004C7A2A /* Cpu6502 */ = {
+		38873EA21B48A85900CD51A1 /* Nes */ = {
 			isa = PBXGroup;
 			children = (
-				38E3ADC01B092DAF004C7A2A /* Addressing.c */,
-				38E3ADC11B092DAF004C7A2A /* Cpu6502.c */,
-				38E3ADC21B092DAF004C7A2A /* Cpu6502.h */,
-				38E3ADC31B092DAF004C7A2A /* CpuStep.c */,
-				38E3ADC61B092DAF004C7A2A /* Instructions.c */,
-				38E3ADC71B092DAF004C7A2A /* nestest_disasm.c */,
-				38E3ADC81B092DAF004C7A2A /* Opcodes.h */,
+				38873EAD1B48A85900CD51A1 /* MemoryAccess.c */,
+				38873EAE1B48A85900CD51A1 /* MemoryAccess.h */,
+				38873EAF1B48A85900CD51A1 /* Nes.c */,
+				38873EB01B48A85900CD51A1 /* Nes.h */,
+				38873EA31B48A85900CD51A1 /* Cpu6502 */,
 			);
-			name = Cpu6502;
+			path = Nes;
+			sourceTree = "<group>";
+		};
+		38873EA31B48A85900CD51A1 /* Cpu6502 */ = {
+			isa = PBXGroup;
+			children = (
+				38873EA41B48A85900CD51A1 /* Addressing.c */,
+				38873EA51B48A85900CD51A1 /* Cpu6502.c */,
+				38873EA61B48A85900CD51A1 /* Cpu6502.h */,
+				38873EA71B48A85900CD51A1 /* CpuStep.c */,
+				38873EA81B48A85900CD51A1 /* Instructions.c */,
+				38873EA91B48A85900CD51A1 /* ModNES Cpu6502 status.txt */,
+				38873EAA1B48A85900CD51A1 /* nestest_disasm.c */,
+				38873EAB1B48A85900CD51A1 /* Opcodes.h */,
+				38873EAC1B48A85900CD51A1 /* symbols.h */,
+			);
+			path = Cpu6502;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -293,6 +284,7 @@
 				38752FB71B07EE6100AC7CF4 /* InfoPlist.strings in Resources */,
 				38752FC51B07EE6100AC7CF4 /* Images.xcassets in Resources */,
 				38752FBD1B07EE6100AC7CF4 /* Credits.rtf in Resources */,
+				38873EB51B48A85900CD51A1 /* ModNES Cpu6502 status.txt in Resources */,
 				38752FC31B07EE6100AC7CF4 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -312,16 +304,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				38F8B9991B19F8E000722F05 /* NametablesView.m in Sources */,
-				38752FC01B07EE6100AC7CF4 /* AppDelegate.m in Sources */,
-				38E3ADCE1B092DAF004C7A2A /* nestest_disasm.c in Sources */,
-				381D1DAA1B1252E30075AC2C /* MemoryAccess.c in Sources */,
-				38E3ADBE1B092D88004C7A2A /* Nes.c in Sources */,
-				384D9AAD1B34163C0014CE4A /* MainView.m in Sources */,
 				38752FB91B07EE6100AC7CF4 /* main.m in Sources */,
-				38E3ADCA1B092DAF004C7A2A /* Cpu6502.c in Sources */,
-				38752FE41B07EF7000AC7CF4 /* ModNesOpenGLView.m in Sources */,
-				38E3ADCB1B092DAF004C7A2A /* CpuStep.c in Sources */,
+				38873EB71B48A85900CD51A1 /* MemoryAccess.c in Sources */,
+				38873EB21B48A85900CD51A1 /* Cpu6502.c in Sources */,
+				38873EB31B48A85900CD51A1 /* CpuStep.c in Sources */,
+				38873EB81B48A85900CD51A1 /* Nes.c in Sources */,
+				38873EB61B48A85900CD51A1 /* nestest_disasm.c in Sources */,
+				38873EB41B48A85900CD51A1 /* Instructions.c in Sources */,
+				38873EB11B48A85900CD51A1 /* Addressing.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -366,6 +356,7 @@
 				38752FC21B07EE6100AC7CF4 /* Base */,
 			);
 			name = MainMenu.xib;
+			path = ModNES;
 			sourceTree = "<group>";
 		};
 		38752FD31B07EE6100AC7CF4 /* InfoPlist.strings */ = {
@@ -374,7 +365,8 @@
 				38752FD41B07EE6100AC7CF4 /* en */,
 			);
 			name = InfoPlist.strings;
-			sourceTree = "<group>";
+			path = ModNESTests;
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXVariantGroup section */
 
