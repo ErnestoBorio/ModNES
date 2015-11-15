@@ -7,7 +7,7 @@
 
 @implementation AppDelegate
 
-char *rompath = "/Volumes/Archive/Emulators/NES/NES 1089 ROMS/";
+char *rompath = "/Users/petruza/Desktop/NES/";
 
 char *roms[] = {
    "10-Yard Fight (U) [!]", // 0
@@ -91,7 +91,7 @@ char *roms[] = {
    _mainView->nes = self->nes;
    
    // Mario Bros. 37 - Super Mario Bros. 57 - Lode Runner 31 - Spy Vs Spy 54 - Donkey Kong 12
-   int romn = 12
+   int romn = 51
    ;
    
    char rom_filename[1024];
