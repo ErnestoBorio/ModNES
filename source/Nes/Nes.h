@@ -10,7 +10,7 @@
 #define CHR_ROM_bank_size 0x2000 // CHR-ROM bank is  8kB
 #define CHR_UNPACKED_size 0x100 * 8 * 8 // 0x100 tiles * 8 px tall * 8 px wide = 0x4000 bytes at 1 byte per pixel = 16Kb
 
-const byte nes_palette[64][3];
+// const byte nes_palette[64][3];
 
 enum {
    mirroring_vertical   = 0,
@@ -104,15 +104,23 @@ typedef struct // Nes
    
 } Nes;
 
-Nes *Nes_Create();
-void Nes_Reset( Nes *this );
-void Nes_Free( Nes *this );
-int  Nes_LoadRom( Nes *this, FILE *rom_file );
-void Nes_DoFrame( Nes *this );
-const byte *Nes_GetPaletteColor( Nes *this, byte area, byte palette, byte index );
+#ifdef __cplusplus
+    extern "C" {
+#endif
+    
+    Nes *Nes_Create();
+    void Nes_Reset( Nes *dis );
+    void Nes_Free( Nes *dis );
+    int  Nes_LoadRom( Nes *dis, FILE *rom_file );
+    void Nes_DoFrame( Nes *dis );
+    const byte *Nes_GetPaletteColor( Nes *dis, byte area, byte palette, byte index );
+    void Nes_SetInputState( Nes *dis, byte gampead, byte button, byte state );
 
-void Nes_SetInputState( Nes *this, byte gampead, byte button, byte state );
-
-const byte Nes_rgb[64][3];
+#ifdef __cplusplus
+    }
+#endif
+    
+// const byte Nes_rgb[64][3];
+// Suddenly gives error: Default initialization of an object of const type 'const byte [64][3]'
 
 #endif // #ifndef _Nes_h_
