@@ -13,8 +13,10 @@
 		38194CEB1BDDA32C0035FFE3 /* MemoryAccess.c in Sources */ = {isa = PBXBuildFile; fileRef = 38194CE71BDDA32C0035FFE3 /* MemoryAccess.c */; };
 		38194CEC1BDDA32C0035FFE3 /* Nes.c in Sources */ = {isa = PBXBuildFile; fileRef = 38194CE91BDDA32C0035FFE3 /* Nes.c */; };
 		38194CEF1BDDA7E30035FFE3 /* openFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 38194CEE1BDDA7E30035FFE3 /* openFile.m */; };
-		38194CF11BDDAC0B0035FFE3 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38194CF01BDDAC0B0035FFE3 /* SDL2.framework */; };
 		388944381BC1ED5900894A8E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 388944361BC1ED5900894A8E /* main.cpp */; };
+		38A371D31C7758DD00B7ADAC /* ModNES.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 38A371D11C7758DD00B7ADAC /* ModNES.cpp */; };
+		38FA586E1C7501A8004403FC /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38FA586D1C7501A8004403FC /* SDL2.framework */; };
+		38FA58701C750227004403FC /* SDL2.framework in Resources */ = {isa = PBXBuildFile; fileRef = 38FA586D1C7501A8004403FC /* SDL2.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -43,10 +45,11 @@
 		38194CE91BDDA32C0035FFE3 /* Nes.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Nes.c; sourceTree = "<group>"; };
 		38194CED1BDDA5090035FFE3 /* Nes.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = Nes.h; sourceTree = "<group>"; };
 		38194CEE1BDDA7E30035FFE3 /* openFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = openFile.m; sourceTree = "<group>"; };
-		38194CF01BDDAC0B0035FFE3 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
 		388944281BC1EBEC00894A8E /* ModNES.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ModNES.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		388944361BC1ED5900894A8E /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		388944371BC1ED5900894A8E /* main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = main.h; sourceTree = "<group>"; };
+		38A371D11C7758DD00B7ADAC /* ModNES.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModNES.cpp; sourceTree = "<group>"; };
+		38A371D21C7758DD00B7ADAC /* ModNES.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModNES.h; sourceTree = "<group>"; };
+		38FA586D1C7501A8004403FC /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,7 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				38194CF11BDDAC0B0035FFE3 /* SDL2.framework in Frameworks */,
+				38FA586E1C7501A8004403FC /* SDL2.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -64,7 +67,7 @@
 		3889441F1BC1EBEC00894A8E = {
 			isa = PBXGroup;
 			children = (
-				38194CF01BDDAC0B0035FFE3 /* SDL2.framework */,
+				38FA586D1C7501A8004403FC /* SDL2.framework */,
 				388944291BC1EBEC00894A8E /* Products */,
 				388944331BC1ED2B00894A8E /* source */,
 			);
@@ -81,8 +84,9 @@
 		388944331BC1ED2B00894A8E /* source */ = {
 			isa = PBXGroup;
 			children = (
+				38A371D11C7758DD00B7ADAC /* ModNES.cpp */,
+				38A371D21C7758DD00B7ADAC /* ModNES.h */,
 				388944361BC1ED5900894A8E /* main.cpp */,
-				388944371BC1ED5900894A8E /* main.h */,
 				38194CEE1BDDA7E30035FFE3 /* openFile.m */,
 				388944341BC1ED2B00894A8E /* Nes */,
 			);
@@ -126,6 +130,7 @@
 				388944241BC1EBEC00894A8E /* Sources */,
 				388944251BC1EBEC00894A8E /* Frameworks */,
 				388944261BC1EBEC00894A8E /* CopyFiles */,
+				38FA586F1C75021B004403FC /* Resources */,
 			);
 			buildRules = (
 			);
@@ -162,12 +167,24 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		38FA586F1C75021B004403FC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				38FA58701C750227004403FC /* SDL2.framework in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		388944241BC1EBEC00894A8E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				388944381BC1ED5900894A8E /* main.cpp in Sources */,
+				38A371D31C7758DD00B7ADAC /* ModNES.cpp in Sources */,
 				38194CEB1BDDA32C0035FFE3 /* MemoryAccess.c in Sources */,
 				38194CE31BDDA3230035FFE3 /* Cpu6502.c in Sources */,
 				38194CEC1BDDA32C0035FFE3 /* Nes.c in Sources */,
@@ -267,7 +284,7 @@
 					/opt/local/lib,
 					/usr/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_LDFLAGS = (
 					"-framework",
 					cocoa,
@@ -297,7 +314,7 @@
 					/opt/local/lib,
 					/usr/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_LDFLAGS = (
 					"-framework",
 					cocoa,
