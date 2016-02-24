@@ -19,6 +19,8 @@ public:
         Windows_count = 2
     };
     
+    SDL_TimerID timer_id;
+    
     struct {
         struct {
             int size;
@@ -47,7 +49,9 @@ public:
     
     void loadCartridge( char *path );
     void renderPatterns();
-    void presentPatterns( SDL_Rect* rect );
+    void presentPatterns();
+    void renderNametables();
+    void presentNametables();
     
     void read_config();
     void write_config();

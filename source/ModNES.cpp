@@ -10,6 +10,14 @@ const string ModNES::config_filename = "ModNES_config";
 extern "C" char* openFile( char* path, int length );
 
 //------------------------------------------------------------------------------------------------------------
+Uint32 vblank_callback( Uint32 interval, void* param )
+{
+    ModNES* self = (ModNES*) param;
+    Nes_DoFrame( self->nes );
+    
+    return interval;
+}
+//------------------------------------------------------------------------------------------------------------
 int ModNES::run()
 {
     this->init();
@@ -78,6 +86,8 @@ int ModNES::init()
     }
 
     this->nes = Nes_Create();
+    this->timer_id = SDL_AddTimer( 1000 / 60, vblank_callback, (void *)this );
+    
     return APP_OK;
 }
 //------------------------------------------------------------------------------------------------------------
@@ -95,7 +105,8 @@ ModNES::~ModNES()
     if( this->patterns_pal ) {
         SDL_FreePalette( this->patterns_pal );
     }
-    SDL_Quit();    
+    SDL_RemoveTimer( this->timer_id );
+    SDL_Quit();
 }  
 //------------------------------------------------------------------------------------------------------------
 void ModNES::loop()
@@ -104,7 +115,7 @@ void ModNES::loop()
     this->quit = false;
     
     static char path[1024];
-   
+    
     while( ! this->quit && SDL_WaitEvent(&event))
     {
         switch( event.type )
@@ -131,7 +142,7 @@ void ModNES::loop()
                         rect.w = 256;
                         rect.h = 128;
                         // this->renderPatterns();
-                        this->presentPatterns( &rect );
+                        this->presentPatterns();
                         config.patterns_win.size = 1;
                     }
                     else if( config.patterns_win.size == 1 ) {
@@ -139,7 +150,7 @@ void ModNES::loop()
                         rect.h = 256;
                         SDL_SetWindowSize( this->patterns_win, 512, 256 );
                         // this->renderPatterns();
-                        this->presentPatterns( &rect );
+                        this->presentPatterns();
                         config.patterns_win.size = 2;
                     }
                     else if( config.patterns_win.size == 2 ) {
@@ -203,7 +214,7 @@ void ModNES::loadCartridge( char *path )
     Nes_Reset( this->nes );
     this->renderPatterns();
     SDL_Rect rect = {0, 0, 256, 128};
-    this->presentPatterns( &rect ); //WIP move this outta here
+    this->presentPatterns(); //WIP move this outta here
 }
 //------------------------------------------------------------------------------------------------------------
 void ModNES::renderPatterns()
@@ -245,7 +256,7 @@ void ModNES::renderPatterns()
     SDL_UnlockSurface( this->patterns_surf );
 }
 //------------------------------------------------------------------------------------------------------------
-void ModNES::presentPatterns( SDL_Rect* rect )
+void ModNES::presentPatterns()
 {
     SDL_Surface *buffer = SDL_CreateRGBSurface( 0, this->patterns_surf->w, this->patterns_surf->h, 32, 0, 0, 0, 0 );
     SDL_BlitSurface( this->patterns_surf, NULL, buffer, NULL );
@@ -259,3 +270,35 @@ void ModNES::presentPatterns( SDL_Rect* rect )
     SDL_UpdateWindowSurface( this->patterns_win );
     SDL_FreeSurface( buffer );
 }
+//------------------------------------------------------------------------------------------------------------
+void ModNES::renderNametables()
+{
+    // loopear las nametables y attributes en memoria
+    // foreach tile:
+    //     ver qué paleta le corresponde, setear esa paleta
+    //     ver qué tile es y blitearlo desde patterns a nametables_win
+    // next x
+    for( int table = 0; table <= 1; ++table )
+    {
+        byte *name_ptr = this->nes->ppu.name_ptr[table];
+        byte *attr_ptr = this->nes->ppu.attr_ptr[table];
+        
+        for( int tiley = 0; tiley < 30; ++tiley )
+        {
+            for( int tilex = 0; tilex < 32; ++tilex )
+            {
+                byte tilen = *name_ptr;
+                
+                // int pattern_pixel_x = (tilen % 16) * 8;
+                Acá empieza el malambo!
+                
+                ++name_ptr;
+            }
+        }
+    }
+}
+//------------------------------------------------------------------------------------------------------------
+void ModNES::presentNametables()
+{
+}
+//------------------------------------------------------------------------------------------------------------
