@@ -12,10 +12,25 @@ extern "C" char* openFile( char* path, int length );
 //------------------------------------------------------------------------------------------------------------
 Uint32 vblank_callback( Uint32 interval, void* param )
 {
-    ModNES* self = (ModNES*) param;
-    Nes_DoFrame( self->nes );
-    
-    return interval;
+    // Push a user event to avoid multithreading problems
+    SDL_Event event;
+    SDL_UserEvent userevent;
+
+    userevent.type = SDL_USEREVENT;
+    userevent.code = 0;
+    userevent.data1 = NULL;
+    userevent.data2 = NULL;
+
+    event.type = SDL_USEREVENT;
+    event.user = userevent;
+
+    SDL_PushEvent(&event);
+    return(interval);
+}
+//------------------------------------------------------------------------------------------------------------
+ModNES::ModNES()
+{
+    this->running = false;
 }
 //------------------------------------------------------------------------------------------------------------
 int ModNES::run()
@@ -81,12 +96,10 @@ int ModNES::init()
     this->temp_pal  = SDL_AllocPalette( 0x100 );
     this->patterns_pal  = SDL_AllocPalette( 0x100 );
         // Even when using only 4 indices, all 256 colors have to be allocated or it won't work.
-    for( int i=0; i<=1; i++ ) {
-        this->nametables_surf[i] = SDL_CreateRGBSurface( 0, 256, 128, 32, 0, 0, 0, 0 );
-    }
+    
+    this->nametables_surf = SDL_CreateRGBSurface( 0, 512, 256, 32, 0, 0, 0, 0 );
 
     this->nes = Nes_Create();
-    this->timer_id = SDL_AddTimer( 1000 / 60, vblank_callback, (void *)this );
     
     return APP_OK;
 }
@@ -197,6 +210,14 @@ void ModNES::loop()
             case SDL_QUIT:
                 this->quit = true;
                 break;
+            //------------------------------------------------------------------------------------------------
+            // VBlank
+            case SDL_USEREVENT:
+                if( this->running ) {
+                    Nes_DoFrame( this->nes );
+                    this->renderNametables();
+                }
+                break;
         }
     }
 }
@@ -215,6 +236,11 @@ void ModNES::loadCartridge( char *path )
     this->renderPatterns();
     SDL_Rect rect = {0, 0, 256, 128};
     this->presentPatterns(); //WIP move this outta here
+    
+    if( ! this->running ) {
+        this->running = true;
+        this->timer_id = SDL_AddTimer( 1000 / 60, vblank_callback, NULL );
+    }
 }
 //------------------------------------------------------------------------------------------------------------
 void ModNES::renderPatterns()
@@ -273,11 +299,10 @@ void ModNES::presentPatterns()
 //------------------------------------------------------------------------------------------------------------
 void ModNES::renderNametables()
 {
-    // loopear las nametables y attributes en memoria
-    // foreach tile:
-    //     ver qué paleta le corresponde, setear esa paleta
-    //     ver qué tile es y blitearlo desde patterns a nametables_win
-    // next x
+    SDL_Rect patt, name;
+    patt.w = patt.h = name.w = name.h = 8;
+    SDL_Surface *windSurf = SDL_GetWindowSurface( this->nametables_win );
+    
     for( int table = 0; table <= 1; ++table )
     {
         byte *name_ptr = this->nes->ppu.name_ptr[table];
@@ -289,13 +314,21 @@ void ModNES::renderNametables()
             {
                 byte tilen = *name_ptr;
                 
-                // int pattern_pixel_x = (tilen % 16) * 8;
-                Acá empieza el malambo!
+                patt.x = 128 + (tilen % 16) * 8;
+                patt.y = (tilen / 16) * 8;
                 
+                
+                name.x = (table * 256) + (tilex * 8);
+                name.y = tiley * 8;
+                
+                SDL_BlitSurface( this->patterns_surf, &patt, windSurf, &name );
+
                 ++name_ptr;
             }
         }
     }
+    SDL_UpdateWindowSurface( this->nametables_win );
+    SDL_FreeSurface( windSurf );
 }
 //------------------------------------------------------------------------------------------------------------
 void ModNES::presentNametables()

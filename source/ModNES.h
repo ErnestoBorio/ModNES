@@ -12,7 +12,10 @@ class ModNES
 public:
     Nes *nes;
     enum APP_STATE { APP_OK = 0, APP_FAILED = 1 };
+    
+    bool running;
     bool quit;
+    
     enum Windows {
         Patterns_win = 0,
         Nametables_win = 1,
@@ -34,11 +37,12 @@ public:
     
     SDL_Window *patterns_win;
     SDL_Window *nametables_win;
+    
     int patterns_win_id;
     int nametables_win_id;
     
     SDL_Surface *patterns_surf;
-    SDL_Surface *nametables_surf[2];
+    SDL_Surface *nametables_surf;
     
     SDL_Palette *patterns_pal;
     SDL_Palette *temp_pal;
@@ -56,6 +60,7 @@ public:
     void read_config();
     void write_config();
 
+    ModNES();
     ~ModNES();
 };
 
