@@ -6,7 +6,7 @@
 using namespace std;
 
 const string ModNES::config_filename = "ModNES_config";
-
+extern const byte Nes_rgb[64][3];
 extern "C" char* openFile( char* path, int length );
 
 //------------------------------------------------------------------------------------------------------------
@@ -47,12 +47,17 @@ void ModNES::read_config()
     if( ! config_file ) {
         config_file.open( ModNES::config_filename, fstream::trunc | fstream::binary | fstream::out );
         
-        this->config.patterns_win.size = 1;
+        this->config.patterns_win.size = 0;
         this->config.patterns_win.pos.x = 400;
-        this->config.patterns_win.pos.y = 20;
+        this->config.patterns_win.pos.y = 200;
+        
         this->config.nametables_win.size = 1;
-        this->config.nametables_win.pos.x = 20;
+        this->config.nametables_win.pos.x = 400;
         this->config.nametables_win.pos.y = 20;
+        
+        this->config.screen_win.size = 1;
+        this->config.screen_win.pos.x = 20;
+        this->config.screen_win.pos.y = 20;
         
         config_file.write( (const char*)&this->config, sizeof( this->config ));
     }
@@ -77,15 +82,24 @@ int ModNES::init()
         fprintf(stderr, "SDL_Init() failed: %s\n", SDL_GetError());
         return APP_FAILED;
     }
-    this->patterns_win = SDL_CreateWindow( "Pattern tables", config.patterns_win.pos.x, config.patterns_win.pos.y, 
+    this->patterns_win = SDL_CreateWindow( "Pattern tables", 
+        config.patterns_win.pos.x, config.patterns_win.pos.y, 
         config.patterns_win.size <= 1 ? 256 : 512, 
         config.patterns_win.size <= 1 ? 128 : 256, 
         config.patterns_win.size == 0 ? SDL_WINDOW_HIDDEN : SDL_WINDOW_SHOWN );
     this->patterns_win_id = SDL_GetWindowID( this->patterns_win );
 
-    this->nametables_win = SDL_CreateWindow( "Name tables", config.nametables_win.pos.x, config.nametables_win.pos.y, 256*2, 240*2, 
+    this->nametables_win = SDL_CreateWindow( "Name tables", 
+        config.nametables_win.pos.x, config.nametables_win.pos.y, 
+        256*2, 240, 
         config.nametables_win.size == 0 ? SDL_WINDOW_HIDDEN : SDL_WINDOW_SHOWN );
     this->nametables_win_id = SDL_GetWindowID( this->nametables_win );
+    
+    this->screen_win = SDL_CreateWindow( "ModNES", 
+        config.screen_win.pos.x, config.screen_win.pos.y,
+        256*2, 240*2, 
+        config.screen_win.size == 0 ? SDL_WINDOW_HIDDEN : SDL_WINDOW_SHOWN );
+    this->screen_win_id = SDL_GetWindowID( this->screen_win );
     
     // SDL_Surface *windSurf = SDL_GetWindowSurface( this->patterns_win );
     // this->patterns_ren = SDL_CreateRenderer( this->patterns_win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
@@ -97,7 +111,7 @@ int ModNES::init()
     this->patterns_pal  = SDL_AllocPalette( 0x100 );
         // Even when using only 4 indices, all 256 colors have to be allocated or it won't work.
     
-    this->nametables_surf = SDL_CreateRGBSurface( 0, 512, 256, 32, 0, 0, 0, 0 );
+    this->nametables_surf = SDL_CreateRGBSurface( 0, 256*2, 240, 32, 0, 0, 0, 0 );
 
     this->nes = Nes_Create();
     
@@ -143,6 +157,9 @@ void ModNES::loop()
                     if( path[0] ) {
                         this->loadCartridge( path );
                     }
+                }
+                else if( event.key.keysym.sym == SDLK_r ) {
+                    Nes_Reset( this->nes );
                 }
                 //------------------------------------------------------------------------------------------------
                 else if( event.key.keysym.sym == SDLK_p ) // resize Pattern tables window
@@ -198,6 +215,10 @@ void ModNES::loop()
                         this->config.nametables_win.pos.x = event.window.data1;
                         this->config.nametables_win.pos.y = event.window.data2;
                     }
+                    else if( event.window.windowID == this->screen_win_id ) {
+                        this->config.screen_win.pos.x = event.window.data1;
+                        this->config.screen_win.pos.y = event.window.data2;
+                    }
                     this->write_config();
                 }
                 break;
@@ -215,7 +236,27 @@ void ModNES::loop()
             case SDL_USEREVENT:
                 if( this->running ) {
                     Nes_DoFrame( this->nes );
+                    
+                    SDL_SetColorKey( this->patterns_surf, SDL_FALSE, 0 );
                     this->renderNametables();
+                    
+                    SDL_SetColorKey( this->patterns_surf, SDL_TRUE, 0 );
+                    this->renderSprites();
+                    
+                    SDL_BlitSurface( this->nametables_surf, NULL, SDL_GetWindowSurface( this->nametables_win ), NULL );
+                    
+                    SDL_Rect viewport = { nes->ppu.horz_scroll, 0, 256, 240 };
+                    SDL_BlitScaled( this->nametables_surf, &viewport, SDL_GetWindowSurface( this->screen_win ), NULL );
+                    
+                    // Draw viewport rectangle WIP get this out of here!
+                    SDL_Rect bounds[2] = {
+                        { nes->ppu.horz_scroll, 0, 1, 240 },
+                        { nes->ppu.horz_scroll + 256, 0, 1, 240 } };
+                    SDL_Surface *windSurf = SDL_GetWindowSurface( this->nametables_win );
+                    SDL_FillRects( windSurf, bounds, 2, SDL_MapRGB( windSurf->format, 0, 255, 0 ) );
+                    
+                    SDL_UpdateWindowSurface( this->nametables_win );
+                    SDL_UpdateWindowSurface( this->screen_win );
                 }
                 break;
         }
@@ -301,7 +342,8 @@ void ModNES::renderNametables()
 {
     SDL_Rect patt, name;
     patt.w = patt.h = name.w = name.h = 8;
-    SDL_Surface *windSurf = SDL_GetWindowSurface( this->nametables_win );
+    SDL_Color colors[4];
+    SDL_SetSurfacePalette( this->patterns_surf, this->temp_pal );
     
     for( int table = 0; table <= 1; ++table )
     {
@@ -317,21 +359,82 @@ void ModNES::renderNametables()
                 patt.x = 128 + (tilen % 16) * 8;
                 patt.y = (tilen / 16) * 8;
                 
-                
                 name.x = (table * 256) + (tilex * 8);
                 name.y = tiley * 8;
                 
-                SDL_BlitSurface( this->patterns_surf, &patt, windSurf, &name );
+                byte attribute = attr_ptr[ (tilex/4) + (tiley/4) * 8 ];
+                
+                byte palette_index;
+                if( tiley % 4 < 2 ) {
+                    if( tilex % 4 < 2 ) {
+                        palette_index = attribute & 0x03; // bits 0,1
+                    }
+                    else {
+                        palette_index = ( attribute & 0x0C ) >>2;  // bits 2,3
+                    }
+                }
+                else {
+                    if( tilex % 4 < 2 ) {
+                        palette_index = ( attribute & 0x30 ) >>4; // bits 4,5
+                    }
+                    else {
+                        palette_index = ( attribute & 0xC0 ) >>6; // bits 6,7
+                    }
+                }
+                
+                
+                // WIP IIRC back and sprite pallettes can be switched? or not?
+                for( int i = 0; i <= 3; ++i )
+                {
+                    int rgb_index = nes->ppu.palettes[ palette_index * 4 + i ]; // should +0x10 if it were sprite palettes
+                    colors[i].r = Nes_rgb[rgb_index][0];
+                    colors[i].g = Nes_rgb[rgb_index][1];
+                    colors[i].b = Nes_rgb[rgb_index][2];
+                }
+                
+                SDL_SetPaletteColors( this->temp_pal, colors, 0, 4 );
+                // SDL_SetSurfacePalette( this->patterns_surf, this->temp_pal );
+                SDL_BlitSurface( this->patterns_surf, &patt, this->nametables_surf, &name );
 
                 ++name_ptr;
             }
         }
     }
-    SDL_UpdateWindowSurface( this->nametables_win );
-    SDL_FreeSurface( windSurf );
 }
 //------------------------------------------------------------------------------------------------------------
-void ModNES::presentNametables()
+void ModNES::renderSprites()
 {
+    SDL_Rect patt, name;
+    patt.w = patt.h = name.w = name.h = 8;
+    
+    SDL_Color colors[4] = {{0,0,0}};
+    
+    SDL_SetSurfacePalette( this->patterns_surf, this->temp_pal );
+    
+    for( byte *sprite = nes->ppu.sprites; sprite < &nes->ppu.sprites[0x100]; sprite += 4 )
+    {
+        name.y = sprite[0];
+        name.x = nes->ppu.horz_scroll + sprite[3];
+        int tilen = sprite[1];
+        int paln  = sprite[2] & 3; // 2 lsb
+        int xflip = sprite[2] & ( 1<<6 );
+        int yflip = sprite[2] & ( 1<<7 );
+        
+        // WIP this is assuming sprites are in pattern table 0
+        patt.x = (tilen % 16) * 8;
+        patt.y = (tilen / 16) * 8;
+        
+        // WIP IIRC back and sprite pallettes can be switched? or not?
+        for( int i = 0; i <= 3; ++i )
+        {
+            int rgb_index = nes->ppu.palettes[ 0x10 + paln * 4 + i ];
+            colors[i].r = Nes_rgb[rgb_index][0];
+            colors[i].g = Nes_rgb[rgb_index][1];
+            colors[i].b = Nes_rgb[rgb_index][2];
+        }
+        
+        SDL_SetPaletteColors( this->temp_pal, colors, 0, 4 );
+        SDL_BlitSurface( this->patterns_surf, &patt, this->nametables_surf, &name );
+    }
 }
 //------------------------------------------------------------------------------------------------------------

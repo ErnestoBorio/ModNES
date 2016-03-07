@@ -31,15 +31,17 @@ public:
                 int x;
                 int y;
             } pos;
-        } patterns_win, nametables_win;
+        } patterns_win, nametables_win, screen_win;
     } config;
     static const std::string config_filename;
     
     SDL_Window *patterns_win;
     SDL_Window *nametables_win;
+    SDL_Window *screen_win;
     
     int patterns_win_id;
     int nametables_win_id;
+    int screen_win_id;
     
     SDL_Surface *patterns_surf;
     SDL_Surface *nametables_surf;
@@ -55,7 +57,7 @@ public:
     void renderPatterns();
     void presentPatterns();
     void renderNametables();
-    void presentNametables();
+    void renderSprites();
     
     void read_config();
     void write_config();
