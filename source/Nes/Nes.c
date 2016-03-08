@@ -46,19 +46,19 @@ static void initialize( Nes *this )
 {
     Cpu6502_Initialize( this->cpu );
     
-    this->ppu.nmi_enabled        = 0;
-    this->ppu.sprite_height     = 8;
-    this->ppu.back_pattern      = 0;
-    this->ppu.sprite_pattern    = 0;
-    this->ppu.increment_vram    = 1;
+    this->ppu.nmi_enabled      = 0;
+    this->ppu.sprite_height    = 8;
+    this->ppu.back_pattern     = 0;
+    this->ppu.sprite_pattern   = 0;
+    this->ppu.increment_vram   = 1;
     this->ppu.scroll_high_bits = 0;
 
-    this->ppu.color_emphasis      = 0;
-    this->ppu.sprites_visible     = 0;
+    this->ppu.color_emphasis     = 0;
+    this->ppu.sprites_visible    = 0;
     this->ppu.background_visible = 0;
-    this->ppu.sprite_clip          = 0;
-    this->ppu.background_clip     = 0;
-    this->ppu.monochrome            = 0;
+    this->ppu.sprite_clip        = 0;
+    this->ppu.background_clip    = 0;
+    this->ppu.monochrome         = 0;
 
     this->ppu.vblank_flag  = 0;
     this->ppu.sprite0_hit  = 0;
@@ -68,15 +68,15 @@ static void initialize( Nes *this )
     this->ppu.horz_scroll  = 0;
     this->ppu.vert_scroll  = 0;
     this->ppu.vram_address = 0;
-    this->ppu.mirroring     = 0;
+    this->ppu.mirroring    = 0;
     
-    this->cpu_cycles        = 0;
-    this->ppu_cycles        = 0;
-    this->frames             = 0;
-    this->scanline          = -1;
-    this->scanpixel         = 0;
-    this->vblank             = 0;
-    this->last_scanpixel  = 0;
+    this->cpu_cycles     = 0;
+    this->ppu_cycles     = 0;
+    this->frames         = 0;
+    this->scanline       = -1;
+    this->scanpixel      = 0;
+    this->vblank         = 0;
+    this->last_scanpixel = 0;
     
     memset( this->input.gamepad,     0, sizeof this->input.gamepad );
     memset( this->input.read_count, 0, sizeof this->input.read_count );

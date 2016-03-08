@@ -275,7 +275,6 @@ void ModNES::loadCartridge( char *path )
     fclose( romFile );
     Nes_Reset( this->nes );
     this->renderPatterns();
-    SDL_Rect rect = {0, 0, 256, 128};
     this->presentPatterns(); //WIP move this outta here
     
     if( ! this->running ) {
@@ -409,9 +408,12 @@ void ModNES::renderSprites()
     
     SDL_Color colors[4] = {{0,0,0}};
     
+    SDL_Surface *flip_surf = SDL_CreateRGBSurface( 0, 8, 8, 8, 0, 0, 0, 0 );
+    SDL_Surface *temp_surf = SDL_CreateRGBSurface( 0, 8, 8, 8, 0, 0, 0, 0 );
+    
     SDL_SetSurfacePalette( this->patterns_surf, this->temp_pal );
     
-    for( byte *sprite = nes->ppu.sprites; sprite < &nes->ppu.sprites[0x100]; sprite += 4 )
+    for( byte *sprite = &nes->ppu.sprites[0x100-4]; sprite >= nes->ppu.sprites; sprite -= 4 )
     {
         name.y = sprite[0];
         name.x = nes->ppu.horz_scroll + sprite[3];
@@ -434,7 +436,60 @@ void ModNES::renderSprites()
         }
         
         SDL_SetPaletteColors( this->temp_pal, colors, 0, 4 );
-        SDL_BlitSurface( this->patterns_surf, &patt, this->nametables_surf, &name );
+        
+        if( xflip == 0 && yflip == 0 ) {
+            SDL_BlitSurface( this->patterns_surf, &patt, this->nametables_surf, &name );
+        }
+        else // flip the sprite. WIP (this should be pre-rendered and cached)
+        {
+            SDL_SetColorKey( flip_surf, SDL_TRUE, 0 );
+            SDL_SetSurfacePalette( flip_surf, this->temp_pal );
+            SDL_FillRect( flip_surf, NULL, 0 );
+            
+            SDL_SetColorKey( temp_surf, SDL_TRUE, 0 );
+            SDL_SetSurfacePalette( temp_surf, this->temp_pal );
+            SDL_FillRect( temp_surf, NULL, 0 );
+            
+            SDL_BlitSurface( this->patterns_surf, &patt, temp_surf, NULL );
+            
+            SDL_LockSurface( temp_surf );
+            SDL_LockSurface( flip_surf );
+            
+            int xstart = 0, ystart = 0, xstep = 0, ystep = 0;
+            
+            if( xflip ) {
+                xstart = 7;
+                xstep  = -1;
+            } else {
+                xstart = 0;
+                xstep  = 1;
+            }
+            if( yflip ) {
+                ystart = 7;
+                ystep  = -1;
+            } else {
+                ystart = 0;
+                ystep  = 1;
+            }
+            
+            for( int sourcey = 0, desty = ystart;
+                 sourcey <= 7;
+                 ++sourcey, desty += ystep )
+            {
+                for( int sourcex = 0, destx = xstart;
+                     sourcex <= 7;
+                     ++sourcex, destx += xstep )
+                {
+                    ((byte*) flip_surf->pixels) [ desty * flip_surf->pitch + destx ] =
+                        ((byte*) temp_surf->pixels) [ sourcey * temp_surf->pitch + sourcex ];
+                }
+            }
+            SDL_UnlockSurface( temp_surf );
+            SDL_UnlockSurface( flip_surf );
+            SDL_BlitSurface( flip_surf, NULL, this->nametables_surf, &name );
+        }
     }
+    SDL_FreeSurface( flip_surf );
+    SDL_FreeSurface( temp_surf );
 }
 //------------------------------------------------------------------------------------------------------------
