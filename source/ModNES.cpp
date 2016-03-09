@@ -344,6 +344,9 @@ void ModNES::renderNametables()
     SDL_Color colors[4];
     SDL_SetSurfacePalette( this->patterns_surf, this->temp_pal );
     
+    // Whether the background tiles are in CHR ROM 0 at $0 or CHR ROM 1 at $1000
+    int chrom_shift = nes->ppu.back_pattern == 0 ? 0 : 128;
+    
     for( int table = 0; table <= 1; ++table )
     {
         byte *name_ptr = this->nes->ppu.name_ptr[table];
@@ -355,7 +358,7 @@ void ModNES::renderNametables()
             {
                 byte tilen = *name_ptr;
                 
-                patt.x = 128 + (tilen % 16) * 8;
+                patt.x = chrom_shift + (tilen % 16) * 8;
                 patt.y = (tilen / 16) * 8;
                 
                 name.x = (table * 256) + (tilex * 8);
@@ -406,6 +409,9 @@ void ModNES::renderSprites()
     SDL_Rect patt, name;
     patt.w = patt.h = name.w = name.h = 8;
     
+    // Whether the sprite tiles are in CHR ROM 0 at $0 or CHR ROM 1 at $1000
+    int chrom_shift = nes->ppu.sprite_pattern == 0 ? 0 : 128;
+    
     SDL_Color colors[4] = {{0,0,0}};
     
     SDL_Surface *flip_surf = SDL_CreateRGBSurface( 0, 8, 8, 8, 0, 0, 0, 0 );
@@ -423,7 +429,7 @@ void ModNES::renderSprites()
         int yflip = sprite[2] & ( 1<<7 );
         
         // WIP this is assuming sprites are in pattern table 0
-        patt.x = (tilen % 16) * 8;
+        patt.x = chrom_shift + (tilen % 16) * 8;
         patt.y = (tilen / 16) * 8;
         
         // WIP IIRC back and sprite pallettes can be switched? or not?
