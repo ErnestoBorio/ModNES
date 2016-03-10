@@ -78,6 +78,8 @@ int ModNES::init()
 {
     this->read_config();
     
+    this->render_sprites = true;
+    
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
         fprintf(stderr, "SDL_Init() failed: %s\n", SDL_GetError());
         return APP_FAILED;
@@ -91,7 +93,7 @@ int ModNES::init()
 
     this->nametables_win = SDL_CreateWindow( "Name tables", 
         config.nametables_win.pos.x, config.nametables_win.pos.y, 
-        256*2, 240, 
+        256*2, 240*2, 
         config.nametables_win.size == 0 ? SDL_WINDOW_HIDDEN : SDL_WINDOW_SHOWN );
     this->nametables_win_id = SDL_GetWindowID( this->nametables_win );
     
@@ -111,7 +113,7 @@ int ModNES::init()
     this->patterns_pal  = SDL_AllocPalette( 0x100 );
         // Even when using only 4 indices, all 256 colors have to be allocated or it won't work.
     
-    this->nametables_surf = SDL_CreateRGBSurface( 0, 256*2, 240, 32, 0, 0, 0, 0 );
+    this->nametables_surf = SDL_CreateRGBSurface( 0, 256*2, 240*2, 32, 0, 0, 0, 0 );
 
     this->nes = Nes_Create();
     
@@ -202,6 +204,10 @@ void ModNES::loop()
                     }
                     this->write_config();
                 }
+                //------------------------------------------------------------------------------------------------
+                else if( event.key.keysym.sym == SDLK_s ) {
+                    this->render_sprites = ! this->render_sprites;
+                }
                 break;
             //------------------------------------------------------------------------------------------------
             case SDL_WINDOWEVENT:
@@ -245,15 +251,20 @@ void ModNES::loop()
                     
                     SDL_BlitSurface( this->nametables_surf, NULL, SDL_GetWindowSurface( this->nametables_win ), NULL );
                     
-                    SDL_Rect viewport = { nes->ppu.horz_scroll, 0, 256, 240 };
-                    SDL_BlitScaled( this->nametables_surf, &viewport, SDL_GetWindowSurface( this->screen_win ), NULL );
+                    // WIP Hardcoded magic numbers to hide first and last tile rows
+                    SDL_Rect viewport = { nes->ppu.horz_scroll, nes->ppu.vert_scroll+8, 256, 224 };
+                    SDL_Rect target = { 0, 16, 512, 240*2-32 };
+                    SDL_BlitScaled( this->nametables_surf, &viewport, SDL_GetWindowSurface( this->screen_win ), &target );
                     
                     // Draw viewport rectangle WIP get this out of here!
-                    SDL_Rect bounds[2] = {
-                        { nes->ppu.horz_scroll, 0, 1, 240 },
-                        { nes->ppu.horz_scroll + 256, 0, 1, 240 } };
+                    SDL_Rect bounds[4] = {
+                        { nes->ppu.horz_scroll, nes->ppu.vert_scroll, 1, 240 },
+                        { nes->ppu.horz_scroll + 255, nes->ppu.vert_scroll, 1, 240 },
+                        { nes->ppu.horz_scroll, nes->ppu.vert_scroll, 256, 1 },
+                        { nes->ppu.horz_scroll, nes->ppu.vert_scroll + 240, 256, 1 },
+                         };
                     SDL_Surface *windSurf = SDL_GetWindowSurface( this->nametables_win );
-                    SDL_FillRects( windSurf, bounds, 2, SDL_MapRGB( windSurf->format, 0, 255, 0 ) );
+                    SDL_FillRects( windSurf, bounds, 4, SDL_MapRGB( windSurf->format, 0, 255, 0 ) );
                     
                     SDL_UpdateWindowSurface( this->nametables_win );
                     SDL_UpdateWindowSurface( this->screen_win );
@@ -349,6 +360,15 @@ void ModNES::renderNametables()
     
     for( int table = 0; table <= 1; ++table )
     {
+        int table_shift_x = 0, table_shift_y = 0;
+        if( nes->ppu.mirroring == mirroring_vertical && table == 1 ) {
+            table_shift_x = 256;
+        }
+        else if( nes->ppu.mirroring == mirroring_horizontal && table == 1 ) {
+            table_shift_y = 256;
+        }
+        // else WIP 4 screen mirroring
+    
         byte *name_ptr = this->nes->ppu.name_ptr[table];
         byte *attr_ptr = this->nes->ppu.attr_ptr[table];
         
@@ -361,8 +381,8 @@ void ModNES::renderNametables()
                 patt.x = chrom_shift + (tilen % 16) * 8;
                 patt.y = (tilen / 16) * 8;
                 
-                name.x = (table * 256) + (tilex * 8);
-                name.y = tiley * 8;
+                name.x = table_shift_x + tilex * 8;
+                name.y = table_shift_y + tiley * 8;
                 
                 byte attribute = attr_ptr[ (tilex/4) + (tiley/4) * 8 ];
                 
@@ -402,10 +422,32 @@ void ModNES::renderNametables()
             }
         }
     }
+    
+    name.x = name.y = 0;
+    SDL_Rect mirror = { 0, 0, 0, 0 };
+    if( nes->ppu.mirroring == mirroring_vertical )
+    {
+        mirror.w = name.w = 512;
+        mirror.h = name.h = 240;
+        mirror.x = 0;
+        mirror.y = 240;
+    }
+    else {
+        assert( 0 && "Horizontal mirroring not yet implemented on frontend" );
+    }
+    // SDL_Surface *temp = SDL_CreateRGBSurface( 0, 512, 240, 8, 0, 0, 0, 0 );
+    // SDL_BlitSurface( this->nametables_surf, &name, temp, NULL );
+    // SDL_BlitSurface( temp, NULL, this->nametables_surf, &mirror );
+    SDL_BlitSurface( this->nametables_surf, &name, this->nametables_surf, &mirror );
 }
 //------------------------------------------------------------------------------------------------------------
 void ModNES::renderSprites()
 {
+    // WIP dirty hack, handle more graciously
+    if( ! this->render_sprites ) {
+        return;
+    }
+    
     SDL_Rect patt, name;
     patt.w = patt.h = name.w = name.h = 8;
     
@@ -421,7 +463,7 @@ void ModNES::renderSprites()
     
     for( byte *sprite = &nes->ppu.sprites[0x100-4]; sprite >= nes->ppu.sprites; sprite -= 4 )
     {
-        name.y = sprite[0];
+        name.y = nes->ppu.vert_scroll + sprite[0] + 1; // Sprite's y position is off by one
         name.x = nes->ppu.horz_scroll + sprite[3];
         int tilen = sprite[1];
         int paln  = sprite[2] & 3; // 2 lsb

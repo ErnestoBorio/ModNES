@@ -35,6 +35,8 @@ public:
     } config;
     static const std::string config_filename;
     
+    bool render_sprites;
+    
     SDL_Window *patterns_win;
     SDL_Window *nametables_win;
     SDL_Window *screen_win;
