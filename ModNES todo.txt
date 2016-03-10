@@ -1,34 +1,17 @@
 
 Próximos pasos:
 
-> SDL!
-Holamundeando SDL2.
-ALTA biblioteca, wachin.
-Descubrí que usando surfaces 8 bpp, si altero los colores de la patleta (no la paleta en sí), antes de blitear, se blitea
-correctamente con la paleta deseada.
-
-Voy a implementar cada pattern table como una surface de 256 tiles, o sea 16x16 tiles, 128x128 px
-Luego por cada tile que tengo que blitear como fondo o como sprite, ahí le seteo los colores de la paleta y depsués bliteo.
-Puedo cachear los tiles vacíos y no blitearlos.
-Bliteo en 4 planos: fondo todo del color de fondo, luego sprites por abajo del fondo, luego fondo, luego sprites por arriba de fondo.
-Sprites se renderean en orden inverso a sprite number.
-(por ahora me cago en sprites bajofondo que tienen mayor prioridad que sprites sobrefondo.)
+> Implementar sprite 0 hit
+> Scroll mid-frame y scroll viewport partido
+> Input
+> FPS count y modo async a ver cuántos FPS tira ModNES unbound
+> Hacer que OAM DMA empiece en OAM ADDR 2003 (sólo si algún juego escribe !=0 en OAM ADDR)
+> Visual debugger. (Cocoa nativo GUI? implementar alguna SDL GUI? GUI propia?)
+> Mappers!
 
 > Pausa
-
-> Scroll
-
-> Mappers
-
-> FPS count
-
 > Brush roller trata de acceder a $4800 なに!!
-
----
-
-> Implementar sprite 0 hit ( √ implementado muy básicamente )
-
-> Hacer que OAM DMA empiece en OAM ADDR 2003 (sólo si algún juego escribe !=0 en OAM ADDR)
+> Ice climber también trata de acceder a un read unimplemented. Raro, la versión anterior con Cocoa OpenGL me parece que no fallaba.
 
 > Implementar también OAM READ/WRITE 2004 (si? o dejar un assert y ver si algún juego lo usa)
 
@@ -37,12 +20,13 @@ Sprites se renderean en orden inverso a sprite number.
 
 > Un nice to have pero no escencial sería renderear cada tile de los pattern tables con la última paleta con el que fue
 rendereado en la pantalla. Igual esto es prioridad 0, porque sirve sólo para que se va lindo el visual debugger, no tiene
-incidencia en el ModNES final.
+incidencia en el ModNES final. Y requiere blittear todos los tiles de vuelta todos los frames, probablemente nunca lo haga.
 
 > Implementar open bus para lectura de registros y demás.
 Los registros de solo escritura devuelven el openbus al ser leidos.
 Los registros que solo usan pocos bits, como $2002, el resto de los bits viene del openbus.
 (en general los read unimplemented de los registros, seguro devuelven openbus)
+El openbus es el último byte leído de la memoria. (consultar documentación a ver si puede haber algo más)
 
 > Eliminar la práctica de include .c dentro de .c (sacar funciones static)
 Debería? esto permite hacer funciones "privadas" con static. Pero xcode ignora los breakpoints en estos archivos.
@@ -52,8 +36,9 @@ Ya hice esto con MemoryAccess.c, quedan Instructions.c y Addressing.c
 > $2002.4 "VRAM write enable/disable" según una Doc, que las demás contradicen. Averiguar qué onda.
 (Por ahora lo ignoro olímpicamente)
 
-
 --- done
+√ Scroll pantalla completa
+√ SDL 2
 √ Implementar read_memory_disasm para no usar los handlers comunes de registros
 √ Implementar save RAM
 √ Implementar cpu y ppu cycle counting, y quizas también frame count a nivel Nes.

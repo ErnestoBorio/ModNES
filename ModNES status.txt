@@ -1,4 +1,31 @@
 
+>> 2016-03-10
+
+Reimplementé el render en SDL, con pallette swaps bliteando de a tiles en vez de a pixel.
+Ahora hay ventanas de: Patterns, Nametables y Screen.
+Sprites y Pallettes no las hice en SDL, y no las voy a hacer hasta que no las necesite.
+Por fin implementé el scroll en 2D, aunque solo en pantalla completa, no split-screen todavía.
+Por primera vez ModNES renderea al screen con scroll y le da un aspecto vivo, cada vez más se parece a una NES verdadera.
+Al querer hacer el flipping de sprites me di cuenta de que SDL no tiene BlitFlipped() me sorprendió.
+Sí tiene para renderers y texturas, seguramente eso lo hace el framework subyacente, e.g. OpenGL.
+Tendría que branchear y probar con renderers y texturas a ver si puedo hacer lo mismo que con surfaces. Probablemente no pueda hacer color keying y pallette swap.
+El aprendizaje de git con Germinate me sirvió para manejar este proyecto mejor, los conceptos de branching y merging son muy simples pero muy poderosos.
+
+
+>> 2015-XX-XX En algún punto entre la fecha anterior y la siguiente (lo había puesto en to do)
+
+Holamundeando SDL2.
+Descubrí que usando surfaces 8 bpp, si altero los colores de la patleta (no la paleta en sí), antes de blitear, se blitea
+correctamente con la paleta deseada.
+
+Voy a implementar cada pattern table como una surface de 256 tiles, o sea 16x16 tiles, 128x128 px
+Luego por cada tile que tengo que blitear como fondo o como sprite, ahí le seteo los colores de la paleta y depsués bliteo.
+Puedo cachear los tiles vacíos y no blitearlos.
+Bliteo en 4 planos: fondo todo del color de fondo, luego sprites por abajo del fondo, luego fondo, luego sprites por arriba de fondo.
+Sprites se renderean en orden inverso a sprite number.
+(por ahora me cago en sprites bajofondo que tienen mayor prioridad que sprites sobrefondo.)
+
+
 >> 2015-08-30
 
 Bueno el evento más importante de ModNES fue tan impactante que no escribí nada acá.
@@ -24,7 +51,7 @@ Esto se podría arreglar ejecutando el addresing para estos NOPs pero creo que n
 
 Mejoras a futuro:
 Llamar primero al addressing y después a la instrucción, ambos según las correspondientes tablas, en vez de hacer el switch
-largo y verbose de CpuStep.
+largo y verbose de CpuStep. (Como hacía antes, con los dos switch y el poderoso goto)
 El PC se puede incrementar simplemente basado en el addressing y no hacerlo a mano en cada caso.
 
 >> 2015-05-10 Domingo
