@@ -209,6 +209,7 @@ void Nes_DoFrame( Nes *this )
     int vblank_started = 0;
     while( 1 )
     {
+        // Reached VBLANK?
         if(( this->scanline == 241 ) && ( this->vblank == 0 ))
         {
             this->frames++;
@@ -217,11 +218,13 @@ void Nes_DoFrame( Nes *this )
             vblank_started = 1;
             if( this->ppu.nmi_enabled )
             {
+                // Yes, execute NMI for VBLANK
                 cpu_cycles = Cpu6502_NMI( this->cpu );
             }
         }
         else
         {
+            // No, just regular step
             cpu_cycles = Cpu6502_CpuStep( this->cpu );
         }
         
@@ -231,11 +234,13 @@ void Nes_DoFrame( Nes *this )
         this->last_scanpixel = this->scanpixel;
         this->scanpixel += 3 * cpu_cycles;
         
+        // Reached right end of the screen?
         if( this->scanpixel >= 341 )
         {
             this->scanpixel -= 341;
             this->scanline++;
             
+            // Reached last scanline?
             if( this->scanline >= 261 )
             {
                 this->scanline = -1;

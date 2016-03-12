@@ -1,13 +1,13 @@
 
 Próximos pasos:
 
-> Implementar sprite 0 hit
 > Scroll mid-frame y scroll viewport partido
 > Input
 > FPS count y modo async a ver cuántos FPS tira ModNES unbound
 > Hacer que OAM DMA empiece en OAM ADDR 2003 (sólo si algún juego escribe !=0 en OAM ADDR)
 > Visual debugger. (Cocoa nativo GUI? implementar alguna SDL GUI? GUI propia?)
 > Mappers!
+> Hacer accyrate sprite 0 hit
 
 > Pausa
 > Brush roller trata de acceder a $4800 なに!!
@@ -37,6 +37,7 @@ Ya hice esto con MemoryAccess.c, quedan Instructions.c y Addressing.c
 (Por ahora lo ignoro olímpicamente)
 
 --- done
+√ Implementar sprite 0 hit (básico)
 √ Scroll pantalla completa
 √ SDL 2
 √ Implementar read_memory_disasm para no usar los handlers comunes de registros
