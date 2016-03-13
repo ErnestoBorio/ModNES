@@ -2,6 +2,8 @@
 Próximos pasos:
 
 > Scroll mid-frame y scroll viewport partido
+http://wiki.nesdev.com/w/index.php/PPU_scrolling
+
 > Input
 > FPS count y modo async a ver cuántos FPS tira ModNES unbound
 > Hacer que OAM DMA empiece en OAM ADDR 2003 (sólo si algún juego escribe !=0 en OAM ADDR)

@@ -86,9 +86,9 @@ byte read_ppu_status( void *sys, word address )
    NES->ppu.vblank_flag = 0; // reset flag once read
    NES->ppu.write_count = 0; // writes count is reset
    
-   #ifdef _Cpu6502_Disassembler
-      NES->cpu->disasm.value = value;
-   #endif
+   // #ifdef _Cpu6502_Disassembler
+   //    NES->cpu->disasm.value = value;
+   // #endif
    
    return value;
 }
