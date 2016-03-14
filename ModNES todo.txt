@@ -3,15 +3,25 @@ Próximos pasos:
 
 > Scroll mid-frame y scroll viewport partido
 http://wiki.nesdev.com/w/index.php/PPU_scrolling
+http://wiki.nesdev.com/w/index.php/PPU_registers#Scroll_.28.242005.29_.3E.3E_write_x2
+    "Changes made to the vertical scroll during rendering will only take effect on the next frame"
+    "Normal" vertical offsets range from 0 to 239, while values of 240 to 255 are treated as -16 through -1 in a way, but tile data is incorrectly fetched from the attribute table.
+
+- Falta hacer wrap around en X e Y del viewport y del bliteo a screen.
+- Registrar cuándo cambia x scroll en midframe, y en ese scanline splitear el viewport
+- assert de scroll Y >= 240
+- assert de modificación de scroll Y midframe
 
 > Input
+> Pausa
 > FPS count y modo async a ver cuántos FPS tira ModNES unbound
+
+> Mappers!
+
 > Hacer que OAM DMA empiece en OAM ADDR 2003 (sólo si algún juego escribe !=0 en OAM ADDR)
 > Visual debugger. (Cocoa nativo GUI? implementar alguna SDL GUI? GUI propia?)
-> Mappers!
-> Hacer accyrate sprite 0 hit
+> Hacer accurate sprite 0 hit
 
-> Pausa
 > Brush roller trata de acceder a $4800 なに!!
 > Ice climber también trata de acceder a un read unimplemented. Raro, la versión anterior con Cocoa OpenGL me parece que no fallaba.
 
@@ -19,10 +29,6 @@ http://wiki.nesdev.com/w/index.php/PPU_scrolling
 
 > Implementar 8 sprites overflow flag (Según http://wiki.nesdev.com/w/index.php/Sprite_overflow_games sólo 7 juegos
    dependen de este flag, es de muy baja prioridad implementarlo.)
-
-> Un nice to have pero no escencial sería renderear cada tile de los pattern tables con la última paleta con el que fue
-rendereado en la pantalla. Igual esto es prioridad 0, porque sirve sólo para que se va lindo el visual debugger, no tiene
-incidencia en el ModNES final. Y requiere blittear todos los tiles de vuelta todos los frames, probablemente nunca lo haga.
 
 > Implementar open bus para lectura de registros y demás.
 Los registros de solo escritura devuelven el openbus al ser leidos.

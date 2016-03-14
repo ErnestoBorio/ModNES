@@ -252,16 +252,16 @@ void ModNES::loop()
                     SDL_BlitSurface( this->nametables_surf, NULL, SDL_GetWindowSurface( this->nametables_win ), NULL );
                     
                     // WIP Hardcoded magic numbers to hide first and last tile rows
-                    SDL_Rect viewport = { nes->ppu.horz_scroll, nes->ppu.vert_scroll+8, 256, 224 };
+                    SDL_Rect viewport = { nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical+8, 256, 224 };
                     SDL_Rect target = { 0, 16, 512, 240*2-32 };
                     SDL_BlitScaled( this->nametables_surf, &viewport, SDL_GetWindowSurface( this->screen_win ), &target );
                     
                     // Draw viewport rectangle WIP get this out of here!
                     SDL_Rect bounds[4] = {
-                        { nes->ppu.horz_scroll, nes->ppu.vert_scroll, 1, 240 },
-                        { nes->ppu.horz_scroll + 255, nes->ppu.vert_scroll, 1, 240 },
-                        { nes->ppu.horz_scroll, nes->ppu.vert_scroll, 256, 1 },
-                        { nes->ppu.horz_scroll, nes->ppu.vert_scroll + 240, 256, 1 },
+                        { nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical, 1, 240 },
+                        { nes->ppu.scroll.horizontal + 255, nes->ppu.scroll.vertical, 1, 240 },
+                        { nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical, 256, 1 },
+                        { nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical + 240, 256, 1 },
                          };
                     SDL_Surface *windSurf = SDL_GetWindowSurface( this->nametables_win );
                     SDL_FillRects( windSurf, bounds, 4, SDL_MapRGB( windSurf->format, 0, 255, 0 ) );
@@ -463,8 +463,8 @@ void ModNES::renderSprites()
     
     for( byte *sprite = &nes->ppu.sprites[0x100-4]; sprite >= nes->ppu.sprites; sprite -= 4 )
     {
-        name.y = nes->ppu.vert_scroll + sprite[0] + 1; // Sprite's y position is off by one
-        name.x = nes->ppu.horz_scroll + sprite[3];
+        name.y = nes->ppu.scroll.vertical + sprite[0] + 1; // Sprite's y position is off by one
+        name.x = nes->ppu.scroll.horizontal + sprite[3];
         int tilen = sprite[1];
         int paln  = sprite[2] & 3; // 2 lsb
         int xflip = sprite[2] & ( 1<<6 );

@@ -55,12 +55,14 @@ byte read_prg_rom( void *sys, word address )
 // $2000
 void write_ppu_control1( void *sys, word address, byte value )
 {
-   NES->ppu.nmi_enabled    = ( value & (1<<7) ) ? 1 : 0;
-   NES->ppu.sprite_height  = ( value & (1<<5) ) ? 16 : 8;
-   NES->ppu.back_pattern   = ( value & (1<<4) ) ? 0x1000 : 0;
-   NES->ppu.sprite_pattern = ( value & (1<<3) ) ? 0x1000 : 0;
-   NES->ppu.increment_vram = ( value & (1<<2) ) ? 32 : 1;
-   NES->ppu.scroll_high_bits = value & 3; // & %11
+    NES->ppu.nmi_enabled    = ( value & (1<<7) ) ? 1 : 0;
+    NES->ppu.sprite_height  = ( value & (1<<5) ) ? 16 : 8;
+    NES->ppu.back_pattern   = ( value & (1<<4) ) ? 0x1000 : 0;
+    NES->ppu.sprite_pattern = ( value & (1<<3) ) ? 0x1000 : 0;
+    NES->ppu.increment_vram = ( value & (1<<2) ) ? 32 : 1;
+
+    NES->ppu.scroll.horizontal_high = value & 1;
+    NES->ppu.scroll.vertical_high = (value & 2)>>1;
 }
 // -------------------------------------------------------------------------------
 // $2001
@@ -114,14 +116,15 @@ void write_spr_ram_io( void *sys, word address, byte value  )
 // $2005
 void write_scroll( void *sys, word address, byte value  )
 {
-   if( NES->ppu.write_count == 0 ) {
-      NES->ppu.horz_scroll = value;
-      NES->ppu.write_count = 1;
-   }
-   else {
-      NES->ppu.vert_scroll = value;
-      NES->ppu.write_count = 0;
-   }
+    if( NES->ppu.write_count == 0 ) {
+        NES->ppu.scroll.horizontal_low = value;
+        NES->ppu.write_count = 1;
+    }
+    else {
+        // WIP Changes made to the vertical scroll during rendering will only take effect on the next frame
+        NES->ppu.scroll.vertical_low = value;
+        NES->ppu.write_count = 0;
+    }
 }
 // -------------------------------------------------------------------------------
 // $2006
@@ -143,7 +146,7 @@ byte read_vram_io( void *sys, word register_address )
    byte old_latch = NES->ppu.vram_latch;
    
    if( NES->ppu.write_count > 0 ) {
-      assert( 0 && "Trying to write to VRAM after only setting half of VRAM address, what to do here?" );
+      assert( 0 && "Trying to read from VRAM after only setting half of VRAM address, what to do here?" );
    }
    
    word vram_address = NES->ppu.vram_address;

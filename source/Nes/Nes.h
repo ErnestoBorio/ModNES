@@ -67,7 +67,6 @@ typedef struct // Nes
         word back_pattern;   // 0|$1000
         word sprite_pattern; // 0|$1000
         byte increment_vram; // 1|32
-        word scroll_high_bits; // 0..3 WIP writes to $2006 supposedly modify this flag
 
         // $2001
         byte color_emphasis; // 0..7
@@ -83,10 +82,18 @@ typedef struct // Nes
         byte sprites_lost;
 
         byte write_count; // writes counter for $2005 & $2006. 0 = no write yet. 1 = one write done, waiting for 2nd.
-        byte horz_scroll;
-        byte vert_scroll;
         word vram_address; // VRAM address to read from or write to
         byte vram_latch;
+        
+        // http://wiki.nesdev.com/w/index.php/PPU_registers#Controller_.28.242000.29_.3E_write
+        struct {
+            byte horizontal_high; // 1 means add 256 to horizontal (or nametable # if you will)
+            byte vertical_high;   // 1 means add 240 to vertical
+            byte horizontal_low;
+            byte vertical_low;
+            word horizontal;
+            word vertical;
+        } scroll;
 
         byte mirroring;
         byte *name_attr;   // Chunk of memory for 2 name tables and their attributes

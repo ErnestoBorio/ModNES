@@ -32,7 +32,7 @@ const byte Nes_rgb[64][3] =
     {0xB3,0xEE,0xFF}, {0xDD,0xDD,0xDD}, {0x11,0x11,0x11}, {0x11,0x11,0x11}  // 3C
 };
 
-// How many PPU cycles until starting VBlank. 262 scanlines * 341 ppu cycles (one per pixel)
+// How many PPU cycles until starting VBlank. 262 scanlines * 341 ppu cycles (one per pixel) WIP NTSC only
 #define VBlank_ppu_cycles 262 * 341
 #define VBlank_end_ppu_cycles 20 * 341
 
@@ -46,12 +46,13 @@ static void initialize( Nes *this )
 {
     Cpu6502_Initialize( this->cpu );
     
+    // memset( this->ppu, 0 sizeof this->ppu ); would be less code but verbosity here is documentation.
+    
     this->ppu.nmi_enabled      = 0;
     this->ppu.sprite_height    = 8;
     this->ppu.back_pattern     = 0;
     this->ppu.sprite_pattern   = 0;
     this->ppu.increment_vram   = 1;
-    this->ppu.scroll_high_bits = 0;
 
     this->ppu.color_emphasis     = 0;
     this->ppu.sprites_visible    = 0;
@@ -63,12 +64,12 @@ static void initialize( Nes *this )
     this->ppu.vblank_flag  = 0;
     this->ppu.sprite0_hit  = 0;
     this->ppu.sprites_lost = 0;
-    
+
     this->ppu.write_count  = 0;
-    this->ppu.horz_scroll  = 0;
-    this->ppu.vert_scroll  = 0;
     this->ppu.vram_address = 0;
     this->ppu.mirroring    = 0;
+
+    memset( &this->ppu.scroll, 0, sizeof this->ppu.scroll );
     
     this->cpu_cycles     = 0;
     this->ppu_cycles     = 0;
@@ -78,7 +79,7 @@ static void initialize( Nes *this )
     this->vblank         = 0;
     this->last_scanpixel = 0;
     
-    memset( this->input.gamepad,     0, sizeof this->input.gamepad );
+    memset( this->input.gamepad,    0, sizeof this->input.gamepad );
     memset( this->input.read_count, 0, sizeof this->input.read_count );
     this->input.strobe_state = Nes_Strobe_init;
 }
@@ -264,6 +265,8 @@ void Nes_DoFrame( Nes *this )
             check_sprite0hit( this );
         }
     }
+    this->ppu.scroll.horizontal = this->ppu.scroll.horizontal_high <<8 | this->ppu.scroll.horizontal_low;
+    this->ppu.scroll.vertical = this->ppu.scroll.vertical_high * 240 + this->ppu.scroll.vertical_low;
 }
 
 // -------------------------------------------------------------------------------
@@ -318,7 +321,6 @@ int Nes_LoadRom( Nes *this, FILE *rom_file )
         assert( 0 && "4 screen [non]mirroring not implemented yet" );
     }
     else if( header[5] & 1 ) {
-        printf("Vertical mirroring\n");  
         this->ppu.mirroring = mirroring_vertical;
         this->ppu.name_ptr[0] = &this->ppu.name_attr[0];
         this->ppu.name_ptr[1] = &this->ppu.name_attr[0x400];
@@ -331,7 +333,7 @@ int Nes_LoadRom( Nes *this, FILE *rom_file )
         this->ppu.attr_ptr[3] = &this->ppu.name_attr[0x7C0];
     }
     else {
-        printf("Horizontal mirroring\n");  
+//        assert( 0 && "Horizontal mirroring");
         this->ppu.mirroring = mirroring_horizontal;
         this->ppu.name_ptr[0] = &this->ppu.name_attr[0];
         this->ppu.name_ptr[1] = &this->ppu.name_attr[0];
