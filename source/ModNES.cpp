@@ -77,7 +77,7 @@ void ModNES::write_config()
 int ModNES::init()
 {
     this->read_config();
-    
+    this->timer_id = 0;
     this->render_sprites = true;
     
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
@@ -296,7 +296,9 @@ void ModNES::loadCartridge( char *path )
     
     if( ! this->running ) {
         this->running = true;
-        this->timer_id = SDL_AddTimer( 1000 / 60, vblank_callback, NULL );
+        if( this->timer_id == 0 ) {
+            this->timer_id = SDL_AddTimer( 1000 / 60, vblank_callback, NULL );
+        }
     }
 }
 //------------------------------------------------------------------------------------------------------------
