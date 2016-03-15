@@ -86,7 +86,7 @@ int ModNES::init()
     }
     this->patterns_win = SDL_CreateWindow( "Pattern tables", 
         config.patterns_win.pos.x, config.patterns_win.pos.y, 
-        config.patterns_win.size <= 1 ? 256 : 512, 
+        config.patterns_win.size <= 1 ? 257 : 514, 
         config.patterns_win.size <= 1 ? 128 : 256, 
         config.patterns_win.size == 0 ? SDL_WINDOW_HIDDEN : SDL_WINDOW_SHOWN );
     this->patterns_win_id = SDL_GetWindowID( this->patterns_win );
@@ -108,7 +108,7 @@ int ModNES::init()
     // La papota parece ser que o creas un renderer (3D, texturas, GPU) del window, o geteas un winSurface, pero no ambos.
     // Probemos primero con get win surface, onda más software mente, después probemos con el renderer y textures.
     
-    this->patterns_surf = SDL_CreateRGBSurface( 0, 256, 128, 8, 0, 0, 0, 0 );
+    this->patterns_surf = SDL_CreateRGBSurface( 0, 257, 128, 8, 0, 0, 0, 0 );
     this->temp_pal  = SDL_AllocPalette( 0x100 );
     this->patterns_pal  = SDL_AllocPalette( 0x100 );
         // Even when using only 4 indices, all 256 colors have to be allocated or it won't work.
@@ -166,23 +166,14 @@ void ModNES::loop()
                 //------------------------------------------------------------------------------------------------
                 else if( event.key.keysym.sym == SDLK_p ) // resize Pattern tables window
                 {
-                    SDL_Rect rect = {0,0,0,0};
-                    printf("Key press %d\n", event.key.keysym.sym );
-                    
                     if( config.patterns_win.size == 0 ) {
                         SDL_ShowWindow( this->patterns_win );
-                        SDL_SetWindowSize( this->patterns_win, 256, 128 );
-                        rect.w = 256;
-                        rect.h = 128;
-                        // this->renderPatterns();
+                        SDL_SetWindowSize( this->patterns_win, 257, 128 );
                         this->presentPatterns();
                         config.patterns_win.size = 1;
                     }
                     else if( config.patterns_win.size == 1 ) {
-                        rect.w = 512;
-                        rect.h = 256;
-                        SDL_SetWindowSize( this->patterns_win, 512, 256 );
-                        // this->renderPatterns();
+                        SDL_SetWindowSize( this->patterns_win, 514, 256 );
                         this->presentPatterns();
                         config.patterns_win.size = 2;
                     }
@@ -328,7 +319,7 @@ void ModNES::renderPatterns()
                 
                 int tilex = tilen % 16;
                 int tiley = tilen / 16;
-                int x = tilex * 8 + chrom * 128;
+                int x = tilex * 8 + chrom * 129;
                 int y = tiley * 8 + line;
                 target = pixels + surf->pitch * y + x;
                 
@@ -364,7 +355,7 @@ void ModNES::renderNametables()
     SDL_SetSurfacePalette( this->patterns_surf, this->temp_pal );
     
     // Whether the background tiles are in CHR ROM 0 at $0 or CHR ROM 1 at $1000
-    int chrom_shift = nes->ppu.back_pattern == 0 ? 0 : 128;
+    int chrom_shift = nes->ppu.back_pattern == 0 ? 0 : 129;
     
     for( int table = 0; table <= 1; ++table )
     {
@@ -460,7 +451,7 @@ void ModNES::renderSprites()
     patt.w = patt.h = name.w = name.h = 8;
     
     // Whether the sprite tiles are in CHR ROM 0 at $0 or CHR ROM 1 at $1000
-    int chrom_shift = nes->ppu.sprite_pattern == 0 ? 0 : 128;
+    int chrom_shift = nes->ppu.sprite_pattern == 0 ? 0 : 129;
     
     SDL_Color colors[4] = {{0,0,0}};
     
