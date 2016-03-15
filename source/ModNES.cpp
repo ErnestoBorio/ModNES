@@ -154,6 +154,10 @@ void ModNES::loop()
                 if( event.key.keysym.sym == SDLK_ESCAPE ) {
                     this->quit = true;
                 }
+                else if( event.key.keysym.sym == SDLK_SPACE ) {
+                    this->running = ! this->running;
+                    printf( running? "PLAY\n": "PAUSE\n" );
+                }
                 else if( event.key.keysym.sym == SDLK_o ) {
                     openFile( path, 1024 );
                     if( path[0] ) {
@@ -162,6 +166,7 @@ void ModNES::loop()
                 }
                 else if( event.key.keysym.sym == SDLK_r ) {
                     Nes_Reset( this->nes );
+                    this->running = true;
                 }
                 //------------------------------------------------------------------------------------------------
                 else if( event.key.keysym.sym == SDLK_p ) // resize Pattern tables window
@@ -200,7 +205,6 @@ void ModNES::loop()
                 else if( event.key.keysym.sym == SDLK_s ) {
                     this->render_sprites = ! this->render_sprites;
                 }
-                break;
             //------------------------------------------------------------------------------------------------
             case SDL_WINDOWEVENT:
                 if( event.window.event == SDL_WINDOWEVENT_MOVED )
