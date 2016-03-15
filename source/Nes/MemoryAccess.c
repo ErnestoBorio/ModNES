@@ -129,9 +129,9 @@ void write_scroll( void *sys, word address, byte value  )
         // if( NES->scanline >= 21 && NES->scanline <= 260 ) {
         //     assert( 0 && "Y Scroll made mid-frame" );
         // }
-        if( NES->ppu.scroll.vertical_low >= 240 ) {
-            assert( 0 && "Y Scroll greater than 240" );
-        }
+        //if( NES->ppu.scroll.vertical_low >= 240 ) {
+        //    assert( 0 && "Y Scroll greater than 240" );
+        //}
     }
 }
 // -------------------------------------------------------------------------------
