@@ -167,6 +167,7 @@ void ModNES::loop()
                 else if( event.key.keysym.sym == SDLK_p ) // resize Pattern tables window
                 {
                     SDL_Rect rect = {0,0,0,0};
+                    printf("Key press %d\n", event.key.keysym.sym );
                     
                     if( config.patterns_win.size == 0 ) {
                         SDL_ShowWindow( this->patterns_win );
@@ -242,38 +243,43 @@ void ModNES::loop()
             case SDL_USEREVENT:
                 if( this->running ) {
                     Nes_DoFrame( this->nes );
-                    
-                    SDL_SetColorKey( this->patterns_surf, SDL_FALSE, 0 );
-                    this->renderNametables();
-                    
-                    SDL_SetColorKey( this->patterns_surf, SDL_TRUE, 0 );
-                    this->renderSprites();
-                    
-                    SDL_BlitSurface( this->nametables_surf, NULL, SDL_GetWindowSurface( this->nametables_win ), NULL );
-                    
-                    // WIP Hardcoded magic numbers to hide first and last tile rows
-                    SDL_Rect viewport = { nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical+8, 256, 224 };
-                    SDL_Rect target = { 0, 16, 512, 240*2-32 };
-                    SDL_BlitScaled( this->nametables_surf, &viewport, SDL_GetWindowSurface( this->screen_win ), &target );
-                    
-                    // Draw viewport rectangle WIP get this out of here!
-                    SDL_Rect bounds[4] = {
-                        { nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical, 1, 240 },
-                        { nes->ppu.scroll.horizontal + 255, nes->ppu.scroll.vertical, 1, 240 },
-                        { nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical, 256, 1 },
-                        { nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical + 240, 256, 1 },
-                         };
-                    SDL_Surface *windSurf = SDL_GetWindowSurface( this->nametables_win );
-                    SDL_FillRects( windSurf, bounds, 4, SDL_MapRGB( windSurf->format, 0, 255, 0 ) );
-                    
-                    SDL_UpdateWindowSurface( this->nametables_win );
-                    SDL_UpdateWindowSurface( this->screen_win );
+                    render();
                 }
                 break;
         }
     }
 }
- //------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
+void ModNES::render()
+{
+    SDL_SetColorKey( this->patterns_surf, SDL_FALSE, 0 );
+    this->renderNametables();
+    
+    SDL_SetColorKey( this->patterns_surf, SDL_TRUE, 0 );
+    this->renderSprites();
+    
+    SDL_BlitSurface( this->nametables_surf, NULL, SDL_GetWindowSurface( this->nametables_win ), NULL );
+    
+    // WIP Hardcoded magic numbers to hide first and last tile rows
+    SDL_Rect viewport = { nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical+8, 256, 224 };
+    SDL_Rect target = { 0, 16, 512, 240*2-32 };
+    SDL_BlitScaled( this->nametables_surf, &viewport, SDL_GetWindowSurface( this->screen_win ), &target );
+    
+    // Draw viewport rectangle WIP get this out of here!
+    SDL_Rect bounds[4] = {
+        { nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical, 1, 240 },
+        { nes->ppu.scroll.horizontal + 255, nes->ppu.scroll.vertical, 1, 240 },
+        { nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical, 256, 1 },
+        { nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical + 240, 256, 1 },
+         };
+    SDL_Surface *windSurf = SDL_GetWindowSurface( this->nametables_win );
+    SDL_FillRects( windSurf, bounds, 4, SDL_MapRGB( windSurf->format, 0, 255, 0 ) );
+    
+    SDL_UpdateWindowSurface( this->nametables_win );
+    SDL_UpdateWindowSurface( this->screen_win );
+}
+
+//------------------------------------------------------------------------------------------------------------
 void ModNES::loadCartridge( char *path )
 {
     FILE *romFile = fopen( path, "rb" );

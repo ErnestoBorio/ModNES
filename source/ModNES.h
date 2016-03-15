@@ -56,6 +56,8 @@ public:
     void loop();
     
     void loadCartridge( char *path );
+    
+    void render();
     void renderPatterns();
     void presentPatterns();
     void renderNametables();
