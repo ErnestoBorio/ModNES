@@ -334,6 +334,8 @@ void ModNES::renderPatterns()
 //------------------------------------------------------------------------------------------------------------
 void ModNES::presentPatterns()
 {
+    // to keep CMY palette: SDL_SetSurfacePalette( this->patterns_surf, this->patterns_pal );
+    
     SDL_Surface *buffer = SDL_CreateRGBSurface( 0, this->patterns_surf->w, this->patterns_surf->h, 32, 0, 0, 0, 0 );
     SDL_BlitSurface( this->patterns_surf, NULL, buffer, NULL );
     SDL_Surface *windSurf = SDL_GetWindowSurface( this->patterns_win );
