@@ -17,6 +17,15 @@ http://wiki.nesdev.com/w/index.php/PPU_registers#Scroll_.28.242005.29_.3E.3E_wri
 > FPS count y modo async a ver cuántos FPS tira ModNES unbound
 
 > Mappers!
+    Easiest and most popular first:
+    3-CNROM:  78 games: Solomon's Key, Gradius, and Hudson's Adventure Island (CHR switching only - easy)
+    11-Color Dreams: 28 games: Crystal Mines, Metal Fighter (easy)
+    2-UNROM: 106 games: Castlevania, MegaMan, Ghosts & Goblins. (CHR-RAM)
+    7-AOROM:  33 games: Battletoads, Marble Madness, and Solar Jetman. (CHR-RAM)
+    4-MMC3:  310 games: Super Mario Bros. 2 and 3, MegaMan 3, 4, 5, and 6, and Crystalis
+    1-MMC1:  251 games: Final Fantasy, Mega Man 2, Metroid, Zelda, Zelda 2, Castlevania 2
+    
+    Estos 5 mappers más NROM suman 891 juegos, todos los demás mappers tienen pocos juegos y poco conocidos, no vale la pena implementarlos.
 
 > Hacer que OAM DMA empiece en OAM ADDR 2003 (sólo si algún juego escribe !=0 en OAM ADDR)
 > Visual debugger. (Cocoa nativo GUI? implementar alguna SDL GUI? GUI propia?)
