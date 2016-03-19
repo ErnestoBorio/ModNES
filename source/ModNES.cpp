@@ -79,6 +79,7 @@ int ModNES::init()
     this->read_config();
     this->timer_id = 0;
     this->render_sprites = true;
+    this->hide_top_bottom = true;
     
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
         fprintf(stderr, "SDL_Init() failed: %s\n", SDL_GetError());
@@ -205,6 +206,10 @@ void ModNES::loop()
                 else if( event.key.keysym.sym == SDLK_s ) {
                     this->render_sprites = ! this->render_sprites;
                 }
+                //------------------------------------------------------------------------------------------------
+                else if( event.key.keysym.sym == SDLK_h ) {
+                    this->hide_top_bottom = ! this->hide_top_bottom;
+                }
             //------------------------------------------------------------------------------------------------
             case SDL_WINDOWEVENT:
                 if( event.window.event == SDL_WINDOWEVENT_MOVED )
@@ -245,6 +250,8 @@ void ModNES::loop()
     }
 }
 //------------------------------------------------------------------------------------------------------------
+void drawRect( SDL_Surface *surface, SDL_Rect *rect );
+
 void ModNES::render()
 {
     SDL_SetColorKey( this->patterns_surf, SDL_FALSE, 0 );
@@ -255,25 +262,52 @@ void ModNES::render()
     
     SDL_BlitSurface( this->nametables_surf, NULL, SDL_GetWindowSurface( this->nametables_win ), NULL );
     
-    // WIP Hardcoded magic numbers to hide first and last tile rows
-    SDL_Rect viewport = { nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical+8, 256, 224 };
-    SDL_Rect target = { 0, 16, 512, 240*2-32 };
-    SDL_BlitScaled( this->nametables_surf, &viewport, SDL_GetWindowSurface( this->screen_win ), &target );
+    SDL_Rect viewport = { nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical, 256, 240 };
+    SDL_Surface *screenWinSurf = SDL_GetWindowSurface( this->screen_win );
+    SDL_BlitScaled( this->nametables_surf, &viewport, SDL_GetWindowSurface( this->screen_win ), NULL );
     
-    // Draw viewport rectangle WIP get this out of here!
-    SDL_Rect bounds[4] = {
-        { nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical, 1, 240 },
-        { nes->ppu.scroll.horizontal + 255, nes->ppu.scroll.vertical, 1, 240 },
-        { nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical, 256, 1 },
-        { nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical + 240, 256, 1 },
-         };
-    SDL_Surface *windSurf = SDL_GetWindowSurface( this->nametables_win );
-    SDL_FillRects( windSurf, bounds, 4, SDL_MapRGB( windSurf->format, 0, 255, 0 ) );
+    // WIP totally unoptimal solution
+    SDL_Rect rect = { 0, 0, 512, 16 };
+    if( this->hide_top_bottom ) {
+        SDL_FillRect( screenWinSurf, &rect, SDL_MapRGB( screenWinSurf->format, 0, 0, 0 ));
+        rect.y = 480 - 16;
+        SDL_FillRect( screenWinSurf, &rect, SDL_MapRGB( screenWinSurf->format, 0, 0, 0 ));
+    }
+
+    SDL_Surface *nameWindSurf = SDL_GetWindowSurface( this->nametables_win );
+    
+    drawRect( nameWindSurf, &viewport );
+    rect = viewport;
+    if( rect.x >= 256 ) { // Horizontal scroll wrap around
+        rect.x -= 512;
+        drawRect( nameWindSurf, &rect );
+        rect.x = viewport.x;
+    }
+    if( rect.y >= 240 ) { // Vertical scroll wrap around
+        rect.y -= 480;
+        drawRect( nameWindSurf, &rect );
+        
+        if( rect.x >= 256 ) { // 2D scroll wrap around
+            rect.x -= 512;
+            drawRect( nameWindSurf, &rect );
+        }
+    }
     
     SDL_UpdateWindowSurface( this->nametables_win );
     SDL_UpdateWindowSurface( this->screen_win );
 }
 
+void drawRect( SDL_Surface *surface, SDL_Rect *rect )
+{
+    SDL_Rect rects[4] = {
+        { rect->x, rect->y, rect->w, 1 },
+        { rect->x, rect->y + rect->h -1, rect->w, 1 },
+        { rect->x, rect->y, 1, rect->h },
+        { rect->x + rect->w -1, rect->y, 1, rect->h }
+    };
+    SDL_FillRects( surface, rects, 4, SDL_MapRGB( surface->format, 0, 255, 0 ) );
+}
+    
 //------------------------------------------------------------------------------------------------------------
 void ModNES::loadCartridge( char *path )
 {
@@ -470,6 +504,14 @@ void ModNES::renderSprites()
     {
         name.y = nes->ppu.scroll.vertical + sprite[0] + 1; // Sprite's y position is off by one
         name.x = nes->ppu.scroll.horizontal + sprite[3];
+        
+        if( name.x >= 512 ) {
+            name.x -= 512;
+        }
+        if( name.y >= 480 ) {
+            name.y -= 480;
+        }
+        
         int tilen = sprite[1];
         int paln  = sprite[2] & 3; // 2 lsb
         int xflip = sprite[2] & ( 1<<6 );

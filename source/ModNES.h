@@ -36,6 +36,7 @@ public:
     static const std::string config_filename;
     
     bool render_sprites;
+    bool hide_top_bottom;
     
     SDL_Window *patterns_win;
     SDL_Window *nametables_win;
