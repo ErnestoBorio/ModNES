@@ -255,6 +255,77 @@ void ModNES::render()
     
     SDL_BlitSurface( this->nametables_surf, NULL, SDL_GetWindowSurface( this->nametables_win ), NULL );
     
+    // ------- Scroll [split] blitting and viewport draw
+    
+    int w1=0, w2, h1=0, h2;
+    if( nes->ppu.scroll.horizontal + 256 > 512 ) {
+        w1 = 512 - nes->ppu.scroll.horizontal;
+        w2 = nes->ppu.scroll.horizontal + 256 - 512;
+    }
+    if( nes->ppu.scroll.vertical + 240 > 480 ) {
+        h1 = 480 - nes->ppu.scroll.vertical;
+        h2 = nes->ppu.scroll.vertical + 240 - 480;
+    }
+    
+    SDL_Rect rects[4];
+    int rect_count;
+    
+    if( w1 == 0 && h1 == 0 ) // No wrapping
+    {
+        rect_count = 1;
+        rects[0].x = nes->ppu.scroll.horizontal;
+        rects[0].y = nes->ppu.scroll.vertical;
+        rects[0].w = 256;
+        rects[0].h = 240;
+    }
+    else if( w1 != 0 ) // Horizontal wrapping
+    {
+        rect_count = 2;
+        rects[0].x = nes->ppu.scroll.horizontal;
+        rects[0].y = nes->ppu.scroll.vertical;
+        rects[0].w = w1;
+        rects[0].h = 240;
+        rects[1].x = 0;
+        rects[1].y = nes->ppu.scroll.vertical;
+        rects[1].w = w2;
+        rects[1].h = 240;
+    }
+    else if( h1 != 0 ) // Vertical wrapping
+    {
+        rect_count = 2;
+        rects[0].x = nes->ppu.scroll.horizontal;
+        rects[0].y = nes->ppu.scroll.vertical;
+        rects[0].w = 256;
+        rects[0].h = h1;
+        rects[1].x = nes->ppu.scroll.horizontal;
+        rects[1].y = 0;
+        rects[1].w = 256;
+        rects[1].h = h2;
+    }
+    else // 4 split wrapping
+    {
+        rect_count = 2;
+        rects[0].x = nes->ppu.scroll.horizontal;
+        rects[0].y = nes->ppu.scroll.vertical;
+        rects[0].w = w1;
+        rects[0].h = h1;
+        
+        rects[1].x = 0;
+        rects[1].y = nes->ppu.scroll.vertical;
+        rects[1].w = w2;
+        rects[1].h = h1;
+        
+        rects[2].x = nes->ppu.scroll.horizontal;
+        rects[2].y = 0;
+        rects[2].w = w1;
+        rects[2].h = h2;
+        
+        rects[3].x = 0;
+        rects[3].y = 0;
+        rects[3].w = w2;
+        rects[3].h = h2;
+    }ANDArA?
+    
     // WIP Hardcoded magic numbers to hide first and last tile rows
     SDL_Rect viewport = { nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical+8, 256, 224 };
     SDL_Rect target = { 0, 16, 512, 240*2-32 };
@@ -269,6 +340,8 @@ void ModNES::render()
          };
     SDL_Surface *windSurf = SDL_GetWindowSurface( this->nametables_win );
     SDL_FillRects( windSurf, bounds, 4, SDL_MapRGB( windSurf->format, 0, 255, 0 ) );
+    
+    // ------- <! Scroll [split] blitting and viewport draw
     
     SDL_UpdateWindowSurface( this->nametables_win );
     SDL_UpdateWindowSurface( this->screen_win );
