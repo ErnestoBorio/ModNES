@@ -59,6 +59,8 @@ void ModNES::read_config()
         this->config.screen_win.pos.x = 20;
         this->config.screen_win.pos.y = 20;
         
+        memset( this->config.romFileName, 0, 1024 );
+        
         config_file.write( (const char*)&this->config, sizeof( this->config ));
     }
     else {
@@ -79,7 +81,7 @@ int ModNES::init()
     this->read_config();
     this->timer_id = 0;
     this->render_sprites = true;
-    this->hide_top_bottom = true;
+    this->hide_top_bottom = false;
     
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
         fprintf(stderr, "SDL_Init() failed: %s\n", SDL_GetError());
@@ -117,6 +119,10 @@ int ModNES::init()
     this->nametables_surf = SDL_CreateRGBSurface( 0, 256*2, 240*2, 32, 0, 0, 0, 0 );
 
     this->nes = Nes_Create();
+    
+    if( *config.romFileName != '\0' ) {
+        loadCartridge( config.romFileName );
+    }
     
     return APP_OK;
 }
@@ -264,9 +270,12 @@ void ModNES::render()
     
     SDL_Rect viewport = { nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical, 256, 240 };
     SDL_Surface *screenWinSurf = SDL_GetWindowSurface( this->screen_win );
-    SDL_BlitScaled( this->nametables_surf, &viewport, SDL_GetWindowSurface( this->screen_win ), NULL );
     
-    // WIP totally unoptimal solution
+    SDL_FillRect( screenWinSurf, NULL, SDL_MapRGB( screenWinSurf->format, 0xFF, 0, 0xFF ));
+    // Blit from nametables to screen
+    SDL_BlitScaled( nametables_surf, &viewport, screenWinSurf, NULL );
+    
+    // Hide top and bottom tile rows. WIP: totally unoptimal solution, better not to render there at all
     SDL_Rect rect = { 0, 0, 512, 16 };
     if( this->hide_top_bottom ) {
         SDL_FillRect( screenWinSurf, &rect, SDL_MapRGB( screenWinSurf->format, 0, 0, 0 ));
@@ -276,16 +285,24 @@ void ModNES::render()
 
     SDL_Surface *nameWindSurf = SDL_GetWindowSurface( this->nametables_win );
     
+    // Draw the viewport rectangle
     drawRect( nameWindSurf, &viewport );
     rect = viewport;
     if( rect.x >= 256 ) { // Horizontal scroll wrap around
         rect.x -= 512;
         drawRect( nameWindSurf, &rect );
+        
+        SDL_Rect rect_dest = { 0, rect.y*2, rect.w*2, rect.h*2 };
+        SDL_BlitScaled( nametables_surf, &rect, screenWinSurf, &rect_dest );
+        
         rect.x = viewport.x;
     }
     if( rect.y >= 240 ) { // Vertical scroll wrap around
         rect.y -= 480;
         drawRect( nameWindSurf, &rect );
+        
+        SDL_Rect rect_dest = { rect.x*2, 0, rect.w*2, rect.h*2 };
+        SDL_BlitScaled( nametables_surf, &rect, screenWinSurf, &rect_dest );
         
         if( rect.x >= 256 ) { // 2D scroll wrap around
             rect.x -= 512;
@@ -305,7 +322,7 @@ void drawRect( SDL_Surface *surface, SDL_Rect *rect )
         { rect->x, rect->y, 1, rect->h },
         { rect->x + rect->w -1, rect->y, 1, rect->h }
     };
-    SDL_FillRects( surface, rects, 4, SDL_MapRGB( surface->format, 0, 255, 0 ) );
+    SDL_FillRects( surface, rects, 4, SDL_MapRGB( surface->format, 0, 0xFF, 0 ));
 }
     
 //------------------------------------------------------------------------------------------------------------
@@ -319,6 +336,11 @@ void ModNES::loadCartridge( char *path )
         SDL_Log( "Rom image couldn't be loaded: %s\n", path );
     }
     fclose( romFile );
+    
+    printf( "Loaded %s\n", strrchr( path, '/' ) +1 );
+    strncpy( this->config.romFileName, path, 1024 );
+    this->write_config();
+    
     Nes_Reset( this->nes );
     this->renderPatterns();
     this->presentPatterns(); //WIP move this outta here
