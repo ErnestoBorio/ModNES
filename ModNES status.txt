@@ -1,4 +1,18 @@
 
+>> 2016-03-25
+
+Implementé scroll con wraparound en X e Y.
+Ahora estoy investigando sobre cómo implementar el mid-frame scroll.
+Para los juegos simples y pioneros del mapper NROM, suponía que a lo sumo podían escrolear dos veces midframe, usando el sprite 0 hit
+y el 8 sprite overflow por scanline.
+
+El Super Mario Bros. usa un scroll para mostrar la GUI arriba.
+El Excite Bike usa dos scrolls, para mostrar la pista y abajo la GUI.
+El Slalom usa tres scrolls en la intro, para escrolear el título Slalom desde la derecha.
+
+Pero el Kung-fu hace hasta 4 scrolls al principio y 3 durante el juego. Debe usar alguna técnica avanzada de timing, y lo necesita porque
+por alguna extraña razón el personaje principal está hecho con tiles de background.
+
 >> 2016-03-10
 
 Reimplementé el render en SDL, con pallette swaps bliteando de a tiles en vez de a pixel.

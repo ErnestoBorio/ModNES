@@ -96,7 +96,10 @@ typedef struct // Nes
             struct {
                 int start_x;
                 int start_y;
-                int midframe_x[2];
+                struct {
+                    int scanline;
+                    int scroll_x;
+                } midframe_x[10];
                 int midframe_count;
             } last_frame;
         } scroll;

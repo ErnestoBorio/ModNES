@@ -208,17 +208,17 @@ void Nes_DoFrame( Nes *this )
 {
     int cpu_cycles = 0;
     int vblank_started = 0;
+    static int last_scanline = -1;
     while( 1 )
     {
-        if( this->scanline == 0 )
+        if( this->scanline == 0 && last_scanline == -1 )
         {
             this->ppu.scroll.last_frame.start_x = this->ppu.scroll.horizontal;
             this->ppu.scroll.last_frame.start_y = this->ppu.scroll.vertical;
-            this->ppu.scroll.last_frame.midframe_count = 0;
+            this->ppu.scroll.last_frame.midframe_count = 0; // reset mid-frame scrolls
         }
-        
         // Reached VBLANK?
-        if(( this->scanline == 241 ) && ( this->vblank == 0 ))
+        else if(( this->scanline == 241 ) && ( this->vblank == 0 ))
         {
             this->frames++;
             this->ppu.vblank_flag = 1;
@@ -241,6 +241,9 @@ void Nes_DoFrame( Nes *this )
 
         this->last_scanpixel = this->scanpixel;
         this->scanpixel += 3 * cpu_cycles;
+        
+        // Keep track of a scanline change
+        last_scanline = this->scanline;
         
         // Reached right end of the screen?
         if( this->scanpixel >= 341 )

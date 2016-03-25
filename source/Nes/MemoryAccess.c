@@ -133,11 +133,15 @@ void write_scroll( void *sys, word address, byte value  )
         if( NES->scanline >= 0 && NES->scanline <= 239 )
         {
             // Shouldn't be more than 2 midframe scrolls
-            assert( NES->ppu.scroll.last_frame.midframe_count < sizeof( NES->ppu.scroll.last_frame.midframe_x ) );
+            assert( NES->ppu.scroll.last_frame.midframe_count < 10 );
             
             NES->ppu.scroll.last_frame.midframe_x[ 
-                NES->ppu.scroll.last_frame.midframe_count ] = 
+                NES->ppu.scroll.last_frame.midframe_count ].scroll_x = 
                     NES->ppu.scroll.horizontal;
+            
+            NES->ppu.scroll.last_frame.midframe_x[ 
+                NES->ppu.scroll.last_frame.midframe_count ].scanline = 
+                    NES->scanline;
                     
             NES->ppu.scroll.last_frame.midframe_count++;
         }

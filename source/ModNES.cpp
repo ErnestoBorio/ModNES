@@ -285,6 +285,15 @@ void ModNES::loop()
                 if( this->running ) {
                     Nes_DoFrame( this->nes );
                     render();
+                    
+                    // WIP mid-frame scroll debug
+                    printf( "X:%3d Y:%3d ", this->nes->ppu.scroll.last_frame.start_x, this->nes->ppu.scroll.last_frame.start_y );
+                    for( int i = 0; i < this->nes->ppu.scroll.last_frame.midframe_count; ++i ) {
+                        printf( "< %3d %3d > ... ", 
+                            this->nes->ppu.scroll.last_frame.midframe_x[ i ].scanline,
+                            this->nes->ppu.scroll.last_frame.midframe_x[ i ].scroll_x );
+                    }
+                    printf( "\n" );
                 }
                 break;
         }
