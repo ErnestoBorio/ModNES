@@ -1,13 +1,12 @@
 
 Próximos pasos:
 
-> Scroll mid-frame y scroll viewport partido
+> Scroll mid-frame y 
 http://wiki.nesdev.com/w/index.php/PPU_scrolling
 http://wiki.nesdev.com/w/index.php/PPU_registers#Scroll_.28.242005.29_.3E.3E_write_x2
     "Changes made to the vertical scroll during rendering will only take effect on the next frame"
     "Normal" vertical offsets range from 0 to 239, while values of 240 to 255 are treated as -16 through -1 in a way, but tile data is incorrectly fetched from the attribute table.
 
-- Falta hacer wrap around en X e Y del viewport y del bliteo a screen.
 - Registrar cuándo cambia x scroll en midframe, y en esos scanlines splitear el viewport
 
 > Input
@@ -51,6 +50,7 @@ Ya hice esto con MemoryAccess.c, quedan Instructions.c y Addressing.c
 (Por ahora lo ignoro olímpicamente)
 
 --- done
+√ scroll viewport partido
 √ Pausa
 √ Implementar sprite 0 hit (básico)
 √ Scroll pantalla completa
