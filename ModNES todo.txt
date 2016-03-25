@@ -7,9 +7,9 @@ http://wiki.nesdev.com/w/index.php/PPU_registers#Scroll_.28.242005.29_.3E.3E_wri
     "Changes made to the vertical scroll during rendering will only take effect on the next frame"
     "Normal" vertical offsets range from 0 to 239, while values of 240 to 255 are treated as -16 through -1 in a way, but tile data is incorrectly fetched from the attribute table.
 
-- Registrar cuándo cambia x scroll en midframe, y en esos scanlines splitear el viewport
+Ver cómo coñas generalizar el recorte de entre 1 y 6 viewports para renderear los rects y blitear midframe split-scroll y wraparound.
 
-> Input
+
 > FPS count y modo async a ver cuántos FPS tira ModNES unbound
 
 > Mappers!
@@ -50,6 +50,7 @@ Ya hice esto con MemoryAccess.c, quedan Instructions.c y Addressing.c
 (Por ahora lo ignoro olímpicamente)
 
 --- done
+√ Input
 √ scroll viewport partido
 √ Pausa
 √ Implementar sprite 0 hit (básico)
