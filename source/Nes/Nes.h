@@ -93,6 +93,12 @@ typedef struct // Nes
             byte vertical_low;
             word horizontal;
             word vertical;
+            struct {
+                int start_x;
+                int start_y;
+                int midframe_x[2];
+                int midframe_count;
+            } last_frame;
         } scroll;
 
         byte mirroring;

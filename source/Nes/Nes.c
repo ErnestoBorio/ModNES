@@ -210,6 +210,13 @@ void Nes_DoFrame( Nes *this )
     int vblank_started = 0;
     while( 1 )
     {
+        if( this->scanline == 0 )
+        {
+            this->ppu.scroll.last_frame.start_x = this->ppu.scroll.horizontal;
+            this->ppu.scroll.last_frame.start_y = this->ppu.scroll.vertical;
+            this->ppu.scroll.last_frame.midframe_count = 0;
+        }
+        
         // Reached VBLANK?
         if(( this->scanline == 241 ) && ( this->vblank == 0 ))
         {
@@ -265,8 +272,6 @@ void Nes_DoFrame( Nes *this )
             check_sprite0hit( this );
         }
     }
-    this->ppu.scroll.horizontal = this->ppu.scroll.horizontal_high <<8 | this->ppu.scroll.horizontal_low;
-    this->ppu.scroll.vertical = this->ppu.scroll.vertical_high * 240 + this->ppu.scroll.vertical_low;
 }
 
 // -------------------------------------------------------------------------------

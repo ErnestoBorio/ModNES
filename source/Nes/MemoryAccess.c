@@ -4,6 +4,13 @@
 
 #define NES ((Nes*)sys) // some syntax de-clutter to compensate for the unfortunate void *sys
 
+// Consolidate 9 bit scroll values from separate registers $2000 and $2005
+static void consolidate_scroll( Nes *this )
+{
+    this->ppu.scroll.horizontal = this->ppu.scroll.horizontal_high <<8 | this->ppu.scroll.horizontal_low;
+    this->ppu.scroll.vertical = this->ppu.scroll.vertical_high * 240 + this->ppu.scroll.vertical_low;
+}
+
 // -------------------------------------------------------------------------------
 // $0..$7FF unmirrored RAM
 byte read_ram( void *sys, word address )
@@ -63,6 +70,7 @@ void write_ppu_control1( void *sys, word address, byte value )
 
     NES->ppu.scroll.horizontal_high = value & 1;
     NES->ppu.scroll.vertical_high = (value & 2)>>1;
+    consolidate_scroll( ((Nes*)sys) );
 }
 // -------------------------------------------------------------------------------
 // $2001
@@ -119,19 +127,26 @@ void write_scroll( void *sys, word address, byte value  )
     if( NES->ppu.write_count == 0 ) {
         NES->ppu.scroll.horizontal_low = value;
         NES->ppu.write_count = 1;
+        consolidate_scroll( ((Nes*)sys) ); // WIP not necessary to consolidate both X and Y on each call
+        
+        // Scroll during frame rendering
+        if( this->scanline >= 0 && this->scanline <= 239 )
+        {
+            // Shouldn't be more than 2 midframe scrolls
+            assert( this->ppu.scroll.last_frame.midframe_count < sizeof( this->ppu.scroll.last_frame.midframe_x ) );
+            
+            this->ppu.scroll.last_frame.midframe_x[ 
+                this->ppu.scroll.last_frame.midframe_count ] = 
+                    this->ppu.scroll.horizontal;
+                    
+            this->ppu.scroll.last_frame.midframe_count++;
+        }
     }
     else {
         // WIP Changes made to the vertical scroll during rendering will only take effect on the next frame
         NES->ppu.scroll.vertical_low = value;
         NES->ppu.write_count = 0;
-        
-        // Chequear que efectivamente se cambie el valor, no solo que se sobreescriba
-        // if( NES->scanline >= 21 && NES->scanline <= 260 ) {
-        //     assert( 0 && "Y Scroll made mid-frame" );
-        // }
-        //if( NES->ppu.scroll.vertical_low >= 240 ) {
-        //    assert( 0 && "Y Scroll greater than 240" );
-        //}
+        consolidate_scroll( ((Nes*)sys) ); // WIP not necessary to consolidate both X and Y on each call
     }
 }
 // -------------------------------------------------------------------------------
