@@ -303,10 +303,26 @@ void ModNES::render()
     
     SDL_BlitSurface( this->nametables_surf, NULL, SDL_GetWindowSurface( this->nametables_win ), NULL );
     
-    SDL_Rect viewport = { nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical, 256, 240 };
     SDL_Surface *screenWinSurf = SDL_GetWindowSurface( this->screen_win );
     
-    SDL_FillRect( screenWinSurf, NULL, SDL_MapRGB( screenWinSurf->format, 0xFF, 0, 0xFF ));
+    // SDL_FillRect( screenWinSurf, NULL, SDL_MapRGB( screenWinSurf->format, 0, 0, 0 )); // Clear the screen
+    
+    // Calculate the viewport rectangles
+    SDL_Rect viewports[6] = {{ nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical, 256, 240 }};
+    vp_count = 1;
+    
+    if( nes->ppu.scroll.horizontal >= 256 ) // Horizontal scroll wrap around
+    {
+        vp_count++;
+        viewports[vp_count].x = nes->ppu.scroll.horizontal - 512;
+        drawRect( nameWindSurf, &rect );
+        
+        SDL_Rect rect_dest = { 0, rect.y*2, rect.w*2, rect.h*2 };
+        SDL_BlitScaled( nametables_surf, &rect, screenWinSurf, &rect_dest );
+        
+        rect.x = viewport.x;
+    }
+    
     // Blit from nametables to screen
     SDL_BlitScaled( nametables_surf, &viewport, screenWinSurf, NULL );
     
@@ -323,15 +339,7 @@ void ModNES::render()
     // Draw the viewport rectangle
     drawRect( nameWindSurf, &viewport );
     rect = viewport;
-    if( rect.x >= 256 ) { // Horizontal scroll wrap around
-        rect.x -= 512;
-        drawRect( nameWindSurf, &rect );
-        
-        SDL_Rect rect_dest = { 0, rect.y*2, rect.w*2, rect.h*2 };
-        SDL_BlitScaled( nametables_surf, &rect, screenWinSurf, &rect_dest );
-        
-        rect.x = viewport.x;
-    }
+    
     if( rect.y >= 240 ) { // Vertical scroll wrap around
         rect.y -= 480;
         drawRect( nameWindSurf, &rect );
