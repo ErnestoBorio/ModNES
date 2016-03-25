@@ -130,16 +130,16 @@ void write_scroll( void *sys, word address, byte value  )
         consolidate_scroll( ((Nes*)sys) ); // WIP not necessary to consolidate both X and Y on each call
         
         // Scroll during frame rendering
-        if( this->scanline >= 0 && this->scanline <= 239 )
+        if( NES->scanline >= 0 && NES->scanline <= 239 )
         {
             // Shouldn't be more than 2 midframe scrolls
-            assert( this->ppu.scroll.last_frame.midframe_count < sizeof( this->ppu.scroll.last_frame.midframe_x ) );
+            assert( NES->ppu.scroll.last_frame.midframe_count < sizeof( NES->ppu.scroll.last_frame.midframe_x ) );
             
-            this->ppu.scroll.last_frame.midframe_x[ 
-                this->ppu.scroll.last_frame.midframe_count ] = 
-                    this->ppu.scroll.horizontal;
+            NES->ppu.scroll.last_frame.midframe_x[ 
+                NES->ppu.scroll.last_frame.midframe_count ] = 
+                    NES->ppu.scroll.horizontal;
                     
-            this->ppu.scroll.last_frame.midframe_count++;
+            NES->ppu.scroll.last_frame.midframe_count++;
         }
     }
     else {
