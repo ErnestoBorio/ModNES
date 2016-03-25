@@ -312,7 +312,7 @@ void ModNES::render()
     
     SDL_BlitSurface( this->nametables_surf, NULL, SDL_GetWindowSurface( this->nametables_win ), NULL );
     
-    SDL_Rect viewport = { nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical, 256, 240 };
+    SDL_Rect viewport = { nes->ppu.scroll.last_frame.start_x, nes->ppu.scroll.last_frame.start_y, 256, 240 };
     SDL_Surface *screenWinSurf = SDL_GetWindowSurface( this->screen_win );
     
     SDL_FillRect( screenWinSurf, NULL, SDL_MapRGB( screenWinSurf->format, 0xFF, 0, 0xFF ));
