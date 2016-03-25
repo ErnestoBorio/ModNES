@@ -301,23 +301,29 @@ void ModNES::render()
     SDL_SetColorKey( this->patterns_surf, SDL_TRUE, 0 );
     this->renderSprites();
     
-    // Present Nametables
     SDL_BlitSurface( this->nametables_surf, NULL, SDL_GetWindowSurface( this->nametables_win ), NULL );
     
-    SDL_Surface *nameWindSurf = SDL_GetWindowSurface( this->nametables_win );
+    SDL_Rect viewport = { nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical, 256, 240 };
     SDL_Surface *screenWinSurf = SDL_GetWindowSurface( this->screen_win );
     
-    // Clear the screen
     SDL_FillRect( screenWinSurf, NULL, SDL_MapRGB( screenWinSurf->format, 0xFF, 0, 0xFF ));
-    
-    //--------------------------------- Start Scroll
-    SDL_Rect viewport = { nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical, 256, 240 };
+    // Blit from nametables to screen
     SDL_BlitScaled( nametables_surf, &viewport, screenWinSurf, NULL );
-    drawRect( nameWindSurf, &viewport );
     
+    // Hide top and bottom tile rows. WIP: totally unoptimal solution, better not to render there at all
+    SDL_Rect rect = { 0, 0, 512, 16 };
+    if( this->hide_top_bottom ) {
+        SDL_FillRect( screenWinSurf, &rect, SDL_MapRGB( screenWinSurf->format, 0, 0, 0 ));
+        rect.y = 480 - 16;
+        SDL_FillRect( screenWinSurf, &rect, SDL_MapRGB( screenWinSurf->format, 0, 0, 0 ));
+    }
+
+    SDL_Surface *nameWindSurf = SDL_GetWindowSurface( this->nametables_win );
+    
+    // Draw the viewport rectangle
+    drawRect( nameWindSurf, &viewport );
     rect = viewport;
-    if( rect.x >= 256 ) // Horizontal scroll wrap around
-    {
+    if( rect.x >= 256 ) { // Horizontal scroll wrap around
         rect.x -= 512;
         drawRect( nameWindSurf, &rect );
         
@@ -326,31 +332,17 @@ void ModNES::render()
         
         rect.x = viewport.x;
     }
-    if( rect.y >= 240 ) // Vertical scroll wrap around
-    {
+    if( rect.y >= 240 ) { // Vertical scroll wrap around
         rect.y -= 480;
         drawRect( nameWindSurf, &rect );
         
         SDL_Rect rect_dest = { rect.x*2, 0, rect.w*2, rect.h*2 };
         SDL_BlitScaled( nametables_surf, &rect, screenWinSurf, &rect_dest );
         
-        if( rect.x >= 256 ) // 2D scroll wrap around
-        {
+        if( rect.x >= 256 ) { // 2D scroll wrap around
             rect.x -= 512;
             drawRect( nameWindSurf, &rect );
-            
-            SDL_Rect rect_dest = { 0, 0, rect.w*2, rect.h*2 };
-            SDL_BlitScaled( nametables_surf, &rect, screenWinSurf, &rect_dest );
         }
-    }
-    //--------------------------------- End Scroll
-    
-    // Hide top and bottom tile rows. WIP: totally unoptimal solution, better not to render there at all
-    SDL_Rect rect2 = { 0, 0, 512, 16 };
-    if( this->hide_top_bottom ) {
-        SDL_FillRect( screenWinSurf, &rect2, SDL_MapRGB( screenWinSurf->format, 0, 0, 0 ));
-        rect2.y = 480 - 16;
-        SDL_FillRect( screenWinSurf, &rect2, SDL_MapRGB( screenWinSurf->format, 0, 0, 0 ));
     }
     
     SDL_UpdateWindowSurface( this->nametables_win );
