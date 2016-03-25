@@ -158,64 +158,99 @@ void ModNES::loop()
         {
             //------------------------------------------------------------------------------------------------
             case SDL_KEYDOWN:
-                if( event.key.keysym.sym == SDLK_ESCAPE ) {
-                    this->quit = true;
-                }
-                else if( event.key.keysym.sym == SDLK_SPACE ) {
-                    this->running = ! this->running;
-                    printf( running? "PLAY\n": "PAUSE\n" );
-                }
-                else if( event.key.keysym.sym == SDLK_o ) {
-                    openFile( path, 1024 );
-                    if( path[0] ) {
-                        this->loadCartridge( path );
-                    }
-                }
-                else if( event.key.keysym.sym == SDLK_r ) {
-                    Nes_Reset( this->nes );
-                    this->running = true;
-                }
-                //------------------------------------------------------------------------------------------------
-                else if( event.key.keysym.sym == SDLK_p ) // resize Pattern tables window
+            {
+                switch( event.key.keysym.sym )
                 {
-                    if( config.patterns_win.size == 0 ) {
-                        SDL_ShowWindow( this->patterns_win );
-                        SDL_SetWindowSize( this->patterns_win, 257, 128 );
-                        this->presentPatterns();
-                        config.patterns_win.size = 1;
-                    }
-                    else if( config.patterns_win.size == 1 ) {
-                        SDL_SetWindowSize( this->patterns_win, 514, 256 );
-                        this->presentPatterns();
-                        config.patterns_win.size = 2;
-                    }
-                    else if( config.patterns_win.size == 2 ) {
-                        SDL_HideWindow( this->patterns_win );
-                        config.patterns_win.size = 0;
-                    }
-                    this->write_config();
+                    case SDLK_ESCAPE:
+                        this->quit = true;
+                        break;
+                    
+                    case SDLK_SPACE:
+                        this->running = ! this->running;
+                        printf( running? "PLAY\n": "PAUSE\n" );
+                        break;
+                        
+                    case SDLK_o:
+                        openFile( path, 1024 );
+                        if( path[0] ) {
+                            this->loadCartridge( path );
+                        }
+                        break;
+
+                    case SDLK_r:
+                        Nes_Reset( this->nes );
+                        this->running = true;
+                        break;
+                    
+                    case SDLK_s:
+                        this->render_sprites = ! this->render_sprites;
+                        break;
+                    
+                    case SDLK_h:
+                        this->hide_top_bottom = ! this->hide_top_bottom;
+                        break;
+                    //------------------------------------------------------------------------------------------------
+                    // Basic input WIP
+                    case SDLK_x:     Nes_SetInputState( this->nes, 0, Nes_A,      1 ); break;
+                    case SDLK_z:     Nes_SetInputState( this->nes, 0, Nes_B,      1 ); break;
+                    case SDLK_c:     Nes_SetInputState( this->nes, 0, Nes_Select, 1 ); break;
+                    case SDLK_v:     Nes_SetInputState( this->nes, 0, Nes_Start,  1 ); break;
+                    case SDLK_UP:    Nes_SetInputState( this->nes, 0, Nes_Up,     1 ); break;
+                    case SDLK_DOWN:  Nes_SetInputState( this->nes, 0, Nes_Down,   1 ); break;
+                    case SDLK_LEFT:  Nes_SetInputState( this->nes, 0, Nes_Left,   1 ); break;
+                    case SDLK_RIGHT: Nes_SetInputState( this->nes, 0, Nes_Right,  1 ); break;
+                    
+                    //------------------------------------------------------------------------------------------------
+                    // resize Pattern tables window
+                    case SDLK_p:
+                        if( config.patterns_win.size == 0 ) {
+                            SDL_ShowWindow( this->patterns_win );
+                            SDL_SetWindowSize( this->patterns_win, 257, 128 );
+                            this->presentPatterns();
+                            config.patterns_win.size = 1;
+                        }
+                        else if( config.patterns_win.size == 1 ) {
+                            SDL_SetWindowSize( this->patterns_win, 514, 256 );
+                            this->presentPatterns();
+                            config.patterns_win.size = 2;
+                        }
+                        else if( config.patterns_win.size == 2 ) {
+                            SDL_HideWindow( this->patterns_win );
+                            config.patterns_win.size = 0;
+                        }
+                        this->write_config();
+                        break;
+                    //------------------------------------------------------------------------------------------------
+                    // resize Nametable window
+                    case SDLK_n:
+                        if( config.nametables_win.size == 0 ) {
+                            SDL_ShowWindow( this->nametables_win );
+                            config.nametables_win.size = 1;
+                        }
+                        else if( config.nametables_win.size == 1 ) {
+                            SDL_HideWindow( this->nametables_win );
+                            config.nametables_win.size = 0;
+                        }
+                        this->write_config();
+                        break;
                 }
-                //------------------------------------------------------------------------------------------------
-                else if( event.key.keysym.sym == SDLK_n ) // resize Nametable window
+                break;
+            }
+            //------------------------------------------------------------------------------------------------
+            case SDL_KEYUP:
+                // Basic input WIP
+                switch( event.key.keysym.sym )
                 {
-                    if( config.nametables_win.size == 0 ) {
-                        SDL_ShowWindow( this->nametables_win );
-                        config.nametables_win.size = 1;
-                    }
-                    else if( config.nametables_win.size == 1 ) {
-                        SDL_HideWindow( this->nametables_win );
-                        config.nametables_win.size = 0;
-                    }
-                    this->write_config();
+                    case SDLK_x:     Nes_SetInputState( this->nes, 0, Nes_A,      0 ); break;
+                    case SDLK_z:     Nes_SetInputState( this->nes, 0, Nes_B,      0 ); break;
+                    case SDLK_c:     Nes_SetInputState( this->nes, 0, Nes_Select, 0 ); break;
+                    case SDLK_v:     Nes_SetInputState( this->nes, 0, Nes_Start,  0 ); break;
+                    case SDLK_UP:    Nes_SetInputState( this->nes, 0, Nes_Up,     0 ); break;
+                    case SDLK_DOWN:  Nes_SetInputState( this->nes, 0, Nes_Down,   0 ); break;
+                    case SDLK_LEFT:  Nes_SetInputState( this->nes, 0, Nes_Left,   0 ); break;
+                    case SDLK_RIGHT: Nes_SetInputState( this->nes, 0, Nes_Right,  0 ); break;
                 }
-                //------------------------------------------------------------------------------------------------
-                else if( event.key.keysym.sym == SDLK_s ) {
-                    this->render_sprites = ! this->render_sprites;
-                }
-                //------------------------------------------------------------------------------------------------
-                else if( event.key.keysym.sym == SDLK_h ) {
-                    this->hide_top_bottom = ! this->hide_top_bottom;
-                }
+                break;
             //------------------------------------------------------------------------------------------------
             case SDL_WINDOWEVENT:
                 if( event.window.event == SDL_WINDOWEVENT_MOVED )
