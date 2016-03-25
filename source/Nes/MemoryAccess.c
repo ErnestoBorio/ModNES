@@ -119,19 +119,18 @@ void write_scroll( void *sys, word address, byte value  )
     if( NES->ppu.write_count == 0 ) {
         NES->ppu.scroll.horizontal_low = value;
         NES->ppu.write_count = 1;
+        
+        if( NES->scanline >= 0 && NES->scanline <= 239 ) {
+            printf("MF scroll: %3d sl:%3d\n", value, NES->scanline );
+        }
+        else {
+            printf("   scroll: %3d sl:%3d\n", value, NES->scanline );
+        }
     }
     else {
         // WIP Changes made to the vertical scroll during rendering will only take effect on the next frame
         NES->ppu.scroll.vertical_low = value;
         NES->ppu.write_count = 0;
-        
-        // Chequear que efectivamente se cambie el valor, no solo que se sobreescriba
-        // if( NES->scanline >= 21 && NES->scanline <= 260 ) {
-        //     assert( 0 && "Y Scroll made mid-frame" );
-        // }
-        //if( NES->ppu.scroll.vertical_low >= 240 ) {
-        //    assert( 0 && "Y Scroll greater than 240" );
-        //}
     }
 }
 // -------------------------------------------------------------------------------
