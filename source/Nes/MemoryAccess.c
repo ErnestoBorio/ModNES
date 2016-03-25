@@ -260,9 +260,9 @@ void write_gamepad( void *sys, word address, byte value )
          if( NES->input.strobe_state == Nes_Strobe_reset ) {
             NES->input.strobe_state = Nes_Strobe_clear;
          }
-         // else: what should happen if 0 is written when not in reset state?
+         // else: what should happen if 0 is written when not in reset state? WIP
       }
-      // else: Some games write $C0 here for APU thingies. Ignore for now
+      // else: Some games write $C0 here for APU thingies. Ignore for now WIP
    }
 }
 // -------------------------------------------------------------------------------
