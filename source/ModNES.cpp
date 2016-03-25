@@ -301,13 +301,16 @@ void ModNES::render()
     SDL_SetColorKey( this->patterns_surf, SDL_TRUE, 0 );
     this->renderSprites();
     
+    // Present Nametables to window
     SDL_BlitSurface( this->nametables_surf, NULL, SDL_GetWindowSurface( this->nametables_win ), NULL );
     
-    SDL_Rect viewport = { nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical, 256, 240 };
     SDL_Surface *screenWinSurf = SDL_GetWindowSurface( this->screen_win );
     
+    // Clear screen
     SDL_FillRect( screenWinSurf, NULL, SDL_MapRGB( screenWinSurf->format, 0xFF, 0, 0xFF ));
+    
     // Blit from nametables to screen
+    SDL_Rect viewport = { nes->ppu.scroll.horizontal, nes->ppu.scroll.vertical, 256, 240 };
     SDL_BlitScaled( nametables_surf, &viewport, screenWinSurf, NULL );
     
     // Hide top and bottom tile rows. WIP: totally unoptimal solution, better not to render there at all
