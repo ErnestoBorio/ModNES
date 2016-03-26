@@ -13,6 +13,8 @@ El Slalom usa tres scrolls en la intro, para escrolear el título Slalom desde l
 Pero el Kung-fu hace hasta 4 scrolls al principio y 3 durante el juego. Debe usar alguna técnica avanzada de timing, y lo necesita porque
 por alguna extraña razón el personaje principal está hecho con tiles de background.
 
+También descubrí que voy a tener que split renderear los sprites.
+
 >> 2016-03-10
 
 Reimplementé el render en SDL, con pallette swaps bliteando de a tiles en vez de a pixel.

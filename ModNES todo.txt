@@ -9,7 +9,17 @@ http://wiki.nesdev.com/w/index.php/PPU_registers#Scroll_.28.242005.29_.3E.3E_wri
 
 - Registrar cuándo cambia x scroll en midframe, y en esos scanlines splitear el viewport
 
-> Input
+*****
+Lo que voy a hacer next:
+- Calcular todos los virewport originales empezando en los start scroll x e y y sliceando de acuerdo a los midframe_x
+- Luego con ese array de rects, ver si:
+    - hace wraparound horizontal, para cada rect
+    - hace wraparound vertical, para cada rect
+    - hace wraparound 2D, para cada rect
+- En todos los casos voy a ir pusheando rects a una lista que después recorro haciendo blits y dibujando rectángulos.
+*****
+
+
 > FPS count y modo async a ver cuántos FPS tira ModNES unbound
 
 > Mappers!
@@ -41,6 +51,8 @@ Los registros que solo usan pocos bits, como $2002, el resto de los bits viene d
 (en general los read unimplemented de los registros, seguro devuelven openbus)
 El openbus es el último byte leído de la memoria. (consultar documentación a ver si puede haber algo más)
 
+> Input completo con redefine keys
+
 > Eliminar la práctica de include .c dentro de .c (sacar funciones static)
 Debería? esto permite hacer funciones "privadas" con static. Pero xcode ignora los breakpoints en estos archivos.
 Quizás se pueda hacer que Xcode haga andar igual estos breakpoints.
@@ -50,11 +62,12 @@ Ya hice esto con MemoryAccess.c, quedan Instructions.c y Addressing.c
 (Por ahora lo ignoro olímpicamente)
 
 --- done
+√ Basic Input
 √ scroll viewport partido
 √ Pausa
 √ Implementar sprite 0 hit (básico)
 √ Scroll pantalla completa
 √ SDL 2
 √ Implementar read_memory_disasm para no usar los handlers comunes de registros
-√ Implementar save RAM
+√ Implementar save RAM (Pero sin persistencia)
 √ Implementar cpu y ppu cycle counting, y quizas también frame count a nivel Nes.
