@@ -52,6 +52,7 @@ typedef struct // Nes
     byte save_ram[0x2000]; // Battery backed RAM
 
     int scanline;        // scanline number currently being rendered [-1..260]
+    int last_scanline;   // last scanline redndered, to detect scanline change
     int scanpixel;       // pixel number of current scanline being rendered [0..340]
     int last_scanpixel;  // to compare the range of pixels rendered during last step
     int frames;          // frames rendered since reset

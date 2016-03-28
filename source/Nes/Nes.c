@@ -75,6 +75,7 @@ static void initialize( Nes *this )
     this->ppu_cycles     = 0;
     this->frames         = 0;
     this->scanline       = -1;
+    this->last_scanline  = 261;
     this->scanpixel      = 0;
     this->vblank         = 0;
     this->last_scanpixel = 0;
@@ -208,10 +209,9 @@ void Nes_DoFrame( Nes *this )
 {
     int cpu_cycles = 0;
     int vblank_started = 0;
-    static int last_scanline = -1;
     while( 1 )
     {
-        if( this->scanline == 0 && last_scanline == -1 )
+        if( this->scanline == 0 && this->last_scanline == -1 )
         {
             this->ppu.scroll.last_frame.start_x = this->ppu.scroll.horizontal;
             this->ppu.scroll.last_frame.start_y = this->ppu.scroll.vertical;
@@ -243,7 +243,7 @@ void Nes_DoFrame( Nes *this )
         this->scanpixel += 3 * cpu_cycles;
         
         // Keep track of a scanline change
-        last_scanline = this->scanline;
+        this->last_scanline = this->scanline;
         
         // Reached right end of the screen?
         if( this->scanpixel >= 341 )
