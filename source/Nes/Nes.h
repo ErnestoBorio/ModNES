@@ -92,8 +92,8 @@ typedef struct // Nes
             byte vertical_high;   // 1 means add 240 to vertical
             byte horizontal_low;
             byte vertical_low;
-            word horizontal;
-            word vertical;
+            int horizontal;
+            int vertical;
             struct {
                 int start_x;
                 int start_y;

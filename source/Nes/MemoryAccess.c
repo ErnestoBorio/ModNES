@@ -7,8 +7,15 @@
 // Consolidate 9 bit scroll values from separate registers $2000 and $2005
 static void consolidate_scroll( Nes *this )
 {
+    // vertical scroll values >= 240 are considered negative
+    int vertical = this->ppu.scroll.vertical_low;
+    if( vertical >= 240 ) {
+        vertical -= 240;
+        vertical *= -1;
+    }
+    this->ppu.scroll.vertical = this->ppu.scroll.vertical_high * 240 + vertical;
+    
     this->ppu.scroll.horizontal = this->ppu.scroll.horizontal_high <<8 | this->ppu.scroll.horizontal_low;
-    this->ppu.scroll.vertical = this->ppu.scroll.vertical_high * 240 + this->ppu.scroll.vertical_low;
 }
 
 // -------------------------------------------------------------------------------
