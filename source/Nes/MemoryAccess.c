@@ -139,18 +139,18 @@ void write_scroll( void *sys, word address, byte value  )
         // Scroll during frame rendering
         if( NES->scanline >= 0 && NES->scanline <= 239 )
         {
-            // Shouldn't be more than 2 midframe scrolls
-            assert( NES->ppu.scroll.last_frame.midframe_count < 10 );
+            // Kungfu made up to 4 midframe scrolls
+            assert( NES->ppu.scroll.last_frame.count < 10 );
             
-            NES->ppu.scroll.last_frame.midframe_x[ 
-                NES->ppu.scroll.last_frame.midframe_count ].scroll_x = 
+            NES->ppu.scroll.last_frame.scroll_x[ 
+                NES->ppu.scroll.last_frame.count ].value = 
                     NES->ppu.scroll.horizontal;
             
-            NES->ppu.scroll.last_frame.midframe_x[ 
-                NES->ppu.scroll.last_frame.midframe_count ].scanline = 
+            NES->ppu.scroll.last_frame.scroll_x[ 
+                NES->ppu.scroll.last_frame.count ].scanline = 
                     NES->scanline;
                     
-            NES->ppu.scroll.last_frame.midframe_count++;
+            NES->ppu.scroll.last_frame.count++;
         }
     }
     else {

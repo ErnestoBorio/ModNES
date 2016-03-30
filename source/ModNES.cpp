@@ -287,11 +287,11 @@ void ModNES::loop()
                     render();
                     
                     // WIP mid-frame scroll debug
-                    printf( "X:%3d Y:%3d ", this->nes->ppu.scroll.last_frame.start_x, this->nes->ppu.scroll.last_frame.start_y );
-                    for( int i = 0; i < this->nes->ppu.scroll.last_frame.midframe_count; ++i ) {
+                    printf( "X:%3d Y:%3d ", this->nes->ppu.scroll.last_frame.scroll_x[0].value, this->nes->ppu.scroll.last_frame.start_y );
+                    for( int i = 1; i < this->nes->ppu.scroll.last_frame.count; ++i ) {
                         printf( "< %3d %3d > ... ", 
-                            this->nes->ppu.scroll.last_frame.midframe_x[ i ].scanline,
-                            this->nes->ppu.scroll.last_frame.midframe_x[ i ].scroll_x );
+                            this->nes->ppu.scroll.last_frame.scroll_x[ i ].scanline,
+                            this->nes->ppu.scroll.last_frame.scroll_x[ i ].value );
                     }
                     printf( "\n" );
                 }
@@ -312,7 +312,7 @@ void ModNES::render()
     
     SDL_BlitSurface( this->nametables_surf, NULL, SDL_GetWindowSurface( this->nametables_win ), NULL );
     
-    SDL_Rect viewport = { nes->ppu.scroll.last_frame.start_x, nes->ppu.scroll.last_frame.start_y, 256, 240 };
+    SDL_Rect viewport = { nes->ppu.scroll.last_frame.scroll_x[0].value, nes->ppu.scroll.last_frame.start_y, 256, 240 };
     SDL_Surface *screenWinSurf = SDL_GetWindowSurface( this->screen_win );
     
     SDL_FillRect( screenWinSurf, NULL, SDL_MapRGB( screenWinSurf->format, 0xFF, 0, 0xFF ));

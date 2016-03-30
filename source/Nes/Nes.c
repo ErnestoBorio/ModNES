@@ -213,9 +213,9 @@ void Nes_DoFrame( Nes *this )
     {
         if( this->scanline == 0 && this->last_scanline == -1 )
         {
-            this->ppu.scroll.last_frame.start_x = this->ppu.scroll.horizontal;
+            this->ppu.scroll.last_frame.scroll_x[0].value = this->ppu.scroll.horizontal;
             this->ppu.scroll.last_frame.start_y = this->ppu.scroll.vertical;
-            this->ppu.scroll.last_frame.midframe_count = 0; // reset mid-frame scrolls
+            this->ppu.scroll.last_frame.count = 1; // reset frame scrolls list
         }
         // Reached VBLANK?
         else if(( this->scanline == 241 ) && ( this->vblank == 0 ))

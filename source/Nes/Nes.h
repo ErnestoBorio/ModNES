@@ -95,13 +95,12 @@ typedef struct // Nes
             int horizontal;
             int vertical;
             struct {
-                int start_x;
                 int start_y;
                 struct {
                     int scanline;
-                    int scroll_x;
-                } midframe_x[10];
-                int midframe_count;
+                    int value;
+                } scroll_x[10]; // index 0 is scroll value before rendering
+                int count; // how many scrolls have been made including pre and mid-frame
             } last_frame;
         } scroll;
 
