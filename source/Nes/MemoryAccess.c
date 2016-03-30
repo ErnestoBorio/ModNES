@@ -164,14 +164,14 @@ void write_scroll( void *sys, word address, byte value  )
 // $2006
 void write_vram_address( void *sys, word register_address, byte value  )
 {
-   if( NES->ppu.write_count == 0 ) {
-      NES->ppu.vram_address = ((word) value & 0x3F ) <<8; // put 6 bits of value in vram_address msb
-      NES->ppu.write_count = 1;
-   }
-   else {
-      NES->ppu.vram_address |= value;
-      NES->ppu.write_count = 0;
-   }
+    if( NES->ppu.write_count == 0 ) {
+        NES->ppu.vram_address = ((word) value & 0x3F ) <<8; // put 6 bits of value in vram_address msb
+        NES->ppu.write_count = 1;
+    }
+    else {
+        NES->ppu.vram_address |= value;
+        NES->ppu.write_count = 0;
+    }
 }
 // -------------------------------------------------------------------------------
 // $2007
