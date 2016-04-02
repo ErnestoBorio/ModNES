@@ -70,6 +70,7 @@ static void initialize( Nes *this )
     this->ppu.mirroring    = 0;
 
     memset( &this->ppu.scroll, 0, sizeof this->ppu.scroll );
+    this->ppu.scroll.last_frame.count = 1;
     
     this->cpu_cycles     = 0;
     this->ppu_cycles     = 0;
@@ -214,6 +215,7 @@ void Nes_DoFrame( Nes *this )
         if( this->scanline == 0 && this->last_scanline == -1 )
         {
             this->ppu.scroll.last_frame.scroll_x[0].value = this->ppu.scroll.horizontal;
+            this->ppu.scroll.last_frame.scroll_x[0].scanline = -1; // WIP would help in calculating split scrolls
             this->ppu.scroll.last_frame.start_y = this->ppu.scroll.vertical;
             this->ppu.scroll.last_frame.count = 1; // reset frame scrolls list
         }
