@@ -310,24 +310,55 @@ void ModNES::render()
     SDL_SetColorKey( this->patterns_surf, SDL_TRUE, 0 );
     this->renderSprites();
     
+    // Present nametables
     SDL_BlitSurface( this->nametables_surf, NULL, SDL_GetWindowSurface( this->nametables_win ), NULL );
     
-    SDL_Rect viewport = { nes->ppu.scroll.last_frame.scroll_x[0].value, nes->ppu.scroll.last_frame.start_y, 256, 240 };
+    SDL_Surface *nameWindSurf = SDL_GetWindowSurface( this->nametables_win );
     SDL_Surface *screenWinSurf = SDL_GetWindowSurface( this->screen_win );
     
+    // Clear the screen to magenta to spot blitting problems
     SDL_FillRect( screenWinSurf, NULL, SDL_MapRGB( screenWinSurf->format, 0xFF, 0, 0xFF ));
+    
+    // ---- begin split scroll code ----
+    SDL_Rect viewport = {
+        nes->ppu.scroll.last_frame.scroll_x[0].value,
+        nes->ppu.scroll.last_frame.start_y,
+        256, 240 };
+    SDL_Rect destport = { 0, 0, 512 };
+    
+    if( nes->ppu.scroll.last_frame.count == 1 )
+    {
+        SDL_BlitScaled( nametables_surf, &viewport, screenWinSurf, NULL );
+        drawRect( nameWindSurf, &viewport );
+    }
+    else if( nes->ppu.scroll.last_frame.count >= 2 )
+    {
+        // 1 split zone
+        viewport.h = nes->ppu.scroll.last_frame.scroll_x[1].scanline + 1;
+        // viewport.h = 
+        //     nes->ppu.scroll.last_frame.scroll_x[1].scanline 
+        //     - nes->ppu.scroll.last_frame.scroll_x[0].scanline; // WIP would work
+        destport.h = viewport.h <<1; // *2
+        
+        SDL_BlitScaled( nametables_surf, &viewport, screenWinSurf, &destport );
+        drawRect( nameWindSurf, &viewport );
+        
+        // 2nd split zone
+        viewport.y += viewport.h;
+        viewport.x = nes->ppu.scroll.last_frame.scroll_x[1].value;
+        viewport.h = 240 - viewport.h;
+        
+        destport.y = viewport.y <<1;
+        destport.h = viewport.h <<1;
+        
+        SDL_BlitScaled( nametables_surf, &viewport, screenWinSurf, &destport );
+        drawRect( nameWindSurf, &viewport );
+    }
+    // ---- end split scroll code ----
+    
+    /*
     // Blit from nametables to screen
     SDL_BlitScaled( nametables_surf, &viewport, screenWinSurf, NULL );
-    
-    // Hide top and bottom tile rows. WIP: totally unoptimal solution, better not to render there at all
-    SDL_Rect rect = { 0, 0, 512, 16 };
-    if( this->hide_top_bottom ) {
-        SDL_FillRect( screenWinSurf, &rect, SDL_MapRGB( screenWinSurf->format, 0, 0, 0 ));
-        rect.y = 480 - 16;
-        SDL_FillRect( screenWinSurf, &rect, SDL_MapRGB( screenWinSurf->format, 0, 0, 0 ));
-    }
-
-    SDL_Surface *nameWindSurf = SDL_GetWindowSurface( this->nametables_win );
     
     // Draw the viewport rectangle
     drawRect( nameWindSurf, &viewport );
@@ -352,6 +383,15 @@ void ModNES::render()
             rect.x -= 512;
             drawRect( nameWindSurf, &rect );
         }
+    }
+    */
+    
+    // Hide top and bottom tile rows. WIP: totally unoptimal solution, better not to render there at all
+    SDL_Rect rect = { 0, 0, 512, 16 };
+    if( this->hide_top_bottom ) {
+        SDL_FillRect( screenWinSurf, &rect, SDL_MapRGB( screenWinSurf->format, 0, 0, 0 ));
+        rect.y = 480 - 16;
+        SDL_FillRect( screenWinSurf, &rect, SDL_MapRGB( screenWinSurf->format, 0, 0, 0 ));
     }
     
     SDL_UpdateWindowSurface( this->nametables_win );
@@ -509,9 +549,11 @@ void ModNES::renderNametables()
                     }
                 }
                 
-                
-                // WIP IIRC back and sprite pallettes can be switched? or not?
-                for( int i = 0; i <= 3; ++i )
+                colors[0].r = Nes_rgb[ nes->ppu.palettes[0] ][0];
+                colors[0].g = Nes_rgb[ nes->ppu.palettes[0] ][1];
+                colors[0].b = Nes_rgb[ nes->ppu.palettes[0] ][2];
+                // WIP IIRC back and sprite pallettes can be switched? or not? (I don't think so)
+                for( int i = 1; i <= 3; ++i )
                 {
                     int rgb_index = nes->ppu.palettes[ palette_index * 4 + i ]; // should +0x10 if it were sprite palettes
                     colors[i].r = Nes_rgb[rgb_index][0];
