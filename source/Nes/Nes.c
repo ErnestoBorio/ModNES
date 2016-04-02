@@ -269,10 +269,10 @@ void Nes_DoFrame( Nes *this )
         }
         
         // if last rendered pixels lie inside the visible screen and collide with the sprite 0 area
-        if(( this->scanline > -1 ) && ( this->scanline < 240 ) && ( this->last_scanpixel < 256 )
+        if(( this->scanline >= 0 ) && ( this->scanline <= 239 ) && ( this->last_scanpixel < 256 )
             && ( this->ppu.sprite0_hit == 0 )
-            && ( this->ppu.sprites[0] >= this->scanline - 8 ) && ( this->ppu.sprites[0] <= this->scanline )
-            && ( this->ppu.sprites[3] >= this->scanpixel - 8 ) && ( this->ppu.sprites[3] <= this->scanpixel ))
+            && ( this->ppu.sprites[0] + 6 <= this->scanline )
+            && ( this->ppu.sprites[3] <= this->scanpixel ))
         {
             check_sprite0hit( this );
         }
