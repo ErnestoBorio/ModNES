@@ -286,14 +286,14 @@ void ModNES::loop()
                     Nes_DoFrame( this->nes );
                     render();
                     
-                    // WIP mid-frame scroll debug
-                    printf( "X:%3d Y:%3d ", this->nes->ppu.scroll.last_frame.scroll_x[0].value, this->nes->ppu.scroll.last_frame.start_y );
-                    for( int i = 1; i < this->nes->ppu.scroll.last_frame.count; ++i ) {
-                        printf( "< %3d %3d > ... ", 
-                            this->nes->ppu.scroll.last_frame.scroll_x[ i ].scanline,
-                            this->nes->ppu.scroll.last_frame.scroll_x[ i ].value );
-                    }
-                    printf( "\n" );
+                    // // WIP mid-frame scroll debug
+                    // printf( "X:%3d Y:%3d ", this->nes->ppu.scroll.last_frame.scroll_x[0].value, this->nes->ppu.scroll.last_frame.start_y );
+                    // for( int i = 1; i < this->nes->ppu.scroll.last_frame.count; ++i ) {
+                    //     printf( "< %3d %3d > ... ", 
+                    //         this->nes->ppu.scroll.last_frame.scroll_x[ i ].scanline,
+                    //         this->nes->ppu.scroll.last_frame.scroll_x[ i ].value );
+                    // }
+                    // printf( "\n\n" );
                 }
                 break;
         }
@@ -307,14 +307,11 @@ void ModNES::render()
     SDL_SetColorKey( this->patterns_surf, SDL_FALSE, 0 );
     this->renderNametables();
     
-    SDL_SetColorKey( this->patterns_surf, SDL_TRUE, 0 );
-    this->renderSprites();
-    
-    // Present nametables
-    SDL_BlitSurface( this->nametables_surf, NULL, SDL_GetWindowSurface( this->nametables_win ), NULL );
-    
     SDL_Surface *nameWindSurf = SDL_GetWindowSurface( this->nametables_win );
     SDL_Surface *screenWinSurf = SDL_GetWindowSurface( this->screen_win );
+    
+    // Present nametables
+    SDL_BlitSurface( this->nametables_surf, NULL, nameWindSurf, NULL );
     
     // Clear the screen to magenta to spot blitting problems
     SDL_FillRect( screenWinSurf, NULL, SDL_MapRGB( screenWinSurf->format, 0xFF, 0, 0xFF ));
@@ -385,6 +382,13 @@ void ModNES::render()
         }
     }
     */
+    
+    SDL_SetColorKey( this->patterns_surf, SDL_TRUE, 0 );
+    this->renderSprites();
+    // Present nametables
+    SDL_BlitSurface( this->nametables_surf, NULL, nameWindSurf, NULL );
+    
+    renderSpritesToScreen();
     
     // Hide top and bottom tile rows. WIP: totally unoptimal solution, better not to render there at all
     SDL_Rect rect = { 0, 0, 512, 16 };
@@ -588,6 +592,15 @@ void ModNES::renderNametables()
     SDL_BlitSurface( this->nametables_surf, &name, this->nametables_surf, &mirror );
 }
 //------------------------------------------------------------------------------------------------------------
+/*
+    This method renders the sprites to the nametables taking into account the 9-bit scroll values.
+    The NES actually rendered the sprites to the screen regardless the scroll values, this is
+    actually simpler to implement.
+    The problem with rendering to the nametables is that I should also cut the sprites if they
+    fall in a mid-frame scroll limit, and that's too much work for no benefit.
+    The benefit of seeing the sprites on the larger 4-screen area is nice, but will have to be
+    re-assessed to see if it's worth the complexity.
+*/
 void ModNES::renderSprites()
 {
     // WIP dirty hack, handle more graciously
@@ -690,6 +703,124 @@ void ModNES::renderSprites()
             SDL_UnlockSurface( temp_surf );
             SDL_UnlockSurface( flip_surf );
             SDL_BlitSurface( flip_surf, NULL, this->nametables_surf, &name );
+        }
+    }
+    SDL_FreeSurface( flip_surf );
+    SDL_FreeSurface( temp_surf );
+}
+//------------------------------------------------------------------------------------------------------------
+void ModNES::renderSpritesToScreen()
+{
+    // WIP dirty hack, handle more graciously
+    if( ! this->render_sprites ) {
+        return;
+    }
+    
+    SDL_SetColorKey( this->patterns_surf, SDL_TRUE, 0 );
+    SDL_Surface *screenWinSurf = SDL_GetWindowSurface( this->screen_win );
+    
+    SDL_Rect patt, screen;
+    patt.w = patt.h = 8;
+    screen.w = screen.h = 16;
+    
+    // Whether the sprite tiles are in CHR ROM 0 at $0 or CHR ROM 1 at $1000
+    int chrom_shift = nes->ppu.sprite_pattern == 0 ? 0 : 129;
+    
+    SDL_Color colors[4] = {{0,0,0}};
+    
+    SDL_Surface *flip_surf = SDL_CreateRGBSurface( 0, 8, 8, 32, 0, 0, 0, 0 );
+    SDL_Surface *temp_surf = SDL_CreateRGBSurface( 0, 8, 8, 32, 0, 0, 0, 0 );
+    
+    SDL_SetSurfacePalette( this->patterns_surf, this->temp_pal );
+    
+    for( byte *sprite = &nes->ppu.sprites[0x100-4]; sprite >= nes->ppu.sprites; sprite -= 4 )
+    {
+        screen.y = 2 * ( sprite[0] + 1 ); // Sprite's y position is off by one
+        screen.x = 2 * sprite[3];
+        
+        int tilen = sprite[1];
+        int paln  = sprite[2] & 3; // 2 lsb
+        int xflip = sprite[2] & ( 1<<6 );
+        int yflip = sprite[2] & ( 1<<7 );
+        
+        // WIP this is assuming sprites are in pattern table 0
+        patt.x = chrom_shift + (tilen % 16) * 8;
+        patt.y = (tilen / 16) * 8;
+        
+        // WIP IIRC back and sprite pallettes can be switched? or not?
+        for( int i = 0; i <= 3; ++i )
+        {
+            int rgb_index = nes->ppu.palettes[ 0x10 + paln * 4 + i ];
+            colors[i].r = Nes_rgb[rgb_index][0];
+            colors[i].g = Nes_rgb[rgb_index][1];
+            colors[i].b = Nes_rgb[rgb_index][2];
+        }
+        
+        SDL_SetPaletteColors( this->temp_pal, colors, 0, 4 );
+        
+        ***
+        The sprites wont render, or at least some of them will.
+        On of the problems is that the flipping is still being made as if surfaces were 8bpp not 32bpp
+        You cant BlitScaled from an 8bpp Surface, so there lies the main problem. Should investigate 
+        this further.
+        Algo bueno que obtuve al no pegar los sprites al name y desde ahí al screen, es que ahora puedo ver
+        todos los sprites off-screen que se renderean abajo de Y = 240, eso estaba bueno.
+        ***
+        
+        // printf("(%3i,%3i) ", screen.x/2, screen.y/2 );
+        if( xflip == 0 && yflip == 0 ) {
+            SDL_FillRect( temp_surf, NULL, SDL_MapRGBA( temp_surf->format, 0, 0, 0, 0 ) );
+            SDL_BlitSurface( this->patterns_surf, &patt, temp_surf, NULL );
+            SDL_BlitScaled( temp_surf, NULL, screenWinSurf, &screen );
+            // SDL_BlitScaled( this->patterns_surf, NULL, screenWinSurf, &screen );
+        }
+        else // flip the sprite. WIP (this should be pre-rendered and cached)
+        {
+            // SDL_SetColorKey( flip_surf, SDL_TRUE, 0 );
+            // SDL_SetSurfacePalette( flip_surf, this->temp_pal );
+            SDL_FillRect( flip_surf, NULL, SDL_MapRGBA( flip_surf->format, 0, 0, 0, 0 ) );
+            
+            // SDL_SetColorKey( temp_surf, SDL_TRUE, 0 );
+            // SDL_SetSurfacePalette( temp_surf, this->temp_pal );
+            SDL_FillRect( temp_surf, NULL, SDL_MapRGBA( temp_surf->format, 0, 0, 0, 0 ) );
+            
+            SDL_BlitSurface( this->patterns_surf, &patt, temp_surf, NULL );
+            
+            SDL_LockSurface( temp_surf );
+            SDL_LockSurface( flip_surf );
+            
+            int xstart = 0, ystart = 0, xstep = 0, ystep = 0;
+            
+            if( xflip ) {
+                xstart = 7;
+                xstep  = -1;
+            } else {
+                xstart = 0;
+                xstep  = 1;
+            }
+            if( yflip ) {
+                ystart = 7;
+                ystep  = -1;
+            } else {
+                ystart = 0;
+                ystep  = 1;
+            }
+            
+            for( int sourcey = 0, desty = ystart;
+                 sourcey <= 7;
+                 ++sourcey, desty += ystep )
+            {
+                for( int sourcex = 0, destx = xstart;
+                     sourcex <= 7;
+                     ++sourcex, destx += xstep )
+                {
+                    ((byte*) flip_surf->pixels) [ desty * flip_surf->pitch + destx ] =
+                        ((byte*) temp_surf->pixels) [ sourcey * temp_surf->pitch + sourcex ];
+                }
+            }
+            SDL_UnlockSurface( temp_surf );
+            SDL_UnlockSurface( flip_surf );
+            SDL_BlitScaled( flip_surf, NULL, screenWinSurf, &screen );
         }
     }
     SDL_FreeSurface( flip_surf );

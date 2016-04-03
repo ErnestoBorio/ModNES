@@ -64,6 +64,7 @@ public:
     void presentPatterns();
     void renderNametables();
     void renderSprites();
+    void renderSpritesToScreen();
     
     void read_config();
     void write_config();
