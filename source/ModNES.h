@@ -47,6 +47,8 @@ public:
     int nametables_win_id;
     int screen_win_id;
     
+    SDL_Window *pijaPuta;
+    
     SDL_Surface *patterns_surf;
     SDL_Surface *nametables_surf;
     

@@ -106,6 +106,8 @@ int ModNES::init()
         config.screen_win.size == 0 ? SDL_WINDOW_HIDDEN : SDL_WINDOW_SHOWN );
     this->screen_win_id = SDL_GetWindowID( this->screen_win );
     
+    // pijaPuta = SDL_CreateWindow( "Pija Puta", 500, 20, 100, 100, SDL_WINDOW_SHOWN );
+    
     // SDL_Surface *windSurf = SDL_GetWindowSurface( this->patterns_win );
     // this->patterns_ren = SDL_CreateRenderer( this->patterns_win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
     // La papota parece ser que o creas un renderer (3D, texturas, GPU) del window, o geteas un winSurface, pero no ambos.
@@ -206,12 +208,12 @@ void ModNES::loop()
                         if( config.patterns_win.size == 0 ) {
                             SDL_ShowWindow( this->patterns_win );
                             SDL_SetWindowSize( this->patterns_win, 257, 128 );
-                            this->presentPatterns();
+                            // this->presentPatterns();
                             config.patterns_win.size = 1;
                         }
                         else if( config.patterns_win.size == 1 ) {
                             SDL_SetWindowSize( this->patterns_win, 514, 256 );
-                            this->presentPatterns();
+                            // this->presentPatterns();
                             config.patterns_win.size = 2;
                         }
                         else if( config.patterns_win.size == 2 ) {
@@ -287,13 +289,13 @@ void ModNES::loop()
                     render();
                     
                     // WIP mid-frame scroll debug
-                    printf( "X:%3d Y:%3d ", this->nes->ppu.scroll.last_frame.scroll_x[0].value, this->nes->ppu.scroll.last_frame.start_y );
-                    for( int i = 1; i < this->nes->ppu.scroll.last_frame.count; ++i ) {
-                        printf( "< %3d %3d > ... ", 
-                            this->nes->ppu.scroll.last_frame.scroll_x[ i ].scanline,
-                            this->nes->ppu.scroll.last_frame.scroll_x[ i ].value );
-                    }
-                    printf( "\n" );
+                    // printf( "X:%3d Y:%3d ", this->nes->ppu.scroll.last_frame.scroll_x[0].value, this->nes->ppu.scroll.last_frame.start_y );
+                    // for( int i = 1; i < this->nes->ppu.scroll.last_frame.count; ++i ) {
+                    //     printf( "< %3d %3d > ... ", 
+                    //         this->nes->ppu.scroll.last_frame.scroll_x[ i ].scanline,
+                    //         this->nes->ppu.scroll.last_frame.scroll_x[ i ].value );
+                    // }
+                    // printf( "\n" );
                 }
                 break;
         }
@@ -306,12 +308,6 @@ void ModNES::render()
 {
     SDL_SetColorKey( this->patterns_surf, SDL_FALSE, 0 );
     this->renderNametables();
-    
-    SDL_SetColorKey( this->patterns_surf, SDL_TRUE, 0 );
-    this->renderSprites();
-    
-    // Present nametables
-    SDL_BlitSurface( this->nametables_surf, NULL, SDL_GetWindowSurface( this->nametables_win ), NULL );
     
     SDL_Surface *nameWindSurf = SDL_GetWindowSurface( this->nametables_win );
     SDL_Surface *screenWinSurf = SDL_GetWindowSurface( this->screen_win );
@@ -329,7 +325,7 @@ void ModNES::render()
     if( nes->ppu.scroll.last_frame.count == 1 )
     {
         SDL_BlitScaled( nametables_surf, &viewport, screenWinSurf, NULL );
-        drawRect( nameWindSurf, &viewport );
+        drawRect( nametables_surf, &viewport );
     }
     else if( nes->ppu.scroll.last_frame.count >= 2 )
     {
@@ -341,7 +337,7 @@ void ModNES::render()
         destport.h = viewport.h <<1; // *2
         
         SDL_BlitScaled( nametables_surf, &viewport, screenWinSurf, &destport );
-        drawRect( nameWindSurf, &viewport );
+        drawRect( nametables_surf, &viewport );
         
         // 2nd split zone
         viewport.y += viewport.h;
@@ -352,7 +348,7 @@ void ModNES::render()
         destport.h = viewport.h <<1;
         
         SDL_BlitScaled( nametables_surf, &viewport, screenWinSurf, &destport );
-        drawRect( nameWindSurf, &viewport );
+        drawRect( nametables_surf, &viewport );
     }
     // ---- end split scroll code ----
     
@@ -385,6 +381,12 @@ void ModNES::render()
         }
     }
     */
+    
+    SDL_SetColorKey( this->patterns_surf, SDL_TRUE, 0 );
+    this->renderSprites();
+    
+    // Present nametables
+    SDL_BlitSurface( this->nametables_surf, NULL, nameWindSurf, NULL );
     
     // Hide top and bottom tile rows. WIP: totally unoptimal solution, better not to render there at all
     SDL_Rect rect = { 0, 0, 512, 16 };
@@ -476,7 +478,7 @@ void ModNES::renderPatterns()
     SDL_UnlockSurface( this->patterns_surf );
 }
 //------------------------------------------------------------------------------------------------------------
-void ModNES::presentPatterns()
+ void ModNES::presentPatterns()
 {
     // to keep CMY palette: SDL_SetSurfacePalette( this->patterns_surf, this->patterns_pal );
     
@@ -595,8 +597,10 @@ void ModNES::renderSprites()
         return;
     }
     
-    SDL_Rect patt, name;
+    SDL_Rect patt, name, screen;
+        
     patt.w = patt.h = name.w = name.h = 8;
+    screen.w = screen.h = 16;
     
     // Whether the sprite tiles are in CHR ROM 0 at $0 or CHR ROM 1 at $1000
     int chrom_shift = nes->ppu.sprite_pattern == 0 ? 0 : 129;
@@ -605,6 +609,10 @@ void ModNES::renderSprites()
     
     SDL_Surface *flip_surf = SDL_CreateRGBSurface( 0, 8, 8, 8, 0, 0, 0, 0 );
     SDL_Surface *temp_surf = SDL_CreateRGBSurface( 0, 8, 8, 8, 0, 0, 0, 0 );
+    SDL_Surface *toScreenSurf = SDL_CreateRGBSurface( 0, 8, 8, 32, 0, 0, 0, 0 );
+    
+    SDL_Surface *screenSurf = SDL_GetWindowSurface( this->screen_win );
+    // SDL_SetSurfaceBlendMode( screenSurf, SDL_BLENDMODE_NONE );
     
     SDL_SetSurfacePalette( this->patterns_surf, this->temp_pal );
     
@@ -612,6 +620,9 @@ void ModNES::renderSprites()
     {
         name.y = nes->ppu.scroll.vertical + sprite[0] + 1; // Sprite's y position is off by one
         name.x = nes->ppu.scroll.horizontal + sprite[3];
+        
+        screen.y = ( sprite[0] + 1 ) <<1; // Sprite's y position is off by one
+        screen.x = sprite[3] <<1;
         
         if( name.x >= 512 ) {
             name.x -= 512;
@@ -642,6 +653,12 @@ void ModNES::renderSprites()
         
         if( xflip == 0 && yflip == 0 ) {
             SDL_BlitSurface( this->patterns_surf, &patt, this->nametables_surf, &name );
+            
+            SDL_FillRect( toScreenSurf, NULL, 0 );
+            SDL_BlitSurface( this->patterns_surf, &patt, toScreenSurf, NULL );
+            
+            SDL_BlitScaled( toScreenSurf, NULL, screenSurf, &screen );
+            screen.w = screen.h = 16; // some genius thought modifying the dst rect in SDL_BlitScaled is A-OK. WTF?
         }
         else // flip the sprite. WIP (this should be pre-rendered and cached)
         {
@@ -694,5 +711,6 @@ void ModNES::renderSprites()
     }
     SDL_FreeSurface( flip_surf );
     SDL_FreeSurface( temp_surf );
+    SDL_FreeSurface( toScreenSurf );
 }
 //------------------------------------------------------------------------------------------------------------
