@@ -291,13 +291,13 @@ void ModNES::loop()
                     render();
                     
                     // WIP mid-frame scroll debug
-                    printf( "X:%3d Y:%3d ", this->nes->ppu.scroll.last_frame.scroll_x[0].value, this->nes->ppu.scroll.last_frame.start_y );
-                    for( int i = 1; i < this->nes->ppu.scroll.last_frame.count; ++i ) {
-                        printf( "< %3d %3d > ... ", 
-                            this->nes->ppu.scroll.last_frame.scroll_x[ i ].scanline,
-                            this->nes->ppu.scroll.last_frame.scroll_x[ i ].value );
-                    }
-                    printf( "\n" );
+                    // printf( "X:%3d Y:%3d ", this->nes->ppu.scroll.last_frame.scroll_x[0].value, this->nes->ppu.scroll.last_frame.start_y );
+                    // for( int i = 1; i < this->nes->ppu.scroll.last_frame.count; ++i ) {
+                    //     printf( "< %3d %3d > ... ", 
+                    //         this->nes->ppu.scroll.last_frame.scroll_x[ i ].scanline,
+                    //         this->nes->ppu.scroll.last_frame.scroll_x[ i ].value );
+                    // }
+                    // printf( "\n" );
                 }
                 break;
         }
@@ -310,12 +310,6 @@ void ModNES::render()
 {
     SDL_SetColorKey( this->patterns_surf, SDL_FALSE, 0 );
     this->renderNametables();
-    
-    SDL_SetColorKey( this->patterns_surf, SDL_TRUE, 0 );
-    this->renderSprites();
-    
-    // Present nametables
-    SDL_BlitSurface( this->nametables_surf, NULL, SDL_GetWindowSurface( this->nametables_win ), NULL );
     
     SDL_Surface *nameWindSurf = SDL_GetWindowSurface( this->nametables_win );
     
@@ -386,6 +380,12 @@ void ModNES::render()
         }
     }
     */
+    
+    SDL_SetColorKey( this->patterns_surf, SDL_TRUE, 0 );
+    this->renderSprites();
+    
+    // Present nametables
+    SDL_BlitSurface( this->nametables_surf, NULL, nameWindSurf, NULL );
     
     // Hide top and bottom tile rows. WIP: totally unoptimal solution, better not to render there at all
     SDL_Rect rect = { 0, 0, 256, 8 };
