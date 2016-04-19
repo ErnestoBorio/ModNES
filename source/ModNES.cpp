@@ -311,8 +311,6 @@ void ModNES::render()
     SDL_SetColorKey( this->patterns_surf, SDL_FALSE, 0 );
     this->renderNametables();
     
-    SDL_Surface *nameWindSurf = SDL_GetWindowSurface( this->nametables_win );
-    
     // Clear the screen to magenta to spot blitting problems
     SDL_FillRect( screen_surf, NULL, SDL_MapRGB( screen_surf->format, 0xFF, 0, 0xFF ));
     
@@ -326,7 +324,7 @@ void ModNES::render()
     if( nes->ppu.scroll.last_frame.count == 1 )
     {
         SDL_BlitSurface( nametables_surf, &viewport, screen_surf, NULL );
-        drawRect( nameWindSurf, &viewport );
+        drawRect( nametables_surf, &viewport );
     }
     else if( nes->ppu.scroll.last_frame.count >= 2 )
     {
@@ -337,7 +335,7 @@ void ModNES::render()
         //     - nes->ppu.scroll.last_frame.scroll_x[0].scanline; // WIP would work
         
         SDL_BlitSurface( nametables_surf, &viewport, screen_surf, &destport );
-        drawRect( nameWindSurf, &viewport );
+        drawRect( nametables_surf, &viewport );
         
         // 2nd split zone
         viewport.y += viewport.h;
@@ -347,7 +345,7 @@ void ModNES::render()
         destport.y = viewport.y;
         
         SDL_BlitSurface( nametables_surf, &viewport, screen_surf, &destport );
-        drawRect( nameWindSurf, &viewport );
+        drawRect( nametables_surf, &viewport );
     }
     // ---- end split scroll code ----
     
@@ -385,7 +383,7 @@ void ModNES::render()
     this->renderSprites();
     
     // Present nametables
-    SDL_BlitSurface( this->nametables_surf, NULL, nameWindSurf, NULL );
+    SDL_BlitSurface( this->nametables_surf, NULL, SDL_GetWindowSurface( nametables_win ), NULL );
     
     // Hide top and bottom tile rows. WIP: totally unoptimal solution, better not to render there at all
     SDL_Rect rect = { 0, 0, 256, 8 };
@@ -597,7 +595,7 @@ void ModNES::renderSprites()
         return;
     }
     
-    SDL_Rect patt, name;
+    SDL_Rect patt, name, screen;
     patt.w = patt.h = name.w = name.h = 8;
     
     // Whether the sprite tiles are in CHR ROM 0 at $0 or CHR ROM 1 at $1000
@@ -612,8 +610,13 @@ void ModNES::renderSprites()
     
     for( byte *sprite = &nes->ppu.sprites[0x100-4]; sprite >= nes->ppu.sprites; sprite -= 4 )
     {
+        // Sprite position on Nametables
         name.y = nes->ppu.scroll.vertical + sprite[0] + 1; // Sprite's y position is off by one
         name.x = nes->ppu.scroll.horizontal + sprite[3];
+        
+        // Sprite position on Screen
+        screen.y = sprite[0] + 1; // Sprite's y position is off by one
+        screen.x = sprite[3];
         
         if( name.x >= 512 ) {
             name.x -= 512;
@@ -644,6 +647,7 @@ void ModNES::renderSprites()
         
         if( xflip == 0 && yflip == 0 ) {
             SDL_BlitSurface( this->patterns_surf, &patt, this->nametables_surf, &name );
+            SDL_BlitSurface( this->patterns_surf, &patt, this->screen_surf, &screen );
         }
         else // flip the sprite. WIP (this should be pre-rendered and cached)
         {
@@ -692,6 +696,7 @@ void ModNES::renderSprites()
             SDL_UnlockSurface( temp_surf );
             SDL_UnlockSurface( flip_surf );
             SDL_BlitSurface( flip_surf, NULL, this->nametables_surf, &name );
+            SDL_BlitSurface( flip_surf, NULL, this->screen_surf, &screen );
         }
     }
     SDL_FreeSurface( flip_surf );
