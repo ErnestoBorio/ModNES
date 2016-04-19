@@ -41,12 +41,13 @@ public:
     
     SDL_Window *patterns_win;
     SDL_Window *nametables_win;
-    SDL_Window *screen_win;
+    SDL_Window *screen_win; // 2x window to blitscaled from screen_surf
     
     int patterns_win_id;
     int nametables_win_id;
     int screen_win_id;
     
+    SDL_Surface *screen_surf; // 1x offscreen buffer for the screen
     SDL_Surface *patterns_surf;
     SDL_Surface *nametables_surf;
     

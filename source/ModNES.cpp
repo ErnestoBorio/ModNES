@@ -87,6 +87,7 @@ int ModNES::init()
         fprintf(stderr, "SDL_Init() failed: %s\n", SDL_GetError());
         return APP_FAILED;
     }
+    
     this->patterns_win = SDL_CreateWindow( "Pattern tables", 
         config.patterns_win.pos.x, config.patterns_win.pos.y, 
         config.patterns_win.size <= 1 ? 257 : 514, 
@@ -111,7 +112,10 @@ int ModNES::init()
     // La papota parece ser que o creas un renderer (3D, texturas, GPU) del window, o geteas un winSurface, pero no ambos.
     // Probemos primero con get win surface, onda más software mente, después probemos con el renderer y textures.
     
-    this->patterns_surf = SDL_CreateRGBSurface( 0, 257, 128, 8, 0, 0, 0, 0 );
+    // Offscreen buffer for the NES screen. Then BlitScaled 2x from this to screen_win
+    this->screen_surf   = SDL_CreateRGBSurface( 0, 256, 240, 32, 0, 0, 0, 0 );
+    
+    this->patterns_surf = SDL_CreateRGBSurface( 0, 257, 128,  8, 0, 0, 0, 0 );
     this->temp_pal  = SDL_AllocPalette( 0x100 );
     this->patterns_pal  = SDL_AllocPalette( 0x100 );
         // Even when using only 4 indices, all 256 colors have to be allocated or it won't work.
@@ -314,21 +318,20 @@ void ModNES::render()
     SDL_BlitSurface( this->nametables_surf, NULL, SDL_GetWindowSurface( this->nametables_win ), NULL );
     
     SDL_Surface *nameWindSurf = SDL_GetWindowSurface( this->nametables_win );
-    SDL_Surface *screenWinSurf = SDL_GetWindowSurface( this->screen_win );
     
     // Clear the screen to magenta to spot blitting problems
-    SDL_FillRect( screenWinSurf, NULL, SDL_MapRGB( screenWinSurf->format, 0xFF, 0, 0xFF ));
+    SDL_FillRect( screen_surf, NULL, SDL_MapRGB( screen_surf->format, 0xFF, 0, 0xFF ));
     
     // ---- begin split scroll code ----
     SDL_Rect viewport = {
         nes->ppu.scroll.last_frame.scroll_x[0].value,
         nes->ppu.scroll.last_frame.start_y,
         256, 240 };
-    SDL_Rect destport = { 0, 0, 512 };
+    SDL_Rect destport = { 0, 0, 256, 240 }; // width and height shouldn't care, blit unscaled doesn't use them
     
     if( nes->ppu.scroll.last_frame.count == 1 )
     {
-        SDL_BlitScaled( nametables_surf, &viewport, screenWinSurf, NULL );
+        SDL_BlitSurface( nametables_surf, &viewport, screen_surf, NULL );
         drawRect( nameWindSurf, &viewport );
     }
     else if( nes->ppu.scroll.last_frame.count >= 2 )
@@ -338,9 +341,8 @@ void ModNES::render()
         // viewport.h = 
         //     nes->ppu.scroll.last_frame.scroll_x[1].scanline 
         //     - nes->ppu.scroll.last_frame.scroll_x[0].scanline; // WIP would work
-        destport.h = viewport.h <<1; // *2
         
-        SDL_BlitScaled( nametables_surf, &viewport, screenWinSurf, &destport );
+        SDL_BlitSurface( nametables_surf, &viewport, screen_surf, &destport );
         drawRect( nameWindSurf, &viewport );
         
         // 2nd split zone
@@ -348,10 +350,9 @@ void ModNES::render()
         viewport.x = nes->ppu.scroll.last_frame.scroll_x[1].value;
         viewport.h = 240 - viewport.h;
         
-        destport.y = viewport.y <<1;
-        destport.h = viewport.h <<1;
+        destport.y = viewport.y;
         
-        SDL_BlitScaled( nametables_surf, &viewport, screenWinSurf, &destport );
+        SDL_BlitSurface( nametables_surf, &viewport, screen_surf, &destport );
         drawRect( nameWindSurf, &viewport );
     }
     // ---- end split scroll code ----
@@ -387,15 +388,16 @@ void ModNES::render()
     */
     
     // Hide top and bottom tile rows. WIP: totally unoptimal solution, better not to render there at all
-    SDL_Rect rect = { 0, 0, 512, 16 };
+    SDL_Rect rect = { 0, 0, 256, 8 };
     if( this->hide_top_bottom ) {
-        SDL_FillRect( screenWinSurf, &rect, SDL_MapRGB( screenWinSurf->format, 0, 0, 0 ));
+        SDL_FillRect( screen_surf, &rect, 0 );
         rect.y = 480 - 16;
-        SDL_FillRect( screenWinSurf, &rect, SDL_MapRGB( screenWinSurf->format, 0, 0, 0 ));
+        SDL_FillRect( screen_surf, &rect, 0 );
     }
     
-    SDL_UpdateWindowSurface( this->nametables_win );
-    SDL_UpdateWindowSurface( this->screen_win );
+    SDL_BlitScaled( screen_surf, NULL, SDL_GetWindowSurface( screen_win ), NULL );
+    SDL_UpdateWindowSurface( nametables_win );
+    SDL_UpdateWindowSurface( screen_win );
 }
 
 void drawRect( SDL_Surface *surface, SDL_Rect *rect )
