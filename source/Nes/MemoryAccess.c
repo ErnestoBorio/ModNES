@@ -75,6 +75,14 @@ void write_ppu_control1( void *sys, word address, byte value )
     NES->ppu.sprite_pattern = ( value & (1<<3) ) ? 0x1000 : 0;
     NES->ppu.increment_vram = ( value & (1<<2) ) ? 32 : 1;
 
+    //WIP
+    if( ((value & 1) == 0) && (NES->ppu.scroll.horizontal_high == 1) ) {
+        printf( " c0 " );
+    }
+    else if( ((value & 1) == 1) && (NES->ppu.scroll.horizontal_high == 0) ) {
+        printf( " c1 " );
+    }
+    
     NES->ppu.scroll.horizontal_high = value & 1;
     NES->ppu.scroll.vertical_high = (value & 2)>>1;
     consolidate_scroll( ((Nes*)sys) );
@@ -150,7 +158,14 @@ void write_scroll( void *sys, word address, byte value  )
                 NES->ppu.scroll.last_frame.count ].scanline = 
                     NES->scanline;
                     
+            //WIP
+            printf( " S%03d ", value );
+            
             NES->ppu.scroll.last_frame.count++;
+        }
+        else {
+            //WIP
+            printf( " s%03d ", value );
         }
     }
     else {

@@ -291,13 +291,13 @@ void ModNES::loop()
                     render();
                     
                     // WIP mid-frame scroll debug
-                    // printf( "X:%3d Y:%3d ", this->nes->ppu.scroll.last_frame.scroll_x[0].value, this->nes->ppu.scroll.last_frame.start_y );
-                    // for( int i = 1; i < this->nes->ppu.scroll.last_frame.count; ++i ) {
-                    //     printf( "< %3d %3d > ... ", 
-                    //         this->nes->ppu.scroll.last_frame.scroll_x[ i ].scanline,
-                    //         this->nes->ppu.scroll.last_frame.scroll_x[ i ].value );
-                    // }
-                    // printf( "\n" );
+                    printf( "X:%3d Y:%3d ", this->nes->ppu.scroll.last_frame.scroll_x[0].value, this->nes->ppu.scroll.last_frame.start_y );
+                    for( int i = 1; i < this->nes->ppu.scroll.last_frame.count; ++i ) {
+                        printf( "< %3d %3d > . ", 
+                            this->nes->ppu.scroll.last_frame.scroll_x[ i ].scanline,
+                            this->nes->ppu.scroll.last_frame.scroll_x[ i ].value );
+                    }
+                    printf( "\n" );
                 }
                 break;
         }
@@ -335,7 +335,8 @@ void ModNES::render()
         //     - nes->ppu.scroll.last_frame.scroll_x[0].scanline; // WIP would work
         
         SDL_BlitSurface( nametables_surf, &viewport, screen_surf, &destport );
-        drawRect( nametables_surf, &viewport );
+        // drawRect( nametables_surf, &viewport );
+        SDL_FillRect( nametables_surf, &viewport, SDL_MapRGB( nametables_surf->format, 0, 0xFF, 0xFF ));
         
         // 2nd split zone
         viewport.y += viewport.h;
@@ -345,7 +346,8 @@ void ModNES::render()
         destport.y = viewport.y;
         
         SDL_BlitSurface( nametables_surf, &viewport, screen_surf, &destport );
-        drawRect( nametables_surf, &viewport );
+        // drawRect( nametables_surf, &viewport );
+        SDL_FillRect( nametables_surf, &viewport, SDL_MapRGB( nametables_surf->format, 0xFF, 0, 0xFF ));
     }
     // ---- end split scroll code ----
     

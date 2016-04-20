@@ -1,13 +1,9 @@
 
 Próximos pasos:
 
-> Scroll mid-frame y 
-http://wiki.nesdev.com/w/index.php/PPU_scrolling
-http://wiki.nesdev.com/w/index.php/PPU_registers#Scroll_.28.242005.29_.3E.3E_write_x2
-    "Changes made to the vertical scroll during rendering will only take effect on the next frame"
-    "Normal" vertical offsets range from 0 to 239, while values of 240 to 255 are treated as -16 through -1 in a way, but tile data is incorrectly fetched from the attribute table.
-
-- Registrar cuándo cambia x scroll en midframe, y en esos scanlines splitear el viewport
+> Logear en qué scanline se setea el fine scroll y en cuál el coarse scroll, a ver si se hacen seguido o qué.
+Para ver cómo detectar qué coarse se corresponde con qué fine y así detectar el scroll slice.
+Postear sino el problema en Nesdev y ver qué dicen.
 
 *****
 Lo que voy a hacer next:
@@ -19,7 +15,7 @@ Lo que voy a hacer next:
 - En todos los casos voy a ir pusheando rects a una lista que después recorro haciendo blits y dibujando rectángulos.
 *****
 
-
+> Prioridad sprites - background
 > FPS count y modo async a ver cuántos FPS tira ModNES unbound
 
 > Mappers!
