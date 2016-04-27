@@ -4,20 +4,6 @@
 
 #define NES ((Nes*)sys) // some syntax de-clutter to compensate for the unfortunate void *sys
 
-// Consolidate 9 bit scroll values from separate registers $2000 and $2005
-static void consolidate_scroll( Nes *this )
-{
-    // vertical scroll values >= 240 are considered negative
-    int vertical = this->ppu.scroll.vertical_low;
-    if( vertical >= 240 ) {
-        vertical -= 240;
-        vertical *= -1;
-    }
-    this->ppu.scroll.vertical = this->ppu.scroll.vertical_high * 240 + vertical;
-    
-    this->ppu.scroll.horizontal = this->ppu.scroll.horizontal_high <<8 | this->ppu.scroll.horizontal_low;
-}
-
 // -------------------------------------------------------------------------------
 // $0..$7FF unmirrored RAM
 byte read_ram( void *sys, word address )
@@ -74,18 +60,14 @@ void write_ppu_control1( void *sys, word address, byte value )
     NES->ppu.back_pattern   = ( value & (1<<4) ) ? 0x1000 : 0;
     NES->ppu.sprite_pattern = ( value & (1<<3) ) ? 0x1000 : 0;
     NES->ppu.increment_vram = ( value & (1<<2) ) ? 32 : 1;
-
-    //WIP
-    if( ((value & 1) == 0) && (NES->ppu.scroll.horizontal_high == 1) ) {
-        printf( " c0 " );
-    }
-    else if( ((value & 1) == 1) && (NES->ppu.scroll.horizontal_high == 0) ) {
-        printf( " c1 " );
-    }
     
-    NES->ppu.scroll.horizontal_high = value & 1;
-    NES->ppu.scroll.vertical_high = (value & 2)>>1;
-    consolidate_scroll( ((Nes*)sys) );
+    NES->ppu.scroll.horizontal = 
+        ( NES->ppu.scroll.horizontal & 0xFF ) | // keep 8 lower bits
+        (( value & 1 ) << 8 ); // write bit 0 of port to bit 8 of coarse X
+    
+    NES->ppu.scroll.vertical = 
+        ( NES->ppu.scroll.vertical & 0xFF ) | // keep 8 lower bits
+        (( value & 2 ) <<7 ); // write bit 1 of port to bit 8 of coarse Y
 }
 // -------------------------------------------------------------------------------
 // $2001
@@ -140,45 +122,28 @@ void write_spr_ram_io( void *sys, word address, byte value  )
 void write_scroll( void *sys, word address, byte value  )
 {
     if( NES->ppu.write_count == 0 ) {
-        NES->ppu.scroll.horizontal_low = value;
-        NES->ppu.write_count = 1;
-        consolidate_scroll( ((Nes*)sys) ); // WIP not necessary to consolidate both X and Y on each call
         
-        // Scroll during frame rendering
-        if( NES->scanline >= 0 && NES->scanline <= 239 )
-        {
-            // Kungfu made up to 4 midframe scrolls
-            assert( NES->ppu.scroll.last_frame.count < 10 );
-            
-            NES->ppu.scroll.last_frame.scroll_x[ 
-                NES->ppu.scroll.last_frame.count ].value = 
-                    NES->ppu.scroll.horizontal;
-            
-            NES->ppu.scroll.last_frame.scroll_x[ 
-                NES->ppu.scroll.last_frame.count ].scanline = 
-                    NES->scanline;
-                    
-            //WIP
-            printf( " S%03d ", value );
-            
-            NES->ppu.scroll.last_frame.count++;
-        }
-        else {
-            //WIP
-            printf( " s%03d ", value );
-        }
+        NES->ppu.scroll.horizontal = 
+            ( NES->ppu.scroll.horizontal & (1<<8) ) | value; // keep bit 8 coarse X
+        
+        NES->ppu.write_count = 1;
     }
     else {
         // WIP Changes made to the vertical scroll during rendering will only take effect on the next frame
-        NES->ppu.scroll.vertical_low = value;
+        NES->ppu.scroll.vertical = 
+            ( NES->ppu.scroll.vertical & (1<<8) ) | value; // keep bit 8 coarse Y
+        
         NES->ppu.write_count = 0;
-        consolidate_scroll( ((Nes*)sys) ); // WIP not necessary to consolidate both X and Y on each call
     }
 }
 // -------------------------------------------------------------------------------
 // $2006
 void write_vram_address( void *sys, word register_address, byte value  )
 {
+    // WIP: It's actually more complex, but this will do for games without raster FX
+    // See: http://wiki.nesdev.com/w/index.php/PPU_scrolling
+    NES->ppu.scroll.horizontal = NES->ppu.scroll.vertical = value;
+    
     if( NES->ppu.write_count == 0 ) {
         NES->ppu.vram_address = ((word) value & 0x3F ) <<8; // put 6 bits of value in vram_address msb
         NES->ppu.write_count = 1;

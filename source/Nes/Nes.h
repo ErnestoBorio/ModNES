@@ -60,7 +60,7 @@ typedef struct // Nes
     long cpu_cycles;     // CPU cycles executed since reset
     long ppu_cycles;     // PPU cycles executed since reset (3 PPU cycles per each CPU cycle)
 
-    struct
+    struct // PPU
     {
         // $2000
         byte nmi_enabled;
@@ -88,10 +88,6 @@ typedef struct // Nes
         
         // http://wiki.nesdev.com/w/index.php/PPU_registers#Controller_.28.242000.29_.3E_write
         struct {
-            byte horizontal_high; // 1 means add 256 to horizontal (or nametable # if you will)
-            byte vertical_high;   // 1 means add 240 to vertical
-            byte horizontal_low;
-            byte vertical_low;
             int horizontal;
             int vertical;
             struct {

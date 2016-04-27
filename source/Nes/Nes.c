@@ -247,6 +247,33 @@ void Nes_DoFrame( Nes *this )
         // Keep track of a scanline change
         this->last_scanline = this->scanline;
         
+        // Beginning each HBlank, check horizontal scrolling
+        // http://wiki.nesdev.com/w/index.php/PPU_scrolling#At_dot_257_of_each_scanline
+        if(( this->scanline >= 0 ) &&
+           ( this->scanline <= 239 ) && // Only for render scanlines
+           ( this->scanpixel >= 257 ) && // After and closest to pixel 257 as possible
+           ( this->last_scanpixel < 257 ) &&
+           ( this->ppu.sprites_visible || this->ppu.background_visible ) && // rendering enabled?
+           ( this->ppu.scroll.last_frame.scroll_x
+                [ this->ppu.scroll.last_frame.count-1 ]
+                    .value != this->ppu.scroll.horizontal )) // Has the H scroll changed in this scanline?
+        {
+             // Kungfu made up to 4 midframe scrolls
+            assert( this->ppu.scroll.last_frame.count < 10 );
+            
+            this->ppu.scroll.last_frame.scroll_x
+                [ this->ppu.scroll.last_frame.count ]
+                    .value =
+                        this->ppu.scroll.horizontal;
+            
+            this->ppu.scroll.last_frame.scroll_x
+                [ this->ppu.scroll.last_frame.count ]
+                    .scanline =
+                        this->scanline;
+                    
+            this->ppu.scroll.last_frame.count++;
+        }
+            
         // Reached right end of the screen?
         if( this->scanpixel >= 341 )
         {

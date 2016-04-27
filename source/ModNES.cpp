@@ -171,7 +171,7 @@ void ModNES::loop()
                     
                     case SDLK_SPACE:
                         this->running = ! this->running;
-                        printf( running? "PLAY\n": "PAUSE\n" );
+                        // printf( running? "PLAY\n": "PAUSE\n" );
                         break;
                         
                     case SDLK_o:
@@ -291,20 +291,20 @@ void ModNES::loop()
                     render();
                     
                     // WIP mid-frame scroll debug
-                    printf( "X:%3d Y:%3d ", this->nes->ppu.scroll.last_frame.scroll_x[0].value, this->nes->ppu.scroll.last_frame.start_y );
-                    for( int i = 1; i < this->nes->ppu.scroll.last_frame.count; ++i ) {
-                        printf( "< %3d %3d > . ", 
-                            this->nes->ppu.scroll.last_frame.scroll_x[ i ].scanline,
-                            this->nes->ppu.scroll.last_frame.scroll_x[ i ].value );
-                    }
-                    printf( "\n" );
+                    // printf( "X:%3d Y:%3d ", this->nes->ppu.scroll.last_frame.scroll_x[0].value, this->nes->ppu.scroll.last_frame.start_y );
+                    // for( int i = 1; i < this->nes->ppu.scroll.last_frame.count; ++i ) {
+                    //     printf( "< %3d %3d > . ", 
+                    //         this->nes->ppu.scroll.last_frame.scroll_x[ i ].scanline,
+                    //         this->nes->ppu.scroll.last_frame.scroll_x[ i ].value );
+                    // }
+                    // printf( "\n" );
                 }
                 break;
         }
     }
 }
 //------------------------------------------------------------------------------------------------------------
-void drawRect( SDL_Surface *surface, SDL_Rect *rect );
+void drawRect( SDL_Surface *surface, SDL_Rect *rect, Uint32 color );
 
 void ModNES::render()
 {
@@ -324,7 +324,7 @@ void ModNES::render()
     if( nes->ppu.scroll.last_frame.count == 1 )
     {
         SDL_BlitSurface( nametables_surf, &viewport, screen_surf, NULL );
-        drawRect( nametables_surf, &viewport );
+        drawRect( nametables_surf, &viewport, 0x00FF00 );
     }
     else if( nes->ppu.scroll.last_frame.count >= 2 )
     {
@@ -335,8 +335,7 @@ void ModNES::render()
         //     - nes->ppu.scroll.last_frame.scroll_x[0].scanline; // WIP would work
         
         SDL_BlitSurface( nametables_surf, &viewport, screen_surf, &destport );
-        // drawRect( nametables_surf, &viewport );
-        SDL_FillRect( nametables_surf, &viewport, SDL_MapRGB( nametables_surf->format, 0, 0xFF, 0xFF ));
+        drawRect( nametables_surf, &viewport, 0xFF00FF );
         
         // 2nd split zone
         viewport.y += viewport.h;
@@ -346,8 +345,7 @@ void ModNES::render()
         destport.y = viewport.y;
         
         SDL_BlitSurface( nametables_surf, &viewport, screen_surf, &destport );
-        // drawRect( nametables_surf, &viewport );
-        SDL_FillRect( nametables_surf, &viewport, SDL_MapRGB( nametables_surf->format, 0xFF, 0, 0xFF ));
+        drawRect( nametables_surf, &viewport, 0x00FFFF );
     }
     // ---- end split scroll code ----
     
@@ -400,7 +398,7 @@ void ModNES::render()
     SDL_UpdateWindowSurface( screen_win );
 }
 
-void drawRect( SDL_Surface *surface, SDL_Rect *rect )
+void drawRect( SDL_Surface *surface, SDL_Rect *rect, Uint32 color )
 {
     SDL_Rect rects[4] = {
         { rect->x, rect->y, rect->w, 1 },
@@ -408,7 +406,7 @@ void drawRect( SDL_Surface *surface, SDL_Rect *rect )
         { rect->x, rect->y, 1, rect->h },
         { rect->x + rect->w -1, rect->y, 1, rect->h }
     };
-    SDL_FillRects( surface, rects, 4, SDL_MapRGB( surface->format, 0, 0xFF, 0 ));
+    SDL_FillRects( surface, rects, 4, color );
 }
     
 //------------------------------------------------------------------------------------------------------------
