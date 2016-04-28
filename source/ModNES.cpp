@@ -321,32 +321,26 @@ void ModNES::render()
         256, 240 };
     SDL_Rect destport = { 0, 0, 256, 240 }; // width and height shouldn't care, blit unscaled doesn't use them
     
-    if( nes->ppu.scroll.last_frame.count == 1 )
+    for( int i = 0; i < nes->ppu.scroll.last_frame.count; ++i )
     {
-        SDL_BlitSurface( nametables_surf, &viewport, screen_surf, NULL );
+        destport.y = nes->ppu.scroll.last_frame.scroll_x[ i ].scanline +1;
+        
+        viewport.x = nes->ppu.scroll.last_frame.scroll_x[ i ].value;
+        
+        viewport.y = nes->ppu.scroll.last_frame.start_y + destport.y;
+        
+        if( i < nes->ppu.scroll.last_frame.count -1 ) {
+            viewport.h = nes->ppu.scroll.last_frame.start_y +
+                nes->ppu.scroll.last_frame.scroll_x[ i+1 ].scanline - viewport.y +1;
+        }
+        else {
+            viewport.h = nes->ppu.scroll.last_frame.start_y + 240 - viewport.y;
+        }
+        
+        SDL_BlitSurface( nametables_surf, &viewport, screen_surf, &destport );
         drawRect( nametables_surf, &viewport, 0x00FF00 );
     }
-    else if( nes->ppu.scroll.last_frame.count >= 2 )
-    {
-        // 1 split zone
-        viewport.h = nes->ppu.scroll.last_frame.scroll_x[1].scanline + 1;
-        // viewport.h = 
-        //     nes->ppu.scroll.last_frame.scroll_x[1].scanline 
-        //     - nes->ppu.scroll.last_frame.scroll_x[0].scanline; // WIP would work
-        
-        SDL_BlitSurface( nametables_surf, &viewport, screen_surf, &destport );
-        drawRect( nametables_surf, &viewport, 0xFF00FF );
-        
-        // 2nd split zone
-        viewport.y += viewport.h;
-        viewport.x = nes->ppu.scroll.last_frame.scroll_x[1].value;
-        viewport.h = 240 - viewport.h;
-        
-        destport.y = viewport.y;
-        
-        SDL_BlitSurface( nametables_surf, &viewport, screen_surf, &destport );
-        drawRect( nametables_surf, &viewport, 0x00FFFF );
-    }
+    
     // ---- end split scroll code ----
     
     /*
