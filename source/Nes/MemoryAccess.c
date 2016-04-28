@@ -273,11 +273,13 @@ void write_gamepad( void *sys, word address, byte value )
 // -------------------------------------------------------------------------------
 byte read_unimplemented( void *sys, word address )
 {
-	assert( 0 && "Memory read not implemented"  );
+    printf( "Memory read not implemented for address: $%X\n", address );
+	assert( 0 );
 	return 0;
 }
 // -------------------------------------------------------------------------------
 void write_unimplemented( void *sys, word address, byte value )
 {
-	assert( 0 && "Memory write not implemented"  );
+	printf( "Memory write not implemented for address: $%X, value: $%X\n", address, value );
+    assert( 0 );
 }
