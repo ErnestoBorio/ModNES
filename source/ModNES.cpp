@@ -339,39 +339,34 @@ void ModNES::render()
         
         SDL_BlitSurface( nametables_surf, &viewport, screen_surf, &destport );
         drawRect( nametables_surf, &viewport, 0x00FF00 );
-    }
-    
-    // ---- end split scroll code ----
-    
-    /*
-    // Blit from nametables to screen
-    SDL_BlitScaled( nametables_surf, &viewport, screenWinSurf, NULL );
-    
-    // Draw the viewport rectangle
-    drawRect( nameWindSurf, &viewport );
-    rect = viewport;
-    if( rect.x >= 256 ) { // Horizontal scroll wrap around
-        rect.x -= 512;
-        drawRect( nameWindSurf, &rect );
         
-        SDL_Rect rect_dest = { 0, rect.y*2, rect.w*2, rect.h*2 };
-        SDL_BlitScaled( nametables_surf, &rect, screenWinSurf, &rect_dest );
+        // Horizontal scroll wrap around
+        if( viewport.x >= 256 )
+        {
+            SDL_Rect hor_viewport = viewport;
+            SDL_Rect hor_destport = destport;
+
+            hor_viewport.x -= 512;
+            hor_destport.x = 0;
+
+            SDL_BlitSurface( nametables_surf, &hor_viewport, screen_surf, &hor_destport );
+            drawRect( nametables_surf, &hor_viewport, 0x00FF00 );
+        }
         
-        rect.x = viewport.x;
-    }
-    if( rect.y >= 240 ) { // Vertical scroll wrap around
-        rect.y -= 480;
-        drawRect( nameWindSurf, &rect );
-        
-        SDL_Rect rect_dest = { rect.x*2, 0, rect.w*2, rect.h*2 };
-        SDL_BlitScaled( nametables_surf, &rect, screenWinSurf, &rect_dest );
-        
-        if( rect.x >= 256 ) { // 2D scroll wrap around
-            rect.x -= 512;
-            drawRect( nameWindSurf, &rect );
+        // Vertical scroll wrap around
+        if( viewport.y >= 240 )
+        {
+            SDL_Rect ver_viewport = viewport;
+            SDL_Rect ver_destport = destport;
+            
+            ver_viewport.y -= 480;
+            ver_destport.y = 0;
+            
+            SDL_BlitSurface( nametables_surf, &ver_viewport, screen_surf, &ver_destport );
+            drawRect( nametables_surf, &ver_viewport, 0x00FF00 );
         }
     }
-    */
+    // ---- end split scroll code ----
     
     SDL_SetColorKey( this->patterns_surf, SDL_TRUE, 0 );
     this->renderSprites();
@@ -383,7 +378,7 @@ void ModNES::render()
     SDL_Rect rect = { 0, 0, 256, 8 };
     if( this->hide_top_bottom ) {
         SDL_FillRect( screen_surf, &rect, 0 );
-        rect.y = 480 - 16;
+        rect.y = 240 - 8;
         SDL_FillRect( screen_surf, &rect, 0 );
     }
     
