@@ -364,6 +364,18 @@ void ModNES::render()
             
             SDL_BlitSurface( nametables_surf, &ver_viewport, screen_surf, &ver_destport );
             drawRect( nametables_surf, &ver_viewport, 0x00FF00 );
+            
+            // Vertical and horizontal wrap around
+            if( viewport.x >= 256 )
+            {
+                ver_destport = destport;
+                
+                ver_viewport.x -= 512;
+                ver_destport.y = ver_destport.x = 0;
+                
+                SDL_BlitSurface( nametables_surf, &ver_viewport, screen_surf, &ver_destport );
+                drawRect( nametables_surf, &ver_viewport, 0x00FF00 );
+            }
         }
     }
     // ---- end split scroll code ----

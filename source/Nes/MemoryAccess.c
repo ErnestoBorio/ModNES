@@ -125,14 +125,14 @@ void write_scroll( void *sys, word address, byte value  )
         
         NES->ppu.scroll.horizontal = 
             ( NES->ppu.scroll.horizontal & (1<<8) ) | value; // keep bit 8 coarse X
-        
+
         NES->ppu.write_count = 1;
     }
     else {
         // WIP Changes made to the vertical scroll during rendering will only take effect on the next frame
         NES->ppu.scroll.vertical = 
             ( NES->ppu.scroll.vertical & (1<<8) ) | value; // keep bit 8 coarse Y
-        
+
         NES->ppu.write_count = 0;
     }
 }
