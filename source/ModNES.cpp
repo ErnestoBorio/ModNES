@@ -324,9 +324,7 @@ void ModNES::render()
     for( int i = 0; i < nes->ppu.scroll.last_frame.count; ++i )
     {
         destport.y = nes->ppu.scroll.last_frame.scroll_x[ i ].scanline +1;
-        
         viewport.x = nes->ppu.scroll.last_frame.scroll_x[ i ].value;
-        
         viewport.y = nes->ppu.scroll.last_frame.start_y + destport.y;
         
         if( i < nes->ppu.scroll.last_frame.count -1 ) {

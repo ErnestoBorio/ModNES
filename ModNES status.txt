@@ -14,6 +14,8 @@ También cambié el rendereado de sprites directo a pantalla además de renderea
 Pasar por nametables complica las cosas, porque hay que andar split-screeneando también los sprites, cosa que en la NES real no sucede, la posición 8bit de los sprites es relativa a la pantalla y no al espacio de 4 nametables.
 El rendereado de sprites en nametables probablemente quede sub-óptimo, para cumplir su función de debug y nada más, por ejemplo rendereando todos los sprites con los valores de scroll al terminar el render o quizas no los renderee para nada en las nametables, como hace FCEUX.
 
+También arreglé la title screen del Super Mario Bros! el error era que no estaba implementado el read $2007 del CHR-ROM. Para qué querrá leer el CHR-ROM? no importa. De todas maneras el read y write tendrán que ser implementados para tener CHR-RAM.
+
 Próximos pasos:
 - Prioridad sprites - background
 - Mappers, por lo menos los más fáciles 3-CNROM y 11-Color Dreams
@@ -112,10 +114,8 @@ Hoy corriendo ModNES con Mario Bros. me di cuenta que no había implementado ASL
 Habría que agregarlos a los tests que corresponda.
 
 Hace varios meses que tenía a ModNES abandonado pensando que Mario Bros. había querido ejecutar una opcode ilegal, lo que suponía uno de dos posibles problemas;
-1) Que efectivamente Mario Bros. usara opcodes ilegales, con lo cual probablemente otros juegos Mapper 0 también lo hicieran, y tendría que implementar
-opcodes ilegales antes de poder correr las primeras pruebas.
-2) Que la ejecución se hubiera desfasado de alguna manera y se estuvieran interpretando operandos como opcodes y viceversa, lo cual implicaba volver a testear
-minuciosamente Cpu6502 para encontrar el error.
+1) Que efectivamente Mario Bros. usara opcodes ilegales, con lo cual probablemente otros juegos Mapper 0 también lo hicieran, y tendría que implementar opcodes ilegales antes de poder correr las primeras pruebas.
+2) Que la ejecución se hubiera desfasado de alguna manera y se estuvieran interpretando operandos como opcodes y viceversa, lo cual implicaba volver a testear minuciosamente Cpu6502 para encontrar el error.
 
 Por suerte $0A no era una opcode ilegal sino que era ASL A que no estaba implementada.
 
