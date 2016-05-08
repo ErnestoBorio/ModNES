@@ -162,7 +162,7 @@ byte read_vram_io( void *sys, word register_address )
     byte old_latch = NES->ppu.vram_latch;
 
     if( NES->ppu.write_count > 0 ) {
-      assert( 0 && "Trying to read from VRAM after only setting half of VRAM address, what to do here?" );
+        assert( 0 && "Trying to read from VRAM after only setting half of VRAM address, what to do here?" );
     }
 
     word vram_address = NES->ppu.vram_address;
@@ -170,22 +170,24 @@ byte read_vram_io( void *sys, word register_address )
     // Palettes
     if( vram_address >= 0x3F00 )
     {
-      vram_address &= 0x1F; // Make VRAM address zero based and Unmirror
-      if( vram_address == 0x10 || vram_address == 0x14 || vram_address == 0x18 || vram_address == 0x1C ) {
-         vram_address -= 0x10; // Sprite colors 0 mirror background colors 0
-      }
-      // NES->ppu.vram_latch = NES->ppu.palettes[ vram_address ];
-      // return NES->ppu.vram_latch;
-      return NES->ppu.palettes[ vram_address ];
+        vram_address &= 0x1F; // Make VRAM address zero based and Unmirror
+        if( vram_address == 0x10 || vram_address == 0x14 || vram_address == 0x18 || vram_address == 0x1C ) {
+            vram_address -= 0x10; // Sprite colors 0 mirror background colors 0
+        }
+        // NES->ppu.vram_latch = NES->ppu.palettes[ vram_address ];
+        // return NES->ppu.vram_latch;
+        return NES->ppu.palettes[ vram_address ];
     }
     // Name tables and attributes
-    else if( vram_address > 0x2000 ) {
-      vram_address &= 0x7FF; // Make VRAM address zero based and Unmirror
-      NES->ppu.vram_latch = NES->ppu.name_attr[ vram_address ];
+    else if( vram_address >= 0x2000 ) {
+        vram_address &= 0x7FF; // Make VRAM address zero based
+        NES->ppu.vram_latch = NES->ppu.name_attr[ vram_address ];
     }
     // WIP: else tries to read from pattern tables, do nothing for now
     else {
-
+        NES->ppu.vram_latch = NES->chr_rom[ vram_address ];
+        // printf( "Reading VRAM $%4x < $2000\n", vram_address );
+        // assert(0);
     }
 
     NES->ppu.vram_address += NES->ppu.increment_vram;
@@ -196,31 +198,31 @@ byte read_vram_io( void *sys, word register_address )
 // -------------------------------------------------------------------------------
 void write_vram_io( void *sys, word register_address, byte value  )
 {
-   if( NES->ppu.write_count > 0 ) {
-      assert( 0 && "Trying to write to VRAM after only setting half of VRAM address, what to do here?" );
-   }
-   
-   word vram_address = NES->ppu.vram_address;
-   
-   // Palettes
-   if( vram_address >= 0x3F00 )
-   {
-      assert( NES->ppu.vram_address < 0x4000 ); // WIP remove this once checked
-      vram_address &= 0x1F; // Make VRAM address zero based and Unmirror
-      if( vram_address == 0x10 || vram_address == 0x14 || vram_address == 0x18 || vram_address == 0x1C ) {
-         vram_address -= 0x10; // Sprite colors 0 mirror background colors 0
-      }
-      NES->ppu.palettes[ vram_address ] = value & 0x3F;
-   }
-   // Name tables and attributes
-   else if( NES->ppu.vram_address > 0x2000 ) {
-      vram_address &= 0x7FF; // Make VRAM address zero based and Unmirror
-      NES->ppu.name_attr[ vram_address ] = value;
-   }
-   // WIP: else tries to write to pattern tables, do nothing for now
-   
-   NES->ppu.vram_address += NES->ppu.increment_vram;
-   NES->ppu.vram_address &= 0x3FFF; // Wrap around $4000
+    if( NES->ppu.write_count > 0 ) {
+        assert( 0 && "Trying to write to VRAM after only setting half of VRAM address, what to do here?" );
+    }
+
+    word vram_address = NES->ppu.vram_address;
+
+    // Palettes
+    if( vram_address >= 0x3F00 )
+    {
+        assert( NES->ppu.vram_address < 0x4000 ); // WIP remove this once checked
+        vram_address &= 0x1F; // Make VRAM address zero based and Unmirror
+        if( vram_address == 0x10 || vram_address == 0x14 || vram_address == 0x18 || vram_address == 0x1C ) {
+            vram_address -= 0x10; // Sprite colors 0 mirror background colors 0
+        }
+        NES->ppu.palettes[ vram_address ] = value & 0x3F;
+    }
+    // Name tables and attributes
+    else if( NES->ppu.vram_address > 0x2000 ) {
+        vram_address &= 0x7FF; // Make VRAM address zero based and Unmirror
+        NES->ppu.name_attr[ vram_address ] = value;
+    }
+    // WIP: else tries to write to pattern tables, do nothing for now
+
+    NES->ppu.vram_address += NES->ppu.increment_vram;
+    NES->ppu.vram_address &= 0x3FFF; // Wrap around $4000
 }
 // -------------------------------------------------------------------------------
 // $4014
