@@ -95,7 +95,7 @@ typedef struct // Nes
                 struct {
                     int scanline;
                     int value;
-                } scroll_x[10]; // index 0 is scroll value before rendering
+                } scroll_x[240]; // index 0 is scroll value before rendering
                 int count; // how many scrolls have been made including pre and mid-frame. Always >= 1
             } last_frame;
         } scroll;

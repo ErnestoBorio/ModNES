@@ -258,8 +258,7 @@ void Nes_DoFrame( Nes *this )
                 [ this->ppu.scroll.last_frame.count-1 ]
                     .value != this->ppu.scroll.horizontal )) // Has the H scroll changed in this scanline?
         {
-             // Kungfu made up to 4 midframe scrolls
-            assert( this->ppu.scroll.last_frame.count < 10 );
+            assert( this->ppu.scroll.last_frame.count < 240 );
             
             this->ppu.scroll.last_frame.scroll_x
                 [ this->ppu.scroll.last_frame.count ]

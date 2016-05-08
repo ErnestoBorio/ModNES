@@ -1,20 +1,6 @@
 
 Próximos pasos:
 
-> Logear en qué scanline se setea el fine scroll y en cuál el coarse scroll, a ver si se hacen seguido o qué.
-Para ver cómo detectar qué coarse se corresponde con qué fine y así detectar el scroll slice.
-Postear sino el problema en Nesdev y ver qué dicen.
-
-*****
-Lo que voy a hacer next:
-- Calcular todos los virewport originales empezando en los start scroll x e y y sliceando de acuerdo a los midframe_x
-- Luego con ese array de rects, ver si:
-    - hace wraparound horizontal, para cada rect
-    - hace wraparound vertical, para cada rect
-    - hace wraparound 2D, para cada rect
-- En todos los casos voy a ir pusheando rects a una lista que después recorro haciendo blits y dibujando rectángulos.
-*****
-
 > Prioridad sprites - background
 > FPS count y modo async a ver cuántos FPS tira ModNES unbound
 
@@ -30,7 +16,7 @@ Lo que voy a hacer next:
     Estos 5 mappers más NROM suman 891 juegos, todos los demás mappers tienen pocos juegos y poco conocidos, no vale la pena implementarlos.
 
 > Hacer que OAM DMA empiece en OAM ADDR 2003 (sólo si algún juego escribe !=0 en OAM ADDR)
-> Visual debugger. (Cocoa nativo GUI? implementar alguna SDL GUI? GUI propia?)
+> Visual debugger, si es que hace falta. (Cocoa nativo GUI? implementar alguna SDL GUI? GUI propia?)
 > Hacer accurate sprite 0 hit
 
 > Brush roller trata de acceder a $4800 なに!!
@@ -58,8 +44,8 @@ Ya hice esto con MemoryAccess.c, quedan Instructions.c y Addressing.c
 (Por ahora lo ignoro olímpicamente)
 
 --- done
+√ scroll a pantalla partida
 √ Basic Input
-√ scroll viewport partido
 √ Pausa
 √ Implementar sprite 0 hit (básico)
 √ Scroll pantalla completa

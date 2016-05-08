@@ -1,10 +1,33 @@
 
+>> 2016-05-08
+
+Finalmente terminé de implementar el scroll a pantalla partida.
+Registro todos los cambios de scroll horizontal durante el frame, siempre en HBlank, y los voy metiendo en un array.
+Al final del frame, se puede consultar ese array para saber en qué scanlines se parte la pantalla y cuántos pixeles está cada porción scroleada en X.
+
+El Slalom tiene un código timed que hace un scroll distinto en cada scanline, aún así haberlo hecho con rectángulos de SDL_Blit funciona bastante bien. Hay un problema chico de sincronía que le corre un scanline de cada 10 un poco al costado, pero no muy grave. El tercio superior de la pantalla no scrolea, según Nesdev no usa 8 sprite overflow, así que debe estar esperando otra condición que no se da, pero en el resto de la pantalla la pista parece scrolear bastante bien.
+
+El veredicto es que el scroll está bastante bien implementado por ahora.
+Voy a integrar este branch de scroll que estuvo serparado del master por mucho tiempo, de nuevo en master y así seguir con la política de siempre tener un master estable y trabajar en branches y luego integrar a master de nuevo cuando el feature está estable, por lo menos lo suficientemente estable para seguir adelante con otros features importantes.
+
+También cambié el rendereado de sprites directo a pantalla además de renderearlos también en la nametables.
+Pasar por nametables complica las cosas, porque hay que andar split-screeneando también los sprites, cosa que en la NES real no sucede, la posición 8bit de los sprites es relativa a la pantalla y no al espacio de 4 nametables.
+El rendereado de sprites en nametables probablemente quede sub-óptimo, para cumplir su función de debug y nada más, por ejemplo rendereando todos los sprites con los valores de scroll al terminar el render o quizas no los renderee para nada en las nametables, como hace FCEUX.
+
+Próximos pasos:
+- Prioridad sprites - background
+- Mappers, por lo menos los más fáciles 3-CNROM y 11-Color Dreams
+- CHR-RAM para mappers 2-UNROM y 7-AOROM
+- Luego los mappers masivos MMC1 y MMC3
+- Accurate sprite 0 hit
+- Factorear el basic SDL render como un mod
+- Empezar a diseñar e implementar mods
+
 >> 2016-03-25
 
 Implementé scroll con wraparound en X e Y.
 Ahora estoy investigando sobre cómo implementar el mid-frame scroll.
-Para los juegos simples y pioneros del mapper NROM, suponía que a lo sumo podían escrolear dos veces midframe, usando el sprite 0 hit
-y el 8 sprite overflow por scanline.
+Para los juegos simples y pioneros del mapper NROM, suponía que a lo sumo podían escrolear dos veces midframe, usando el sprite 0 hit y el 8 sprite overflow por scanline.
 
 El Super Mario Bros. usa un scroll para mostrar la GUI arriba.
 El Excite Bike usa dos scrolls, para mostrar la pista y abajo la GUI.
