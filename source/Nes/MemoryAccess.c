@@ -159,34 +159,39 @@ void write_vram_address( void *sys, word register_address, byte value  )
 // $2007
 byte read_vram_io( void *sys, word register_address )
 {
-   byte old_latch = NES->ppu.vram_latch;
-   
-   if( NES->ppu.write_count > 0 ) {
+    byte old_latch = NES->ppu.vram_latch;
+
+    if( NES->ppu.write_count > 0 ) {
       assert( 0 && "Trying to read from VRAM after only setting half of VRAM address, what to do here?" );
-   }
-   
-   word vram_address = NES->ppu.vram_address;
-   NES->ppu.vram_address += NES->ppu.increment_vram;
-   NES->ppu.vram_address &= 0x3FFF;
-   
-   // Palettes
-   if( vram_address >= 0x3F00 )
-   {
+    }
+
+    word vram_address = NES->ppu.vram_address;
+
+    // Palettes
+    if( vram_address >= 0x3F00 )
+    {
       vram_address &= 0x1F; // Make VRAM address zero based and Unmirror
       if( vram_address == 0x10 || vram_address == 0x14 || vram_address == 0x18 || vram_address == 0x1C ) {
          vram_address -= 0x10; // Sprite colors 0 mirror background colors 0
       }
-      NES->ppu.vram_latch = NES->ppu.palettes[ vram_address ];
-      return NES->ppu.vram_latch;
-   }
-   // Name tables and attributes
-   else if( vram_address > 0x2000 ) {
+      // NES->ppu.vram_latch = NES->ppu.palettes[ vram_address ];
+      // return NES->ppu.vram_latch;
+      return NES->ppu.palettes[ vram_address ];
+    }
+    // Name tables and attributes
+    else if( vram_address > 0x2000 ) {
       vram_address &= 0x7FF; // Make VRAM address zero based and Unmirror
       NES->ppu.vram_latch = NES->ppu.name_attr[ vram_address ];
-   }
-   // WIP: else tries to read from pattern tables, do nothing for now
-   
-   return old_latch;
+    }
+    // WIP: else tries to read from pattern tables, do nothing for now
+    else {
+
+    }
+
+    NES->ppu.vram_address += NES->ppu.increment_vram;
+    NES->ppu.vram_address &= 0x3FFF; // Wrap around $4000
+
+    return old_latch;
 }
 // -------------------------------------------------------------------------------
 void write_vram_io( void *sys, word register_address, byte value  )
