@@ -19,6 +19,8 @@ Próximos pasos:
 > Visual debugger, si es que hace falta. (Cocoa nativo GUI? implementar alguna SDL GUI? GUI propia?)
 > Hacer accurate sprite 0 hit
 
+> El scroll vertical no está bien en Xevious. En ciertos momentos se desincroniza y la actualización del background se ve en las 3 o 4 filas de abajo, esto no debería superar una fila de tiles.
+
 > Brush roller trata de acceder a $4800 なに!!
 > Ice climber también trata de acceder a un read unimplemented. Raro, la versión anterior con Cocoa OpenGL me parece que no fallaba.
 
