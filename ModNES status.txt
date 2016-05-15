@@ -18,6 +18,7 @@ También arreglé la title screen del Super Mario Bros! el error era que no esta
 
 Próximos pasos:
 - Prioridad sprites - background
+- Left tile column clipping
 - Mappers, por lo menos los más fáciles 3-CNROM y 11-Color Dreams
 - CHR-RAM para mappers 2-UNROM y 7-AOROM
 - Luego los mappers masivos MMC1 y MMC3

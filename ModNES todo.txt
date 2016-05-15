@@ -2,6 +2,8 @@
 Próximos pasos:
 
 > Prioridad sprites - background
+> Left tile column clipping
+
 > FPS count y modo async a ver cuántos FPS tira ModNES unbound
 
 > Mappers!
