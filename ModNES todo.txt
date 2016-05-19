@@ -1,10 +1,8 @@
 
 Próximos pasos:
 
-> Prioridad sprites - background
+> No renderear pantalla cuando back y sprites están disabled
 > Left tile column clipping
-
-> FPS count y modo async a ver cuántos FPS tira ModNES unbound
 
 > Mappers!
     Easiest and most popular first:
@@ -16,6 +14,8 @@ Próximos pasos:
     1-MMC1:  251 games: Final Fantasy, Mega Man 2, Metroid, Zelda, Zelda 2, Castlevania 2
     
     Estos 5 mappers más NROM suman 891 juegos, todos los demás mappers tienen pocos juegos y poco conocidos, no vale la pena implementarlos.
+
+> FPS count y modo async a ver cuántos FPS tira ModNES unbound
 
 > Hacer que OAM DMA empiece en OAM ADDR 2003 (sólo si algún juego escribe !=0 en OAM ADDR)
 > Visual debugger, si es que hace falta. (Cocoa nativo GUI? implementar alguna SDL GUI? GUI propia?)
@@ -48,6 +48,7 @@ Ya hice esto con MemoryAccess.c, quedan Instructions.c y Addressing.c
 (Por ahora lo ignoro olímpicamente)
 
 --- done
+√ Prioridad sprites - background
 √ scroll a pantalla partida
 √ Basic Input
 √ Pausa

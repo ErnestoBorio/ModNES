@@ -1,4 +1,14 @@
 
+>> 2016-05-18
+
+Terminé de implementar sprite background priority.
+Me costó entender cómo maneja SDL los alpha y los color keys, pero finalmente logré renderear los sprites bajo fondo primero, luego el nametable a screen con el fondo transparente, luego los sprites sobre fondo.
+Ahora la nametable sólo muestra los sprites sobre fondo, porque al renderearse los sprites en dos pasadas, la primer pasada bajo fondo quedaría tapada por el dibujado de los tiles de fondo.
+También pasa que los sprites rendereados a nametables están con el scroll del final del frame, recortarlos según todos los scrolls midframe sería un trabajo totalmente innecesario.
+El rendereado de sprites a nametable es bastante impreciso, pero para fines de debug, funciona. Se podría apagar con algun setting.
+
+Próximo paso: ocultar leftmost 8 pixel column según registros
+
 >> 2016-05-08
 
 Finalmente terminé de implementar el scroll a pantalla partida.
