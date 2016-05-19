@@ -339,6 +339,12 @@ void ModNES::render()
     byte const* bg_rgb = Nes_GetPaletteColor( nes, 0, 0, 0 );
     Uint32 bg_color = SDL_MapRGB( nametables_surf->format, bg_rgb[0], bg_rgb[1], bg_rgb[2] );
     
+    // Clear the screen to background color
+    SDL_FillRect( screen_surf, NULL, bg_color);
+    
+    // Render sprites under background
+    this->renderSprites( 1 );
+    
     SDL_SetColorKey( patterns_surf, SDL_FALSE, 0 );
     SDL_SetColorKey( nametables_surf, SDL_FALSE, bg_color );
     this->renderNametables();
@@ -348,9 +354,6 @@ void ModNES::render()
     SDL_BlitSurface( this->nametables_surf, NULL, name_win_surf, NULL );
     
     SDL_SetColorKey( nametables_surf, SDL_TRUE, bg_color );
-    
-    // Clear the screen to magenta to spot blitting problems
-    SDL_FillRect( screen_surf, NULL, SDL_MapRGB( screen_surf->format, 0xFF, 0, 0xFF ));
     
     // ---- begin split scroll code ----
     SDL_Rect viewport = {
@@ -417,7 +420,8 @@ void ModNES::render()
     // ---- end split scroll code ----
     
     SDL_SetColorKey( this->patterns_surf, SDL_TRUE, 0 );
-    this->renderSprites();
+    // Render sprites over background
+    this->renderSprites( 0 );
     
     // Hide top and bottom tile rows. WIP: totally unoptimal solution, better not to render there at all
     SDL_Rect rect = { 0, 0, 256, 8 };
@@ -595,11 +599,16 @@ void ModNES::renderNametables()
     SDL_BlitSurface( this->nametables_surf, &name, this->nametables_surf, &mirror );
 }
 //------------------------------------------------------------------------------------------------------------
-void ModNES::renderSprites()
+void ModNES::renderSprites( int priority )
 {
     // WIP dirty hack, handle more graciously
     if( ! this->render_sprites ) {
         return;
+    }
+    
+    SDL_Surface* name_win_surf;
+    if( priority == 0 ) {
+        name_win_surf = SDL_GetWindowSurface( nametables_win );
     }
     
     SDL_Rect patt, name, screen;
@@ -617,6 +626,11 @@ void ModNES::renderSprites()
     
     for( byte *sprite = &nes->ppu.sprites[0x100-4]; sprite >= nes->ppu.sprites; sprite -= 4 )
     {
+        // render only sprites of specified background priority
+        if( ( sprite[2] & (1<<5) ) != ( priority<<5 ) ) {
+            continue;
+        }
+        
         // Sprite position on Nametables
         name.y = nes->ppu.scroll.vertical + sprite[0] + 1; // Sprite's y position is off by one
         name.x = nes->ppu.scroll.horizontal + sprite[3];
@@ -652,9 +666,13 @@ void ModNES::renderSprites()
         
         SDL_SetPaletteColors( this->temp_pal, colors, 0, 4 );
         
-        if( xflip == 0 && yflip == 0 ) {
-            SDL_BlitSurface( this->patterns_surf, &patt, this->nametables_surf, &name );
+        if( xflip == 0 && yflip == 0 ) {            
             SDL_BlitSurface( this->patterns_surf, &patt, this->screen_surf, &screen );
+            
+            // Render sprites to nametables only when over background, otherwise is not practical, this is just for debugging
+            if( priority == 0 ) {
+                SDL_BlitSurface( patterns_surf, &patt, name_win_surf, &name );
+            }
         }
         else // flip the sprite. WIP (this should be pre-rendered and cached)
         {
@@ -702,8 +720,12 @@ void ModNES::renderSprites()
             }
             SDL_UnlockSurface( temp_surf );
             SDL_UnlockSurface( flip_surf );
-            SDL_BlitSurface( flip_surf, NULL, this->nametables_surf, &name );
             SDL_BlitSurface( flip_surf, NULL, this->screen_surf, &screen );
+            
+            // Render sprites to nametables only when over background, otherwise is not practical, this is just for debugging
+            if( priority == 0 ) {
+                SDL_BlitSurface( flip_surf, NULL, name_win_surf, &name );
+            }
         }
     }
     SDL_FreeSurface( flip_surf );

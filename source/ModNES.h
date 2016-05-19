@@ -64,7 +64,7 @@ public:
     void renderPatterns();
     void presentPatterns();
     void renderNametables();
-    void renderSprites();
+    void renderSprites( int priority );
     
     void read_config();
     void write_config();
