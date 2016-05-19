@@ -336,8 +336,18 @@ void drawRect( SDL_Surface *surface, SDL_Rect *rect, Uint32 color );
 
 void ModNES::render()
 {
-    SDL_SetColorKey( this->patterns_surf, SDL_FALSE, 0 );
+    byte const* bg_rgb = Nes_GetPaletteColor( nes, 0, 0, 0 );
+    Uint32 bg_color = SDL_MapRGB( nametables_surf->format, bg_rgb[0], bg_rgb[1], bg_rgb[2] );
+    
+    SDL_SetColorKey( patterns_surf, SDL_FALSE, 0 );
+    SDL_SetColorKey( nametables_surf, SDL_FALSE, bg_color );
     this->renderNametables();
+    
+    SDL_Surface* name_win_surf = SDL_GetWindowSurface( nametables_win );
+    // Present nametables
+    SDL_BlitSurface( this->nametables_surf, NULL, name_win_surf, NULL );
+    
+    SDL_SetColorKey( nametables_surf, SDL_TRUE, bg_color );
     
     // Clear the screen to magenta to spot blitting problems
     SDL_FillRect( screen_surf, NULL, SDL_MapRGB( screen_surf->format, 0xFF, 0, 0xFF ));
@@ -364,7 +374,7 @@ void ModNES::render()
         }
         
         SDL_BlitSurface( nametables_surf, &viewport, screen_surf, &destport );
-        drawRect( nametables_surf, &viewport, 0x00FF00 );
+        drawRect( name_win_surf, &viewport, 0x00FF00 );
         
         // Horizontal scroll wrap around
         if( viewport.x >= 256 )
@@ -376,7 +386,7 @@ void ModNES::render()
             hor_destport.x = 0;
 
             SDL_BlitSurface( nametables_surf, &hor_viewport, screen_surf, &hor_destport );
-            drawRect( nametables_surf, &hor_viewport, 0x00FF00 );
+            drawRect( name_win_surf, &hor_viewport, 0x00FF00 );
         }
         
         // Vertical scroll wrap around
@@ -389,7 +399,7 @@ void ModNES::render()
             ver_destport.y = 0;
             
             SDL_BlitSurface( nametables_surf, &ver_viewport, screen_surf, &ver_destport );
-            drawRect( nametables_surf, &ver_viewport, 0x00FF00 );
+            drawRect( name_win_surf, &ver_viewport, 0x00FF00 );
             
             // Vertical and horizontal wrap around
             if( viewport.x >= 256 )
@@ -400,7 +410,7 @@ void ModNES::render()
                 ver_destport.y = ver_destport.x = 0;
                 
                 SDL_BlitSurface( nametables_surf, &ver_viewport, screen_surf, &ver_destport );
-                drawRect( nametables_surf, &ver_viewport, 0x00FF00 );
+                drawRect( name_win_surf, &ver_viewport, 0x00FF00 );
             }
         }
     }
@@ -408,9 +418,6 @@ void ModNES::render()
     
     SDL_SetColorKey( this->patterns_surf, SDL_TRUE, 0 );
     this->renderSprites();
-    
-    // Present nametables
-    SDL_BlitSurface( this->nametables_surf, NULL, SDL_GetWindowSurface( nametables_win ), NULL );
     
     // Hide top and bottom tile rows. WIP: totally unoptimal solution, better not to render there at all
     SDL_Rect rect = { 0, 0, 256, 8 };
