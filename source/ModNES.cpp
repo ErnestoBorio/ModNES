@@ -304,6 +304,34 @@ void ModNES::loop()
     }
 }
 //------------------------------------------------------------------------------------------------------------
+void ModNES::loadCartridge( char *path )
+{
+    FILE *romFile = fopen( path, "rb" );
+    if( ! romFile ) {
+        SDL_Log( "Rom file couldn't be opened: %s\n", path );
+    }
+    if( ! Nes_LoadRom( this->nes, romFile )) {
+        SDL_Log( "Rom image couldn't be loaded: %s\n", path );
+    }
+    fclose( romFile );
+    
+    printf( "Loaded %s\n", strrchr( path, '/' ) +1 );
+    strncpy( this->config.romFileName, path, 1024 );
+    this->write_config();
+    
+    Nes_Reset( this->nes );
+    this->renderPatterns();
+    this->presentPatterns(); //WIP move this outta here
+    
+    if( ! this->running ) {
+        this->running = true;
+        if( this->timer_id == 0 ) {
+            this->timer_id = SDL_AddTimer( 1000 / 60, vblank_callback, NULL );
+        }
+    }
+}
+
+//------------------------------------------------------------------------------------------------------------
 void drawRect( SDL_Surface *surface, SDL_Rect *rect, Uint32 color );
 
 void ModNES::render()
@@ -407,34 +435,7 @@ void drawRect( SDL_Surface *surface, SDL_Rect *rect, Uint32 color )
     };
     SDL_FillRects( surface, rects, 4, color );
 }
-    
-//------------------------------------------------------------------------------------------------------------
-void ModNES::loadCartridge( char *path )
-{
-    FILE *romFile = fopen( path, "rb" );
-    if( ! romFile ) {
-        SDL_Log( "Rom file couldn't be opened: %s\n", path );
-    }
-    if( ! Nes_LoadRom( this->nes, romFile )) {
-        SDL_Log( "Rom image couldn't be loaded: %s\n", path );
-    }
-    fclose( romFile );
-    
-    printf( "Loaded %s\n", strrchr( path, '/' ) +1 );
-    strncpy( this->config.romFileName, path, 1024 );
-    this->write_config();
-    
-    Nes_Reset( this->nes );
-    this->renderPatterns();
-    this->presentPatterns(); //WIP move this outta here
-    
-    if( ! this->running ) {
-        this->running = true;
-        if( this->timer_id == 0 ) {
-            this->timer_id = SDL_AddTimer( 1000 / 60, vblank_callback, NULL );
-        }
-    }
-}
+
 //------------------------------------------------------------------------------------------------------------
 void ModNES::renderPatterns()
 {
