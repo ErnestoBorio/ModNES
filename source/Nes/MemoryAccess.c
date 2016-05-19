@@ -73,12 +73,15 @@ void write_ppu_control1( void *sys, word address, byte value )
 // $2001
 void write_ppu_control2( void *sys, word address, byte value )
 {
-   NES->ppu.color_emphasis     = ( value & 0xE0 ) >>5; // & %11100000
-   NES->ppu.sprites_visible    = ( value & (1<<4) ) ? 1 : 0;
-   NES->ppu.background_visible = ( value & (1<<3) ) ? 1 : 0;
-   NES->ppu.sprite_clip        = ( value & (1<<2) ) ? 0 : 1;
-   NES->ppu.background_clip    = ( value & (1<<1) ) ? 0 : 1;
-   NES->ppu.monochrome         = ( value & (1<<1) ) ? 1 : 0;
+    NES->ppu.color_emphasis     = ( value & 0xE0 ) >>5; // & %11100000
+    NES->ppu.sprites_visible    = ( value & (1<<4) ) ? 1 : 0;
+    NES->ppu.background_visible = ( value & (1<<3) ) ? 1 : 0;
+    NES->ppu.sprite_clip        = ( value & (1<<2) ) ? 0 : 1;
+    NES->ppu.background_clip    = ( value & (1<<1) ) ? 0 : 1;
+    NES->ppu.monochrome         = ( value & (1<<1) ) ? 1 : 0;
+    if( NES->ppu.sprites_visible != NES->ppu.background_visible ) {
+        printf( "Visibility sprites: %d != background: %d (Not handled yet)\n", NES->ppu.sprites_visible, NES->ppu.background_visible );
+    }
 }
 // -------------------------------------------------------------------------------
 // $2002

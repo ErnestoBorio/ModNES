@@ -336,6 +336,14 @@ void drawRect( SDL_Surface *surface, SDL_Rect *rect, Uint32 color );
 
 void ModNES::render()
 {
+    // WIP It's not handled when either of bg and sprites is visible and the other is not. But it's not likely that would happen.
+    if( ! nes->ppu.background_visible && ! nes->ppu.sprites_visible ) {
+        SDL_Surface* screen_win_surf = SDL_GetWindowSurface( screen_win );
+        SDL_FillRect( screen_win_surf, NULL, 0 );
+        SDL_UpdateWindowSurface( screen_win );
+        return;
+    }
+    
     byte const* bg_rgb = Nes_GetPaletteColor( nes, 0, 0, 0 );
     Uint32 bg_color = SDL_MapRGB( nametables_surf->format, bg_rgb[0], bg_rgb[1], bg_rgb[2] );
     
@@ -355,7 +363,7 @@ void ModNES::render()
     
     SDL_SetColorKey( nametables_surf, SDL_TRUE, bg_color );
     
-    // ---- begin split scroll code ----
+    // ---- begin blitting nametables to screen with scroll ----
     SDL_Rect viewport = {
         nes->ppu.scroll.last_frame.scroll_x[0].value,
         nes->ppu.scroll.last_frame.start_y,
@@ -417,7 +425,12 @@ void ModNES::render()
             }
         }
     }
-    // ---- end split scroll code ----
+    // WIP clipping screen_surf would be more efficient, but it displaced the 0,0 origin
+    if( nes->ppu.background_clip ) {
+        SDL_Rect rect = { 0, 0, 8, 240 };
+        SDL_FillRect( screen_surf, &rect, 0 );
+    }
+    // ---- end blitting nametables to screen with scroll ----
     
     SDL_SetColorKey( this->patterns_surf, SDL_TRUE, 0 );
     // Render sprites over background
@@ -601,6 +614,11 @@ void ModNES::renderNametables()
 //------------------------------------------------------------------------------------------------------------
 void ModNES::renderSprites( int priority )
 {
+    if( nes->ppu.sprite_clip ) {
+        SDL_Rect clip = { 8, 0, 256, 240 };
+        SDL_SetClipRect( screen_surf, &clip );
+    }
+    
     // WIP dirty hack, handle more graciously
     if( ! this->render_sprites ) {
         return;
@@ -730,5 +748,6 @@ void ModNES::renderSprites( int priority )
     }
     SDL_FreeSurface( flip_surf );
     SDL_FreeSurface( temp_surf );
+    SDL_SetClipRect( screen_surf, NULL );
 }
 //------------------------------------------------------------------------------------------------------------

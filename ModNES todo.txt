@@ -1,9 +1,6 @@
 
 Próximos pasos:
 
-> No renderear pantalla cuando back y sprites están disabled
-> Left tile column clipping
-
 > Mappers!
     Easiest and most popular first:
     3-CNROM:  78 games: Solomon's Key, Gradius, and Hudson's Adventure Island (CHR switching only - easy)
@@ -48,6 +45,8 @@ Ya hice esto con MemoryAccess.c, quedan Instructions.c y Addressing.c
 (Por ahora lo ignoro olímpicamente)
 
 --- done
+√ No renderear pantalla cuando back y sprites están disabled
+√ Left tile column clipping
 √ Prioridad sprites - background
 √ scroll a pantalla partida
 √ Basic Input
