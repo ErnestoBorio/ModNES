@@ -51,6 +51,7 @@ typedef struct // Nes
     byte ram[0x800]; // Built-in 2kB of RAM
     byte save_ram[0x2000]; // Battery backed RAM
 
+    int mapper;          // iNES mapper number    
     int scanline;        // scanline number currently being rendered [-1..260]
     int last_scanline;   // last scanline redndered, to detect scanline change
     int scanpixel;       // pixel number of current scanline being rendered [0..340]

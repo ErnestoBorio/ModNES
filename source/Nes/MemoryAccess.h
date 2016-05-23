@@ -19,5 +19,6 @@ void write_sprite_dma( void *sys, word address, byte value );
 void write_vram_io( void *sys, word address, byte value  );
 byte read_gamepad( void *sys, word address );
 void write_gamepad( void *sys, word address, byte value );
+void write_bank_switch( void *sys, word address, byte value );
 byte read_unimplemented( void *sys, word address );
 void write_unimplemented( void *sys, word address, byte value );

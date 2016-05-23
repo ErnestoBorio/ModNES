@@ -1,6 +1,8 @@
 
 Próximos pasos:
 
+> Serious PHP script que organice las ROMs por mapper
+
 > Mappers!
     Easiest and most popular first:
     3-CNROM:  78 games: Solomon's Key, Gradius, and Hudson's Adventure Island (CHR switching only - easy)

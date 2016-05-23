@@ -52,6 +52,16 @@ byte read_prg_rom( void *sys, word address )
 }
 
 // -------------------------------------------------------------------------------
+// $8000..$FFFF for mappers bank switching
+void write_bank_switch( void *sys, word address, byte value )
+{
+    if( NES->mapper == 3 ) // CNROM
+    {
+        
+    }
+}
+
+// -------------------------------------------------------------------------------
 // $2000
 void write_ppu_control1( void *sys, word address, byte value )
 {

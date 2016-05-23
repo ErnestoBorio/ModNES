@@ -324,6 +324,8 @@ int Nes_LoadRom( Nes *this, FILE *rom_file )
     int trainer = ( header[6] & (1<<2) ) > 0; 
     int offset = 16 + ( trainer ? 512 : 0 ); // skip 16 bytes header + 512B trainer
     
+    this->mapper = header[6] & 0xF0;
+    
     // Read PRG-ROM banks
     this->prg_rom_count = (int) header[4];
     this->prg_rom = (byte*) malloc( this->prg_rom_count * PRG_ROM_bank_size );
@@ -499,7 +501,7 @@ static void init_builtin_memory_handlers( Nes *this )
 // PRG ROM
     for( i=0x8000; i<=0xFFFF; ++i ) {
         this->cpu->read_memory[i]  = read_prg_rom;
-        this->cpu->write_memory[i] = write_ignore;
+        this->cpu->write_memory[i] = write_bank_switch;
     }
 }
 
