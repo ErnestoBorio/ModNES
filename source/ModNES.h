@@ -11,7 +11,6 @@ class ModNES
 {
 public:
     Nes *nes;
-    enum APP_STATE { APP_OK = 0, APP_FAILED = 1 };
     
     bool running;
     bool quit;
@@ -21,8 +20,6 @@ public:
         Nametables_win = 1,
         Windows_count = 2
     };
-    
-    SDL_TimerID timer_id;
     
     struct {
         struct {
@@ -35,6 +32,12 @@ public:
         char romFileName[1024];
     } config;
     static const std::string config_filename;
+    
+    struct {
+        struct {
+            
+        } second;
+    } stats;
     
     bool render_sprites;
     bool hide_top_bottom;

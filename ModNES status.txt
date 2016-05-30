@@ -1,4 +1,11 @@
 
+>> 2016-05-30
+
+Implementé un conteo de FPS rudimentario. Las stats al día de hoy son:
+
+~ 100 fps con render común, sin restringir a 60 fps, obvio. Skipear el sprite flip ineficiente no ahorra ni un fps. El cuello de botella tiene que estar en otro lado.
+~ 1400 fps sin render, pura emulación Nes. Ejecuta en 2 segundos lo que llevaría 1 minuto en tiempo real de 60 fps.
+
 >> 2016-05-18
 
 Terminé de implementar sprite background priority.
