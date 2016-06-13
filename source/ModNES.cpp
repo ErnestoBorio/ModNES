@@ -289,7 +289,7 @@ void ModNES::loop()
             usleep( sleep * 1000 );
             Uint32 delay = SDL_GetTicks();
             
-            printf( "%2d loop | %2d frame | %2d render | %2d delay | %3d total\n", start-last, frame-start, render-frame, delay-render, delay-last );
+            // printf( "%2d loop | %2d frame | %2d render | %2d delay | %3d total\n", start-last, frame-start, render-frame, delay-render, delay-last );
             
             last = delay;
         }
