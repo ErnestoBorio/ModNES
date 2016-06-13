@@ -1,4 +1,4 @@
-
+#include <unistd.h>
 #include "ModNES.h"
 #include "Nes.h"
 #include <stdio.h>
@@ -10,24 +10,6 @@ extern const byte Nes_rgb[64][3];
 extern "C" char* openFile( char* path, int length );
 
 //------------------------------------------------------------------------------------------------------------
-Uint32 vblank_callback( Uint32 interval, void* param )
-{
-    // Push a user event to avoid multithreading problems
-    SDL_Event event;
-    SDL_UserEvent userevent;
-
-    userevent.type = SDL_USEREVENT;
-    userevent.code = 0;
-    userevent.data1 = NULL;
-    userevent.data2 = NULL;
-
-    event.type = SDL_USEREVENT;
-    event.user = userevent;
-
-    SDL_PushEvent(&event);
-    return(interval);
-}
-//------------------------------------------------------------------------------------------------------------
 ModNES::ModNES()
 {
     this->running = false;
@@ -38,7 +20,7 @@ int ModNES::run()
     this->init();
     // this->renderPatterns();
     this->loop();
-    return APP_OK;
+    return 0;
 }
 //------------------------------------------------------------------------------------------------------------
 void ModNES::read_config()
@@ -79,13 +61,12 @@ void ModNES::write_config()
 int ModNES::init()
 {
     this->read_config();
-    this->timer_id = 0;
     this->render_sprites = true;
     this->hide_top_bottom = false;
     
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
+    if( SDL_Init( SDL_INIT_VIDEO ) < 0 ) {
         fprintf(stderr, "SDL_Init() failed: %s\n", SDL_GetError());
-        return APP_FAILED;
+        return -1;
     }
     
     this->patterns_win = SDL_CreateWindow( "Pattern tables", 
@@ -128,7 +109,7 @@ int ModNES::init()
         loadCartridge( config.romFileName );
     }
     
-    return APP_OK;
+    return 0;
 }
 //------------------------------------------------------------------------------------------------------------
 ModNES::~ModNES()
@@ -145,7 +126,6 @@ ModNES::~ModNES()
     if( this->patterns_pal ) {
         SDL_FreePalette( this->patterns_pal );
     }
-    SDL_RemoveTimer( this->timer_id );
     SDL_Quit();
 }  
 //------------------------------------------------------------------------------------------------------------
@@ -156,150 +136,162 @@ void ModNES::loop()
     
     static char path[1024];
     
-    while( ! this->quit && SDL_WaitEvent(&event))
+    while( ! this->quit )
     {
-        switch( event.type )
+        while( SDL_PollEvent( &event ))
         {
-            //------------------------------------------------------------------------------------------------
-            case SDL_KEYDOWN:
+            switch( event.type )
             {
-                switch( event.key.keysym.sym )
+                //------------------------------------------------------------------------------------------------
+                case SDL_KEYDOWN:
                 {
-                    case SDLK_ESCAPE:
-                        this->quit = true;
-                        break;
-                    
-                    case SDLK_SPACE:
-                        this->running = ! this->running;
-                        // printf( running? "PLAY\n": "PAUSE\n" );
-                        break;
+                    switch( event.key.keysym.sym )
+                    {
+                        case SDLK_ESCAPE:
+                            this->quit = true;
+                            break;
                         
-                    case SDLK_o:
-                        openFile( path, 1024 );
-                        if( path[0] ) {
-                            this->loadCartridge( path );
-                        }
-                        break;
+                        case SDLK_SPACE:
+                            this->running = ! this->running;
+                            // printf( running? "PLAY\n": "PAUSE\n" );
+                            break;
+                            
+                        case SDLK_o:
+                            openFile( path, 1024 );
+                            if( path[0] ) {
+                                this->loadCartridge( path );
+                            }
+                            break;
 
-                    case SDLK_r:
-                        Nes_Reset( this->nes );
-                        this->running = true;
-                        break;
-                    
-                    case SDLK_s:
-                        this->render_sprites = ! this->render_sprites;
-                        break;
-                    
-                    case SDLK_h:
-                        this->hide_top_bottom = ! this->hide_top_bottom;
-                        break;
-                    //------------------------------------------------------------------------------------------------
+                        case SDLK_r:
+                            Nes_Reset( this->nes );
+                            this->running = true;
+                            break;
+                        
+                        case SDLK_s:
+                            this->render_sprites = ! this->render_sprites;
+                            break;
+                        
+                        case SDLK_h:
+                            this->hide_top_bottom = ! this->hide_top_bottom;
+                            break;
+                        //------------------------------------------------------------------------------------------------
+                        // Basic input WIP
+                        case SDLK_x:     Nes_SetInputState( this->nes, 0, Nes_A,      1 ); break;
+                        case SDLK_z:     Nes_SetInputState( this->nes, 0, Nes_B,      1 ); break;
+                        case SDLK_c:     Nes_SetInputState( this->nes, 0, Nes_Select, 1 ); break;
+                        case SDLK_v:     Nes_SetInputState( this->nes, 0, Nes_Start,  1 ); break;
+                        case SDLK_UP:    Nes_SetInputState( this->nes, 0, Nes_Up,     1 ); break;
+                        case SDLK_DOWN:  Nes_SetInputState( this->nes, 0, Nes_Down,   1 ); break;
+                        case SDLK_LEFT:  Nes_SetInputState( this->nes, 0, Nes_Left,   1 ); break;
+                        case SDLK_RIGHT: Nes_SetInputState( this->nes, 0, Nes_Right,  1 ); break;
+                        
+                        //------------------------------------------------------------------------------------------------
+                        // resize Pattern tables window
+                        case SDLK_p:
+                            if( config.patterns_win.size == 0 ) {
+                                SDL_ShowWindow( this->patterns_win );
+                                SDL_SetWindowSize( this->patterns_win, 257, 128 );
+                                this->presentPatterns();
+                                config.patterns_win.size = 1;
+                            }
+                            else if( config.patterns_win.size == 1 ) {
+                                SDL_SetWindowSize( this->patterns_win, 514, 256 );
+                                this->presentPatterns();
+                                config.patterns_win.size = 2;
+                            }
+                            else if( config.patterns_win.size == 2 ) {
+                                SDL_HideWindow( this->patterns_win );
+                                config.patterns_win.size = 0;
+                            }
+                            this->write_config();
+                            break;
+                        //------------------------------------------------------------------------------------------------
+                        // resize Nametable window
+                        case SDLK_n:
+                            if( config.nametables_win.size == 0 ) {
+                                SDL_ShowWindow( this->nametables_win );
+                                config.nametables_win.size = 1;
+                            }
+                            else if( config.nametables_win.size == 1 ) {
+                                SDL_HideWindow( this->nametables_win );
+                                config.nametables_win.size = 0;
+                            }
+                            this->write_config();
+                            break;
+                    }
+                    break;
+                }
+                //------------------------------------------------------------------------------------------------
+                case SDL_KEYUP:
                     // Basic input WIP
-                    case SDLK_x:     Nes_SetInputState( this->nes, 0, Nes_A,      1 ); break;
-                    case SDLK_z:     Nes_SetInputState( this->nes, 0, Nes_B,      1 ); break;
-                    case SDLK_c:     Nes_SetInputState( this->nes, 0, Nes_Select, 1 ); break;
-                    case SDLK_v:     Nes_SetInputState( this->nes, 0, Nes_Start,  1 ); break;
-                    case SDLK_UP:    Nes_SetInputState( this->nes, 0, Nes_Up,     1 ); break;
-                    case SDLK_DOWN:  Nes_SetInputState( this->nes, 0, Nes_Down,   1 ); break;
-                    case SDLK_LEFT:  Nes_SetInputState( this->nes, 0, Nes_Left,   1 ); break;
-                    case SDLK_RIGHT: Nes_SetInputState( this->nes, 0, Nes_Right,  1 ); break;
-                    
-                    //------------------------------------------------------------------------------------------------
-                    // resize Pattern tables window
-                    case SDLK_p:
-                        if( config.patterns_win.size == 0 ) {
-                            SDL_ShowWindow( this->patterns_win );
-                            SDL_SetWindowSize( this->patterns_win, 257, 128 );
-                            this->presentPatterns();
-                            config.patterns_win.size = 1;
+                    switch( event.key.keysym.sym )
+                    {
+                        case SDLK_x:     Nes_SetInputState( this->nes, 0, Nes_A,      0 ); break;
+                        case SDLK_z:     Nes_SetInputState( this->nes, 0, Nes_B,      0 ); break;
+                        case SDLK_c:     Nes_SetInputState( this->nes, 0, Nes_Select, 0 ); break;
+                        case SDLK_v:     Nes_SetInputState( this->nes, 0, Nes_Start,  0 ); break;
+                        case SDLK_UP:    Nes_SetInputState( this->nes, 0, Nes_Up,     0 ); break;
+                        case SDLK_DOWN:  Nes_SetInputState( this->nes, 0, Nes_Down,   0 ); break;
+                        case SDLK_LEFT:  Nes_SetInputState( this->nes, 0, Nes_Left,   0 ); break;
+                        case SDLK_RIGHT: Nes_SetInputState( this->nes, 0, Nes_Right,  0 ); break;
+                    }
+                    break;
+                //------------------------------------------------------------------------------------------------
+                case SDL_WINDOWEVENT:
+                    if( event.window.event == SDL_WINDOWEVENT_MOVED )
+                    {
+                        if( event.window.windowID == this->patterns_win_id ) {
+                            this->config.patterns_win.pos.x = event.window.data1;
+                            this->config.patterns_win.pos.y = event.window.data2;
                         }
-                        else if( config.patterns_win.size == 1 ) {
-                            SDL_SetWindowSize( this->patterns_win, 514, 256 );
-                            this->presentPatterns();
-                            config.patterns_win.size = 2;
+                        else if( event.window.windowID == this->nametables_win_id ) {
+                            this->config.nametables_win.pos.x = event.window.data1;
+                            this->config.nametables_win.pos.y = event.window.data2;
                         }
-                        else if( config.patterns_win.size == 2 ) {
-                            SDL_HideWindow( this->patterns_win );
-                            config.patterns_win.size = 0;
-                        }
-                        this->write_config();
-                        break;
-                    //------------------------------------------------------------------------------------------------
-                    // resize Nametable window
-                    case SDLK_n:
-                        if( config.nametables_win.size == 0 ) {
-                            SDL_ShowWindow( this->nametables_win );
-                            config.nametables_win.size = 1;
-                        }
-                        else if( config.nametables_win.size == 1 ) {
-                            SDL_HideWindow( this->nametables_win );
-                            config.nametables_win.size = 0;
+                        else if( event.window.windowID == this->screen_win_id ) {
+                            this->config.screen_win.pos.x = event.window.data1;
+                            this->config.screen_win.pos.y = event.window.data2;
                         }
                         this->write_config();
-                        break;
-                }
-                break;
+                    }
+                    break;
+                //------------------------------------------------------------------------------------------------
+                case SDL_DROPFILE:
+                    this->loadCartridge( event.drop.file );
+                    SDL_free( event.drop.file );
+                    break;
+                //------------------------------------------------------------------------------------------------
+                case SDL_QUIT:
+                    this->quit = true;
+                    break;
+                //------------------------------------------------------------------------------------------------
             }
-            //------------------------------------------------------------------------------------------------
-            case SDL_KEYUP:
-                // Basic input WIP
-                switch( event.key.keysym.sym )
-                {
-                    case SDLK_x:     Nes_SetInputState( this->nes, 0, Nes_A,      0 ); break;
-                    case SDLK_z:     Nes_SetInputState( this->nes, 0, Nes_B,      0 ); break;
-                    case SDLK_c:     Nes_SetInputState( this->nes, 0, Nes_Select, 0 ); break;
-                    case SDLK_v:     Nes_SetInputState( this->nes, 0, Nes_Start,  0 ); break;
-                    case SDLK_UP:    Nes_SetInputState( this->nes, 0, Nes_Up,     0 ); break;
-                    case SDLK_DOWN:  Nes_SetInputState( this->nes, 0, Nes_Down,   0 ); break;
-                    case SDLK_LEFT:  Nes_SetInputState( this->nes, 0, Nes_Left,   0 ); break;
-                    case SDLK_RIGHT: Nes_SetInputState( this->nes, 0, Nes_Right,  0 ); break;
-                }
-                break;
-            //------------------------------------------------------------------------------------------------
-            case SDL_WINDOWEVENT:
-                if( event.window.event == SDL_WINDOWEVENT_MOVED )
-                {
-                    if( event.window.windowID == this->patterns_win_id ) {
-                        this->config.patterns_win.pos.x = event.window.data1;
-                        this->config.patterns_win.pos.y = event.window.data2;
-                    }
-                    else if( event.window.windowID == this->nametables_win_id ) {
-                        this->config.nametables_win.pos.x = event.window.data1;
-                        this->config.nametables_win.pos.y = event.window.data2;
-                    }
-                    else if( event.window.windowID == this->screen_win_id ) {
-                        this->config.screen_win.pos.x = event.window.data1;
-                        this->config.screen_win.pos.y = event.window.data2;
-                    }
-                    this->write_config();
-                }
-                break;
-            //------------------------------------------------------------------------------------------------
-            case SDL_DROPFILE:
-                this->loadCartridge( event.drop.file );
-                SDL_free( event.drop.file );
-                break;
-            //------------------------------------------------------------------------------------------------
-            case SDL_QUIT:
-                this->quit = true;
-                break;
-            //------------------------------------------------------------------------------------------------
-            // VBlank
-            case SDL_USEREVENT:
-                if( this->running ) {
-                    Nes_DoFrame( this->nes );
-                    render();
-                    
-                    // WIP mid-frame scroll debug
-                    // printf( "X:%3d Y:%3d ", this->nes->ppu.scroll.last_frame.scroll_x[0].value, this->nes->ppu.scroll.last_frame.start_y );
-                    // for( int i = 1; i < this->nes->ppu.scroll.last_frame.count; ++i ) {
-                    //     printf( "< %3d %3d > . ", 
-                    //         this->nes->ppu.scroll.last_frame.scroll_x[ i ].scanline,
-                    //         this->nes->ppu.scroll.last_frame.scroll_x[ i ].value );
-                    // }
-                    // printf( "\n" );
-                }
-                break;
+        }
+        
+        // VBlank
+        if( this->running )
+        {
+            static Uint32 last = 0;
+            
+            Uint32 start = SDL_GetTicks();
+            
+            Nes_DoFrame( this->nes );
+            Uint32 frame = SDL_GetTicks();
+            
+            render();
+            Uint32 render = SDL_GetTicks();
+            
+            Uint32 sleep = 16 - ( render - last );
+            if( sleep > 16 ) {
+                sleep = 16;
+            }
+            usleep( sleep * 1000 );
+            Uint32 delay = SDL_GetTicks();
+            
+            printf( "%2d loop | %2d frame | %2d render | %2d delay | %3d total\n", start-last, frame-start, render-frame, delay-render, delay-last );
+            
+            last = delay;
         }
     }
 }
@@ -325,9 +317,6 @@ void ModNES::loadCartridge( char *path )
     
     if( ! this->running ) {
         this->running = true;
-        if( this->timer_id == 0 ) {
-            this->timer_id = SDL_AddTimer( 1000 / 60, vblank_callback, NULL );
-        }
     }
 }
 
@@ -523,6 +512,7 @@ void ModNES::renderNametables()
     patt.w = patt.h = name.w = name.h = 8;
     SDL_Color colors[4];
     SDL_SetSurfacePalette( this->patterns_surf, this->temp_pal );
+    long elapsed = 0, start = 0;
     
     // Whether the background tiles are in CHR ROM 0 at $0 or CHR ROM 1 at $1000
     int chrom_shift = nes->ppu.back_pattern == 0 ? 0 : 129;
@@ -585,9 +575,11 @@ void ModNES::renderNametables()
                     colors[i].b = Nes_rgb[rgb_index][2];
                 }
                 
+                start = clock();
                 SDL_SetPaletteColors( this->temp_pal, colors, 0, 4 );
                 // SDL_SetSurfacePalette( this->patterns_surf, this->temp_pal );
                 SDL_BlitSurface( this->patterns_surf, &patt, this->nametables_surf, &name );
+                elapsed += clock() - start;
 
                 ++name_ptr;
             }
@@ -609,7 +601,11 @@ void ModNES::renderNametables()
     // SDL_Surface *temp = SDL_CreateRGBSurface( 0, 512, 240, 8, 0, 0, 0, 0 );
     // SDL_BlitSurface( this->nametables_surf, &name, temp, NULL );
     // SDL_BlitSurface( temp, NULL, this->nametables_surf, &mirror );
+    start = clock();
     SDL_BlitSurface( this->nametables_surf, &name, this->nametables_surf, &mirror );
+    elapsed += clock() - start;
+    
+    printf( "Elapsed blitting: %.2f\n", (float)elapsed / 1000 );
 }
 //------------------------------------------------------------------------------------------------------------
 void ModNES::renderSprites( int priority )

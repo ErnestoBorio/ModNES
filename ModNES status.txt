@@ -1,4 +1,24 @@
 
+>> 2016-06-11
+
+Implementé un limitador de 60fps precario. clock() no parece tener en cuenta el tiempo transcurrido durante SDL_Delay(), así que tuve que medirlo en milisegundos con SDL_GetTicks()
+Debería hacer un contador de frames y que considere skipear frames de ser necesario.
+
+Mediciones de tiempo:
+- Main loop     < 1 ms
+- NES_DoFrame() < 1 ms
+- render()      ~ 10 ms
+
+Dentro del render, el blitting de nametables tarda unos 7 ms, si solo se rendereara el screen, sería mucho más rápido.
+Probablemente usando texturas por hardware se podría incluso hacer más eficiente.
+
+>> 2016-05-30
+
+Implementé un conteo de FPS rudimentario. Las stats al día de hoy son:
+
+~ 100 fps con render común, sin restringir a 60 fps, obvio. Skipear el sprite flip ineficiente no ahorra ni un fps. El cuello de botella tiene que estar en otro lado.
+~ 1400 fps sin render, pura emulación Nes. Ejecuta en 2 segundos lo que llevaría 1 minuto en tiempo real de 60 fps.
+
 >> 2016-05-18
 
 Terminé de implementar sprite background priority.
