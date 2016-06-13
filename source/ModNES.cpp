@@ -1,4 +1,4 @@
-
+#include <unistd.h>
 #include "ModNES.h"
 #include "Nes.h"
 #include <stdio.h>
@@ -270,41 +270,28 @@ void ModNES::loop()
         }
         
         // VBlank
-        if( this->running ) 
+        if( this->running )
         {
-            static int frames = 0;
-            static clock_t last_time = 0;
-            clock_t time = clock();
-            static int ellapsed = 0;
-            int delta = time - last_time;
-            ellapsed +=  delta;
+            static Uint32 last = 0;
             
-            static int subellapsed = 0;
-            subellapsed += delta;
+            Uint32 start = SDL_GetTicks();
             
-            if( ellapsed > CLOCKS_PER_SEC ) {
-                ellapsed -= CLOCKS_PER_SEC;
-                printf("fps %3d\n", frames );
-                frames = 0;
+            Nes_DoFrame( this->nes );
+            Uint32 frame = SDL_GetTicks();
+            
+            render();
+            Uint32 render = SDL_GetTicks();
+            
+            Uint32 sleep = 16 - ( render - last );
+            if( sleep > 16 ) {
+                sleep = 16;
             }
-            last_time = time;
+            usleep( sleep * 1000 );
+            Uint32 delay = SDL_GetTicks();
             
-            if( subellapsed > CLOCKS_PER_SEC / 60 ) {
-                frames++;
-                subellapsed -= CLOCKS_PER_SEC / 60;
-                
-                Nes_DoFrame( this->nes );
-                render();
-            }
+            printf( "%2d loop | %2d frame | %2d render | %2d delay | %3d total\n", start-last, frame-start, render-frame, delay-render, delay-last );
             
-            // WIP mid-frame scroll debug
-            // printf( "X:%3d Y:%3d ", this->nes->ppu.scroll.last_frame.scroll_x[0].value, this->nes->ppu.scroll.last_frame.start_y );
-            // for( int i = 1; i < this->nes->ppu.scroll.last_frame.count; ++i ) {
-            //     printf( "< %3d %3d > . ", 
-            //         this->nes->ppu.scroll.last_frame.scroll_x[ i ].scanline,
-            //         this->nes->ppu.scroll.last_frame.scroll_x[ i ].value );
-            // }
-            // printf( "\n" );
+            last = delay;
         }
     }
 }
@@ -525,6 +512,7 @@ void ModNES::renderNametables()
     patt.w = patt.h = name.w = name.h = 8;
     SDL_Color colors[4];
     SDL_SetSurfacePalette( this->patterns_surf, this->temp_pal );
+    long elapsed = 0, start = 0;
     
     // Whether the background tiles are in CHR ROM 0 at $0 or CHR ROM 1 at $1000
     int chrom_shift = nes->ppu.back_pattern == 0 ? 0 : 129;
@@ -587,9 +575,11 @@ void ModNES::renderNametables()
                     colors[i].b = Nes_rgb[rgb_index][2];
                 }
                 
+                start = clock();
                 SDL_SetPaletteColors( this->temp_pal, colors, 0, 4 );
                 // SDL_SetSurfacePalette( this->patterns_surf, this->temp_pal );
                 SDL_BlitSurface( this->patterns_surf, &patt, this->nametables_surf, &name );
+                elapsed += clock() - start;
 
                 ++name_ptr;
             }
@@ -611,7 +601,11 @@ void ModNES::renderNametables()
     // SDL_Surface *temp = SDL_CreateRGBSurface( 0, 512, 240, 8, 0, 0, 0, 0 );
     // SDL_BlitSurface( this->nametables_surf, &name, temp, NULL );
     // SDL_BlitSurface( temp, NULL, this->nametables_surf, &mirror );
+    start = clock();
     SDL_BlitSurface( this->nametables_surf, &name, this->nametables_surf, &mirror );
+    elapsed += clock() - start;
+    
+    printf( "Elapsed blitting: %.2f\n", (float)elapsed / 1000 );
 }
 //------------------------------------------------------------------------------------------------------------
 void ModNES::renderSprites( int priority )
