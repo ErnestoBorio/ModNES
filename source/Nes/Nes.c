@@ -145,11 +145,13 @@ void Nes_Free( Nes *this )
 // -------------------------------------------------------------------------------
 /** Converts NES' mixed 2 bit pattern into stream of 1 byte per color index
  */
-void Nes_UnpackChrRom( Nes *this )
+void Nes_UnpackChrRoms( Nes *this )
 {
     if( this->chr_unpacked != NULL ) {
         free( this->chr_unpacked );
     }
+    
+    WIP!
     
     // 1 CHR-ROM bank = 2 CHR-ROM tables
     assert( this->chr_rom_count == 1 ); // for now
@@ -308,14 +310,7 @@ void Nes_DoFrame( Nes *this )
 // -------------------------------------------------------------------------------
 int Nes_LoadRom( Nes *this, FILE *rom_file )
 {
-    if( this->prg_rom != NULL ) {
-        free( this->prg_rom );
-        this->prg_rom = NULL;
-    }
-    if( this->chr_rom != NULL ) {
-        free( this->chr_rom );
-        this->chr_rom = NULL;
-    }
+    Nes_Free( this );
     
     rewind( rom_file );
     byte header[10];
@@ -340,19 +335,30 @@ int Nes_LoadRom( Nes *this, FILE *rom_file )
     
     // The CHR-ROM banks immediately follow the PRG-ROM banks, no fseek() needed
     this->chr_rom_count = (int) header[5];
+    this->selected_chr_rom = 0;
+    
+    // Validate CHR-ROM bank count depending on mapper
+    switch( this->mapper ) {
+        case 3:
+            assert( this->chr_rom_count <= 4 );
+            break;
+    }
+    
     if( this->chr_rom_count == 0 ) {
         this->chr_rom_count = 1; // WIP: CHR-ROM count of 0 means 1 as most docs say or does it mean it has only CHR-RAM?
     }
-    this->chr_rom = (byte*) malloc( this->chr_rom_count * CHR_ROM_bank_size );
-    if( this->chr_rom == NULL ) {
+    this->chr_roms = (byte*) malloc( this->chr_rom_count * CHR_ROM_bank_size );
+    if( this->chr_roms == NULL ) {
         goto Exception;
     }
-    read_count = fread( this->chr_rom, CHR_ROM_bank_size, this->chr_rom_count, rom_file );
+    this->chr_rom = this->chr_roms;
+    
+    read_count = fread( this->chr_roms, CHR_ROM_bank_size, this->chr_rom_count, rom_file );
     if( read_count != this->chr_rom_count ) {
         goto Exception;
     }
     
-    Nes_UnpackChrRom( this );
+    Nes_UnpackChrRoms( this );
 
     if( header[5] & (1<<3) ) {
         this->ppu.mirroring = mirroring_4screens;

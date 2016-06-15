@@ -40,8 +40,10 @@ typedef struct // Nes
 {
     Cpu6502 *cpu;
 
-    byte *chr_rom; // Chunk with all CHR-ROM banks
+    byte *chr_roms; // Chunk with all CHR-ROM banks
+    byte *chr_rom;  // Pointer to current selected CHR-ROM bank
     int chr_rom_count; // How many 8kB CHR-ROM banks are present
+    int selected_chr_rom; // 0 based index of selected CHR-ROM bank
     byte *chr_unpacked; // 1 byte per pixel translation of CHR-ROM
     byte *chr_unpacked_ptr[2];
 
