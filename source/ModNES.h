@@ -35,8 +35,15 @@ public:
     
     struct {
         struct {
-            
+            int frames;
+            int rendered;
+            int sleeps;
+            int elapsed;
         } second;
+        
+        const int frame_time = 17; // milliseconds per frame
+        int elapsed; // time elapsed since last frame
+        long last_time;
     } stats;
     
     bool render_sprites;

@@ -1,4 +1,3 @@
-#include <unistd.h>
 #include "ModNES.h"
 #include "Nes.h"
 #include <stdio.h>
@@ -17,9 +16,8 @@ ModNES::ModNES()
 //------------------------------------------------------------------------------------------------------------
 int ModNES::run()
 {
-    this->init();
-    // this->renderPatterns();
-    this->loop();
+    init();
+    loop();
     return 0;
 }
 //------------------------------------------------------------------------------------------------------------
@@ -108,6 +106,10 @@ int ModNES::init()
     if( *config.romFileName != '\0' ) {
         loadCartridge( config.romFileName );
     }
+    
+    stats.second = { 0,0,0,0 };
+    stats.elapsed = 0;
+    stats.last_time = SDL_GetTicks();
     
     return 0;
 }
@@ -269,32 +271,40 @@ void ModNES::loop()
             }
         }
         
-        // VBlank
         if( this->running )
         {
-            static Uint32 last = 0;
-            
-            // Uint32 start = SDL_GetTicks();
-            
-            Nes_DoFrame( this->nes );
-            // Uint32 frame = SDL_GetTicks();
-            
-            render();
-            Uint32 render = SDL_GetTicks();
-            
-            int sleep = 15 - ( render - last );
-            if( sleep < 0 ) {
-                sleep = 0;
+            long time = SDL_GetTicks();
+            stats.elapsed += time - stats.last_time;
+            stats.second.elapsed += time - stats.last_time;
+            // printf("e:%d ", stats.elapsed );
+                
+            if( stats.elapsed > stats.frame_time )
+            {
+                do {
+                    stats.elapsed -= stats.frame_time;
+                    Nes_DoFrame( this->nes );
+                    stats.second.frames++;
+                } while( stats.elapsed > stats.frame_time );
+                
+                render();
+                stats.second.rendered++;
             }
-            else if( sleep > 15 ) {
-                sleep = 15;
+            
+            // if there's still time until the next frame
+            if( stats.elapsed + 2 < stats.frame_time ) {
+                SDL_Delay(1);
+                stats.second.sleeps++;
             }
-            SDL_Delay( sleep );
-            Uint32 delay = SDL_GetTicks();
-            
-            // printf( "%2d loop | %2d frame | %2d render | %2d delay | %3d total %c\n", start-last, frame-start, render-frame, delay-render, delay-last, ( delay-last > 18 ? '!' :  '\0' ) );
-            
-            last = delay;
+                        
+            // if( stats.second.elapsed >= 1000 )
+            // {
+            //     stats.second.elapsed -= 1000;
+            //     printf( "FPS: %4d | Skipped: %3d | Slept per frame: %.2f \n", 
+            //         stats.second.frames, stats.second.frames - stats.second.rendered, 
+            //         (float)stats.second.sleeps / (float)stats.second.frames );
+            //     stats.second.frames = stats.second.rendered = stats.second.sleeps = 0;
+            // }
+            stats.last_time = time;
         }
     }
 }
