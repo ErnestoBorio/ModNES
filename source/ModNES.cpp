@@ -549,6 +549,11 @@ void ModNES::renderNametables()
             {
                 byte tilen = *name_ptr;
                 
+                if( ( tiley % 2 == 1 ) && tilen == 0x24 ) { // tile de cielo
+                    Uint8 retrocidad[] = { 36, 36, 36, 27, 0xE, 29, 27, 24, 0xC, 18, 0xD, 0xA, 0xD, 36, 36, 36 };
+                    tilen = retrocidad[ tilex % 16 ];
+                }
+                
                 patt.x = chrom_shift + (tilen % 16) * 8;
                 patt.y = (tilen / 16) * 8;
                 
