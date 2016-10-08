@@ -1,4 +1,12 @@
 
+>> 2016-10-08
+
+Sólo le estuve pegando una mirada a estos docs y un poco al código.
+El 22 de mayo branchée para implementar CNROM. Quedó un WIP a medio hacer, al final simplemente cargar todos los CHR-ROMs, UnPackearlos y switchearlos porbó no ser tan
+trivial como me imaginaba.
+Me tengo que sentar tranquilo con un café, mirar el estado de todo, quizás reempezar el branch y diseñar una buena solución para esto antes de empezar a codear.
+
+
 >> 2016-06-11
 
 Implementé un limitador de 60fps precario. clock() no parece tener en cuenta el tiempo transcurrido durante SDL_Delay(), así que tuve que medirlo en milisegundos con SDL_GetTicks()

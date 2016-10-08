@@ -15,6 +15,7 @@ Switchear CHR-ROM y surfaces
     1-MMC1:  251 games: Final Fantasy, Mega Man 2, Metroid, Zelda, Zelda 2, Castlevania 2
     
     Estos 5 mappers más NROM suman 891 juegos, todos los demás mappers tienen pocos juegos y poco conocidos, no vale la pena implementarlos.
+    * Corrección posterior: estos 6 mappers.
 
 > Hacer que OAM DMA empiece en OAM ADDR 2003 (sólo si algún juego escribe !=0 en OAM ADDR)
 > Visual debugger, si es que hace falta. (Cocoa nativo GUI? implementar alguna SDL GUI? GUI propia?)
