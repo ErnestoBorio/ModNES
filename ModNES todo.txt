@@ -30,6 +30,7 @@ Separado en dos pattern tables de 4kB, 0-0FFF y 1000-1FFFF
 > CNROM todo:
 √ leer mapper en load ROM // this->mapper = header[6] & 0xF0;
 
+
 √ redefinir containers de CHR-ROM compressed para que sea collection
 √ agregar puntero a CHR-ROM bank actual
 √ mallocear el contenedor de los CHR-ROM.
