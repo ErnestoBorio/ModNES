@@ -1,9 +1,47 @@
 
 Próximos pasos:
 
-> Mapper CNROM:
+>> Mapper CNROM:
 Cargar todos los CHR-ROM banks y crear las surfaces accordingly
 Switchear CHR-ROM y surfaces
+
+- CNROM
+PRG ROM size: 16 KiB or 32 KiB
+PRG ROM bank size: Not bankswitched
+PRG RAM: None
+CHR capacity: Up to 2048 KiB ROM
+CHR bank size: 8 KiB
+
+PPU $0000-$1FFF: 8 KB switchable CHR ROM bank
+
+- Registro:
+Bank select ($8000-$FFFF)
+7  bit  0
+---- ----
+cccc ccCC
+|||| ||||
+++++-++++- Select 8 KB CHR ROM bank for PPU $0000-$1FFF
+
+CNROM only implements the lowest 2 bits, capping it at 32 KiB CHR. Other boards may implement 4 or more bits for larger CHR.
+
+>> CNROM todo:
+√ leer mapper en load ROM // this->mapper = header[6] & 0xF0;
+- redefinir containers de CHR-ROM compressed y no compressed para que sea collection
+- mallocear el contenedor de los CHR-ROM y los uncompressed CHR-ROM
+- freear el contenedor de los CHR-ROM y los uncompressed CHR-ROM
+- modificar todo el código que accede a CHR-ROM para acceda indexado ahora.
+- crear y blittear a las SDL surfaces correspondientes cuando haga falta.
+- Uncompressear los multiples CHR-ROM
+- agregar variable que storee el CHR-ROM bank number
+- hacer los memory handlers para switchear CHR-ROM banks
+- trappear si se usan más de dos bits en el switch register (no debería? debería ignorar?)
+- Actualizar todas las SDL surfaces que sea necesario al switchear banks
+
+
+
+
+
+
 
 > Mappers!
     Easiest and most popular first:
