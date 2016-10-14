@@ -44,6 +44,7 @@ typedef struct // Nes
     int chr_rom_count; // How many 8kB CHR-ROM banks are present
     byte *chr_unpacked; // 1 byte per pixel translation of CHR-ROM
     byte *chr_unpacked_ptr[2];
+    byte mapper; // iNES mapper number
 
     byte *prg_rom; // Chunk with all PRG-ROM banks
     int prg_rom_count; // How many 16kB PRG-ROM banks are present

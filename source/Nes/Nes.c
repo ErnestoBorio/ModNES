@@ -336,7 +336,9 @@ int Nes_LoadRom( Nes *this, FILE *rom_file )
         goto Exception;
     }
     
-    // The CHR-ROM banks immediately follow the PRG-ROM banks, no fseek() needed
+    // iNES mapper number
+    this->mapper = header[6] & 0xF0;
+    
     this->chr_rom_count = (int) header[5];
     if( this->chr_rom_count == 0 ) {
         this->chr_rom_count = 1; // WIP: CHR-ROM count of 0 means 1 as most docs say or does it mean it has only CHR-RAM?
