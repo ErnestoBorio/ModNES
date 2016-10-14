@@ -36,15 +36,19 @@ Separado en dos pattern tables de 4kB, 0-0FFF y 1000-1FFFF
 √ mallocear el contenedor de los CHR-ROM.
 √ freear el contenedor de los CHR-ROM.
 
+- TENGO que dejar de llamar chrom o CHR-ROM a los pattern tables.
+Es fuente de confusión. 1 CHR-ROM bank = 2 pattern tables.
+Tengo que rediseñar el unpacking para arreglar esto.
+
 - Volver a entender cómo funcionan los uncompressed.
 - redefinir containers de CHR-ROM uncompressed para que sea collection
 - agregar puntero a CHR-ROM uncompressed bank actual
 - mallocear el contenedor de los CHR-ROM uncompressed.
 - freear el contenedor de los CHR-ROM uncompressed.
 
-- modificar todo el código que accede a CHR-ROM para acceda indexado ahora.
-- crear y blittear a las SDL surfaces correspondientes cuando haga falta.
 - Uncompressear los multiples CHR-ROM
+- modificar todo el código que accede a CHR-ROM para acceda indexado ahora.
+- crear, agrandar y blittear a las SDL surfaces correspondientes cuando haga falta.
 - hacer los memory handlers para switchear CHR-ROM banks
 - trappear si se usan más de dos bits en el switch register (no debería? debería ignorar?)
 - Actualizar todas las SDL surfaces que sea necesario al switchear banks
