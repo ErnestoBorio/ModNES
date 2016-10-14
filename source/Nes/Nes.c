@@ -131,8 +131,8 @@ void Nes_Free( Nes *this )
     if( this->prg_rom != NULL ) {
         free( this->prg_rom );
     }
-    if( this->chr_rom != NULL ) {
-        free( this->chr_rom );
+    if( this->chr_roms != NULL ) {
+        free( this->chr_roms );
     }
     if( this->chr_unpacked != NULL ) {
         free( this->chr_unpacked );
@@ -343,11 +343,21 @@ int Nes_LoadRom( Nes *this, FILE *rom_file )
     if( this->chr_rom_count == 0 ) {
         this->chr_rom_count = 1; // WIP: CHR-ROM count of 0 means 1 as most docs say or does it mean it has only CHR-RAM?
     }
-    this->chr_rom = (byte*) malloc( this->chr_rom_count * CHR_ROM_bank_size );
-    if( this->chr_rom == NULL ) {
+    
+    switch( $this->mapper ) {
+        case 3:
+            if( this->chr_rom_count > 4 ) {
+                printf( "Mapper 3 CNROM shouldn't have more than 4 CHR-ROM banks, ROM claims it has %d.\n", this->chr_rom_count );
+            }
+            break;
+    }
+    
+    // chr_rom points to chr_roms[0], effectively initializing to first bank.
+    this->chr_rom = this->chr_roms = (byte*) malloc( this->chr_rom_count * CHR_ROM_bank_size );
+    if( this->chr_roms == NULL ) {
         goto Exception;
     }
-    read_count = fread( this->chr_rom, CHR_ROM_bank_size, this->chr_rom_count, rom_file );
+    read_count = fread( this->chr_roms, CHR_ROM_bank_size, this->chr_rom_count, rom_file );
     if( read_count != this->chr_rom_count ) {
         goto Exception;
     }

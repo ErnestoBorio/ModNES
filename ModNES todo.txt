@@ -26,13 +26,19 @@ CNROM only implements the lowest 2 bits, capping it at 32 KiB CHR. Other boards 
 
 >> CNROM todo:
 √ leer mapper en load ROM // this->mapper = header[6] & 0xF0;
+
 - redefinir containers de CHR-ROM compressed y no compressed para que sea collection
+- agregar puntero a CHR-ROM bank actual
+
+Cada banco de CHR-ROM ocupa 8kB, 0-1FFF
+Separado en dos pattern tables de 4kB, 0-0FFF y 1000-1FFFF
+
+
 - mallocear el contenedor de los CHR-ROM y los uncompressed CHR-ROM
 - freear el contenedor de los CHR-ROM y los uncompressed CHR-ROM
 - modificar todo el código que accede a CHR-ROM para acceda indexado ahora.
 - crear y blittear a las SDL surfaces correspondientes cuando haga falta.
 - Uncompressear los multiples CHR-ROM
-- agregar variable que storee el CHR-ROM bank number
 - hacer los memory handlers para switchear CHR-ROM banks
 - trappear si se usan más de dos bits en el switch register (no debería? debería ignorar?)
 - Actualizar todas las SDL surfaces que sea necesario al switchear banks
