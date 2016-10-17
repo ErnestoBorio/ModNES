@@ -345,7 +345,7 @@ int Nes_LoadRom( Nes *this, FILE *rom_file )
         this->chr_rom_count = 1; // WIP: CHR-ROM count of 0 means 1 as most docs say or does it mean it has only CHR-RAM?
     }
     
-    switch( $this->mapper ) {
+    switch( this->mapper ) {
         case 3:
             if( this->chr_rom_count > 4 ) {
                 printf( "Mapper 3 CNROM shouldn't have more than 4 CHR-ROM banks, ROM claims it has %d.\n", this->chr_rom_count );

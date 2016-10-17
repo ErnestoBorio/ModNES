@@ -15,8 +15,8 @@
 		38194CEF1BDDA7E30035FFE3 /* openFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 38194CEE1BDDA7E30035FFE3 /* openFile.m */; };
 		388944381BC1ED5900894A8E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 388944361BC1ED5900894A8E /* main.cpp */; };
 		38A371D31C7758DD00B7ADAC /* ModNES.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 38A371D11C7758DD00B7ADAC /* ModNES.cpp */; };
-		38FA586E1C7501A8004403FC /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38FA586D1C7501A8004403FC /* SDL2.framework */; };
 		38FA58701C750227004403FC /* SDL2.framework in Resources */ = {isa = PBXBuildFile; fileRef = 38FA586D1C7501A8004403FC /* SDL2.framework */; };
+		38FEEAC81DB462DB005F6514 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38FA586D1C7501A8004403FC /* SDL2.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -50,6 +50,7 @@
 		38A371D11C7758DD00B7ADAC /* ModNES.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModNES.cpp; sourceTree = "<group>"; };
 		38A371D21C7758DD00B7ADAC /* ModNES.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModNES.h; sourceTree = "<group>"; };
 		38FA586D1C7501A8004403FC /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
+		38FEEAC61DB461D8005F6514 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = libs/SDL2.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,7 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				38FA586E1C7501A8004403FC /* SDL2.framework in Frameworks */,
+				38FEEAC81DB462DB005F6514 /* SDL2.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,6 +71,7 @@
 				38FA586D1C7501A8004403FC /* SDL2.framework */,
 				388944291BC1EBEC00894A8E /* Products */,
 				388944331BC1ED2B00894A8E /* source */,
+				38FEEAC51DB461D7005F6514 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -120,6 +122,14 @@
 			path = Cpu6502;
 			sourceTree = "<group>";
 		};
+		38FEEAC51DB461D7005F6514 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				38FEEAC61DB461D8005F6514 /* SDL2.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -147,7 +157,7 @@
 		388944201BC1EBEC00894A8E /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0730;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = Petruza;
 			};
 			buildConfigurationList = 388944231BC1EBEC00894A8E /* Build configuration list for PBXProject "ModNES" */;
@@ -210,14 +220,19 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -230,7 +245,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 			};
@@ -249,21 +264,26 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				SDKROOT = macosx;
 			};
 			name = Release;
@@ -275,6 +295,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					/Library/Frameworks,
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
+					"$(PROJECT_DIR)/libs",
 				);
 				HEADER_SEARCH_PATHS = (
 					/opt/local/include,
@@ -305,6 +326,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					/Library/Frameworks,
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
+					"$(PROJECT_DIR)/libs",
 				);
 				HEADER_SEARCH_PATHS = (
 					/opt/local/include,
