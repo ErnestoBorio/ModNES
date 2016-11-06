@@ -155,7 +155,12 @@ void ModNES::loop()
                         
                         case SDLK_SPACE:
                             this->running = ! this->running;
-                            // printf( running? "PLAY\n": "PAUSE\n" );
+                            if( ! this->running ) {
+                                SDL_SetWindowTitle( this->screen_win, "ModNES | Paused" );
+                            }
+                            else {
+                                SDL_SetWindowTitle( this->screen_win, "ModNES" );
+                            }
                             break;
                             
                         case SDLK_o:
