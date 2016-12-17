@@ -10,16 +10,31 @@ Porque con el CHR-RAM sería necesario volver a descomprimir los CHR cada vez qu
 directamente los CHR comprimidos para mayor simpleza, o quizás descomprimirlos solo para mappers con CHR-ROM.
 
 
-+ Tile pipeline, para refactorear a CHR-RAM read on-the-fly sin uncompressear:
+
+
+>> Tile pipeline, para refactorear a CHR-RAM read on-the-fly sin uncompressear:
+
+- ModNES::init()
+  Debería crear tantas patterns_surf como NES::chr_bank_count haya.
+  Ahora tiene una sola hardcodeada. Debería destruirlas y crearlas con cada load ROM.
+
+- ModNES::loadCartridge()
+  Llama a renderPatterns(), que lee chr_unpacked y lo blitea a patterns_surf.
+  Este paso debería ser eliminado y el render se hace per tile on pattern write.
 
 - Nes_LoadRom()
   Carga datos en ->chr, todos los CHR-ROM banks juntos. c/u: 8kb, $2000 cada banco con 2 pattern tables.
   Ya no hace CHR-ROM unpack.
   
+- ModNES::loop() -> ModNES::render()
+  Llama a renderSprites() y renderNametables()
+  Y blitea a screen.
 
-
-
-
+- renderNametables()
+  WIP
+  
+- renderSprites()
+  WIP
 
 
 
