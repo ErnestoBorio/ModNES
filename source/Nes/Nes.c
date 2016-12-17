@@ -360,7 +360,7 @@ int Nes_LoadRom( Nes *this, FILE *rom_file )
             goto Exception;
         }
         
-        Nes_UnpackChrRom( this );
+        // Nes_UnpackChrRom( this );
     }
 
     if( header[5] & (1<<3) ) {

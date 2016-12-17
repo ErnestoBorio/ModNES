@@ -41,9 +41,9 @@ typedef struct // Nes
     Cpu6502 *cpu;
 
     byte *chr; // Chunk with all CHR banks
-    int chr_bank_count; // How many 8kB CHR banks are present
-    byte *chr_unpacked; // 1 byte per pixel translation of CHR-ROM
-    byte *chr_unpacked_ptr[2];
+    int chr_bank_count; // How many 8kB $2000 CHR banks are present
+    // byte *chr_unpacked; // 1 byte per pixel translation of CHR-ROM
+    // byte *chr_unpacked_ptr[2];
 
     byte *prg_rom; // Chunk with all PRG-ROM banks
     int prg_rom_count; // How many 16kB PRG-ROM banks are present
