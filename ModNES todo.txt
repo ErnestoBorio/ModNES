@@ -5,10 +5,14 @@ Próximos pasos:
 Cargar todos los CHR-ROM banks y crear las surfaces accordingly
 Switchear CHR-ROM y surfaces
 
+* Guarda: Quizás sea conveniente encarar CHR switching y CHR-RAM juntos, para no tener que volver a refactorear.
+Porque con el CHR-RAM sería necesario volver a descomprimir los CHR cada vez que se escribe. Entonces directamente hay que hacer que se lea
+directamente los CHR comprimidos para mayor simpleza, o quizás descomprimirlos solo para mappers con CHR-ROM.
+
 > Mappers!
     Easiest and most popular first:
     3-CNROM:  78 games: Solomon's Key, Gradius, and Hudson's Adventure Island (CHR switching only - easy)
-    11-Color Dreams: 28 games: Crystal Mines, Metal Fighter (easy)
+    11-Color Dreams: 28 games: Crystal Mines, Metal Fighter (PRG & CHR switching - easy)
     2-UNROM: 106 games: Castlevania, MegaMan, Ghosts & Goblins. (CHR-RAM)
     7-AOROM:  33 games: Battletoads, Marble Madness, and Solar Jetman. (CHR-RAM)
     4-MMC3:  310 games: Super Mario Bros. 2 and 3, MegaMan 3, 4, 5, and 6, and Crystalis
