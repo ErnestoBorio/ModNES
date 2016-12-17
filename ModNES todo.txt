@@ -9,6 +9,18 @@ Switchear CHR-ROM y surfaces
 Porque con el CHR-RAM sería necesario volver a descomprimir los CHR cada vez que se escribe. Entonces directamente hay que hacer que se lea
 directamente los CHR comprimidos para mayor simpleza, o quizás descomprimirlos solo para mappers con CHR-ROM.
 
+
++ Tile pipeline, para refactorear a CHR-RAM read on-the-fly sin uncompressear:
+
+- Nes_LoadRom()
+  
+
+
+
+
+
+
+
 > Mappers!
     Easiest and most popular first:
     3-CNROM:  78 games: Solomon's Key, Gradius, and Hudson's Adventure Island (CHR switching only - easy)
@@ -22,7 +34,7 @@ directamente los CHR comprimidos para mayor simpleza, o quizás descomprimirlos 
     * Corrección posterior: estos 6 mappers.
 
 > Hacer que OAM DMA empiece en OAM ADDR 2003 (sólo si algún juego escribe !=0 en OAM ADDR)
-> Visual debugger, si es que hace falta. (Cocoa nativo GUI? implementar alguna SDL GUI? GUI propia?)
+> Visual debugger, si es que hace falta. (Cocoa nativo GUI? implementar alguna SDL GUI? GUI propia?) 
 > Hacer accurate sprite 0 hit
 
 > El scroll vertical no está bien en Xevious. En ciertos momentos se desincroniza y la actualización del background se ve en las 3 o 4 filas de abajo, esto no debería superar una fila de tiles.

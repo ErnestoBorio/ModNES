@@ -143,7 +143,13 @@ void Nes_Free( Nes *this )
 }
 
 // -------------------------------------------------------------------------------
-/** Converts NES' mixed 2 bit pattern into stream of 1 byte per color index
+/** 
+ * Converts NES' mixed 2 bit pattern into stream of 1 byte per color index
+ 
+ Esta rutina está escrita diferenciando el tilemap de fondo del de frente, cosa que en realidad es transparente para la NES e innecesaria de hacer.
+ Habría que tratar el CHR-ROM bank entero, con ambos tilemaps, como un solo buffer de bytes y listo.
+ Para copear con el CHR-RAM de los mappers 2 y 7, estaría bueno ya directamente no unpackear las CHR-ROMs, y leerlas así scrambled como están.
+ El performance penalty no debe ser significativo, sobre todo si se leen y escriben pocos tiles por frames.
  */
 void Nes_UnpackChrRom( Nes *this )
 {
@@ -322,7 +328,7 @@ int Nes_LoadRom( Nes *this, FILE *rom_file )
     fread( header, 10, 1, rom_file );
             
     int trainer = ( header[6] & (1<<2) ) > 0; 
-    int offset = 16 + ( trainer ? 512 : 0 ); // skip 16 bytes header + 512B trainer
+    int offset = 16 + ( trainer ? 512 : 0 ); // skip 16 bytes header + optional 512 bytes trainer
     
     // Read PRG-ROM banks
     this->prg_rom_count = (int) header[4];
@@ -338,9 +344,7 @@ int Nes_LoadRom( Nes *this, FILE *rom_file )
     
     // The CHR-ROM banks immediately follow the PRG-ROM banks, no fseek() needed
     this->chr_rom_count = (int) header[5];
-    if( this->chr_rom_count == 0 ) {
-        this->chr_rom_count = 1; // WIP: CHR-ROM count of 0 means 1 as most docs say or does it mean it has only CHR-RAM?
-    }
+    
     this->chr_rom = (byte*) malloc( this->chr_rom_count * CHR_ROM_bank_size );
     if( this->chr_rom == NULL ) {
         goto Exception;
