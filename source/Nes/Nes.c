@@ -342,15 +342,19 @@ int Nes_LoadRom( Nes *this, FILE *rom_file )
         goto Exception;
     }
     
-    this->chr_bank_count = (int) header[5];
-    
     // The CHR-ROM banks immediately follow the PRG-ROM banks, no fseek() needed
-    if( this->chr_bank_count > 0 ) // if 0, the game uses CHR-RAM
+    
+    int chr_rom_count = (int) header[5];
+    // if CHR-ROM banks = 0, then CHR-RAM
+    this->chr_bank_count = chr_rom_count > 0 ? chr_rom_count : 1;
+    
+    this->chr = (byte*) malloc( this->chr_bank_count * CHR_bank_size );
+    if( this->chr == NULL ) {
+        goto Exception;
+    }
+        
+    if( chr_rom_count > 0 ) // if 0, the game uses CHR-RAM
     {
-        this->chr = (byte*) malloc( this->chr_bank_count * CHR_bank_size );
-        if( this->chr == NULL ) {
-            goto Exception;
-        }
         read_count = fread( this->chr, CHR_bank_size, this->chr_bank_count, rom_file );
         if( read_count != this->chr_bank_count ) {
             goto Exception;

@@ -13,7 +13,8 @@ directamente los CHR comprimidos para mayor simpleza, o quizás descomprimirlos 
 + Tile pipeline, para refactorear a CHR-RAM read on-the-fly sin uncompressear:
 
 - Nes_LoadRom()
-  Carga datos en ->chr (debería ser renombrado a chr nomás, porque puede ser ram)
+  Carga datos en ->chr, todos los CHR-ROM banks juntos. c/u: 8kb, $2000 cada banco con 2 pattern tables.
+  Ya no hace CHR-ROM unpack.
   
 
 
