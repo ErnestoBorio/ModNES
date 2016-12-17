@@ -105,8 +105,8 @@ Nes *Nes_Create()
     
     this->prg_rom_count = 0;
     this->prg_rom = NULL;
-    this->chr_rom_count = 0;
-    this->chr_rom = NULL;
+    this->chr_bank_count = 0;
+    this->chr = NULL;
 
     memset( this->ram, 0, 0x800 );
     memset( this->save_ram, 0, 0x2000 );
@@ -131,8 +131,8 @@ void Nes_Free( Nes *this )
     if( this->prg_rom != NULL ) {
         free( this->prg_rom );
     }
-    if( this->chr_rom != NULL ) {
-        free( this->chr_rom );
+    if( this->chr != NULL ) {
+        free( this->chr );
     }
     if( this->chr_unpacked != NULL ) {
         free( this->chr_unpacked );
@@ -158,12 +158,12 @@ void Nes_UnpackChrRom( Nes *this )
     }
     
     // 1 CHR-ROM bank = 2 CHR-ROM tables
-    assert( this->chr_rom_count == 1 ); // for now
+    assert( this->chr_bank_count == 1 ); // for now
     this->chr_unpacked = (byte *) malloc( 2 * CHR_UNPACKED_size );
     
-    byte *chr_rom_ptr[] = {
-        &this->chr_rom[0],
-        &this->chr_rom[0x1000]
+    byte *chr_ptr[] = {
+        &this->chr[0],
+        &this->chr[0x1000]
     };
     
     // Each pointer points to each of the 2 CHR-ROM tables, 0: sprites, 1: background
@@ -172,7 +172,7 @@ void Nes_UnpackChrRom( Nes *this )
     
     for( int chrom = 0; chrom <= 1; ++chrom )
     {
-        byte *lsb = chr_rom_ptr[chrom];
+        byte *lsb = chr_ptr[chrom];
         byte *msb = lsb + 8;
         byte *unpacked = this->chr_unpacked_ptr[chrom];
         for( int tilen = 0; tilen < 0x100; ++tilen )
@@ -318,9 +318,9 @@ int Nes_LoadRom( Nes *this, FILE *rom_file )
         free( this->prg_rom );
         this->prg_rom = NULL;
     }
-    if( this->chr_rom != NULL ) {
-        free( this->chr_rom );
-        this->chr_rom = NULL;
+    if( this->chr != NULL ) {
+        free( this->chr );
+        this->chr = NULL;
     }
     
     rewind( rom_file );
@@ -342,19 +342,22 @@ int Nes_LoadRom( Nes *this, FILE *rom_file )
         goto Exception;
     }
     
+    this->chr_bank_count = (int) header[5];
+    
     // The CHR-ROM banks immediately follow the PRG-ROM banks, no fseek() needed
-    this->chr_rom_count = (int) header[5];
-    
-    this->chr_rom = (byte*) malloc( this->chr_rom_count * CHR_ROM_bank_size );
-    if( this->chr_rom == NULL ) {
-        goto Exception;
+    if( this->chr_bank_count > 0 ) // if 0, the game uses CHR-RAM
+    {
+        this->chr = (byte*) malloc( this->chr_bank_count * CHR_bank_size );
+        if( this->chr == NULL ) {
+            goto Exception;
+        }
+        read_count = fread( this->chr, CHR_bank_size, this->chr_bank_count, rom_file );
+        if( read_count != this->chr_bank_count ) {
+            goto Exception;
+        }
+        
+        Nes_UnpackChrRom( this );
     }
-    read_count = fread( this->chr_rom, CHR_ROM_bank_size, this->chr_rom_count, rom_file );
-    if( read_count != this->chr_rom_count ) {
-        goto Exception;
-    }
-    
-    Nes_UnpackChrRom( this );
 
     if( header[5] & (1<<3) ) {
         this->ppu.mirroring = mirroring_4screens;
@@ -401,9 +404,9 @@ Exception:
         free( this->prg_rom );
         this->prg_rom = NULL;
     }
-    if( this->chr_rom != NULL ) {
-        free( this->chr_rom );
-        this->chr_rom = NULL;
+    if( this->chr != NULL ) {
+        free( this->chr );
+        this->chr = NULL;
     }  
     return false;
 }

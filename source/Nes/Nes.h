@@ -7,7 +7,7 @@
 #define bit_value( _byte, bit_order ) ( ( _byte & ( 1 << bit_order ) ) >> bit_order )
 
 #define PRG_ROM_bank_size 0x4000 // PRG-ROM bank is 16kB
-#define CHR_ROM_bank_size 0x2000 // CHR-ROM bank is  8kB
+#define CHR_bank_size     0x2000 // CHR bank is  8kB
 #define CHR_UNPACKED_size 0x100 * 8 * 8 // 0x100 tiles * 8 px tall * 8 px wide = 0x4000 bytes at 1 byte per pixel = 16Kb
 
 // const byte nes_palette[64][3];
@@ -40,8 +40,8 @@ typedef struct // Nes
 {
     Cpu6502 *cpu;
 
-    byte *chr_rom; // Chunk with all CHR-ROM banks
-    int chr_rom_count; // How many 8kB CHR-ROM banks are present
+    byte *chr; // Chunk with all CHR banks
+    int chr_bank_count; // How many 8kB CHR banks are present
     byte *chr_unpacked; // 1 byte per pixel translation of CHR-ROM
     byte *chr_unpacked_ptr[2];
 
