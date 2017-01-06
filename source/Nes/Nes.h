@@ -42,6 +42,7 @@ typedef struct // Nes
 
     byte *chr; // Chunk with all CHR banks
     int chr_bank_count; // How many 8kB $2000 CHR banks are present
+    int chr_ram; // if true, there's CHR-RAM, else there's CHR-ROM
     // byte *chr_unpacked; // 1 byte per pixel translation of CHR-ROM
     // byte *chr_unpacked_ptr[2];
 

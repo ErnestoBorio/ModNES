@@ -347,6 +347,7 @@ int Nes_LoadRom( Nes *this, FILE *rom_file )
     int chr_rom_count = (int) header[5];
     // if CHR-ROM banks = 0, then CHR-RAM
     this->chr_bank_count = chr_rom_count > 0 ? chr_rom_count : 1;
+    this->chr_ram = ( chr_rom_count == 0 ); // 1: CHR-RAM, 0: CHR-ROM
     
     this->chr = (byte*) malloc( this->chr_bank_count * CHR_bank_size );
     if( this->chr == NULL ) {
@@ -359,7 +360,6 @@ int Nes_LoadRom( Nes *this, FILE *rom_file )
         if( read_count != this->chr_bank_count ) {
             goto Exception;
         }
-        
         // Nes_UnpackChrRom( this );
     }
 
