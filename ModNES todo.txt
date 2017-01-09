@@ -1,7 +1,7 @@
 
 Próximos pasos:
 
-> El próximo paso es implementar CHR-ROM switching para mappers 3 y 11 (106 juegos), y CHR-RAM para mappers 2 y 7 (139 juegos incluído el G'nG)
+> El próximo paso es implementar CHR-ROM switching para mappers 3 y 11 (106 juegos), y CHR-RAM para mappers 2 y 7 (139 juegos incluído el G'nG) (y además PRG switching)
 
 >> Para CHR-RAM se puede implementar fácil haciendo que cada vez que se escribe al CHR-RAM, se re blitee el tile correspondiente a la surface de patterns.
 Esto puede producir un gran overhead porque para reescribir un tile completo hacen falta 16 escrituras, y se estaría re bliteando el tile 16 veces, entonces se puede optimizar haciendo una lista de tiles dirty por cada frame.
