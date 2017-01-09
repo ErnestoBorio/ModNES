@@ -80,6 +80,7 @@ static void initialize( Nes *this )
     this->scanpixel      = 0;
     this->vblank         = 0;
     this->last_scanpixel = 0;
+    this->chr_ptr        = this->chr; // point to first CHR bank
     
     memset( this->input.gamepad,    0, sizeof this->input.gamepad );
     memset( this->input.read_count, 0, sizeof this->input.read_count );

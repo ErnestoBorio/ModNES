@@ -41,6 +41,7 @@ typedef struct // Nes
     Cpu6502 *cpu;
 
     byte *chr; // Chunk with all CHR banks
+    byte *chr_ptr; // Pointer to current CHR bank
     int chr_bank_count; // How many 8kB $2000 CHR banks are present
     int chr_ram; // if true, there's CHR-RAM, else there's CHR-ROM
     // byte *chr_unpacked; // 1 byte per pixel translation of CHR-ROM
@@ -50,7 +51,7 @@ typedef struct // Nes
     int prg_rom_count; // How many 16kB PRG-ROM banks are present
 
     byte ram[0x800]; // Built-in 2kB of RAM
-    byte save_ram[0x2000]; // Battery backed RAM
+    byte save_ram[0x2000]; // Battery backed 8kB RAM
 
     int scanline;        // scanline number currently being rendered [-1..260]
     int last_scanline;   // last scanline redndered, to detect scanline change
