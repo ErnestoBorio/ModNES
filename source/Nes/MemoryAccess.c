@@ -186,11 +186,9 @@ byte read_vram_io( void *sys, word register_address )
         vram_address &= 0x7FF; // Make VRAM address zero based
         NES->ppu.vram_latch = NES->ppu.name_attr[ vram_address ];
     }
-    // WIP: else tries to read from pattern tables, do nothing for now
+    // Pattern tables
     else {
         NES->ppu.vram_latch = NES->chr[ vram_address ];
-        // printf( "Reading VRAM $%4x < $2000\n", vram_address );
-        // assert(0);
     }
 
     NES->ppu.vram_address += NES->ppu.increment_vram;
