@@ -188,7 +188,7 @@ byte read_vram_io( void *sys, word register_address )
     }
     // Pattern tables
     else {
-        NES->ppu.vram_latch = NES->chr[ vram_address ];
+        NES->ppu.vram_latch = NES->chr_ptr[ vram_address ];
     }
 
     NES->ppu.vram_address += NES->ppu.increment_vram;
@@ -220,7 +220,16 @@ void write_vram_io( void *sys, word register_address, byte value  )
         vram_address &= 0x7FF; // Make VRAM address zero based and Unmirror
         NES->ppu.name_attr[ vram_address ] = value;
     }
-    // WIP: else tries to write to pattern tables, do nothing for now
+    // Pattern tables
+    else {
+        if( NES->chr_ram ) {
+            NES->chr_ptr[ vram_address ] = value;
+            // WIP: Mark the tile written to as dirty to be re-blitted before render.
+        }
+        else {
+            assert( 0 && "Tried to write to pattern tables but there's CHR-ROM" );
+        }
+    }
 
     NES->ppu.vram_address += NES->ppu.increment_vram;
     NES->ppu.vram_address &= 0x3FFF; // Wrap around $4000

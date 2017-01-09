@@ -239,8 +239,7 @@ void Nes_DoFrame( Nes *this )
                 cpu_cycles = Cpu6502_NMI( this->cpu );
             }
         }
-        else
-        {
+        else  {
             // No, just regular step
             cpu_cycles = Cpu6502_CpuStep( this->cpu );
         }
@@ -265,7 +264,7 @@ void Nes_DoFrame( Nes *this )
                 [ this->ppu.scroll.last_frame.count-1 ]
                     .value != this->ppu.scroll.horizontal )) // Has the H scroll changed in this scanline?
         {
-            assert( this->ppu.scroll.last_frame.count < 240 );
+            assert( this->ppu.scroll.last_frame.count < 240 ); // WIP remove assert
             
             this->ppu.scroll.last_frame.scroll_x
                 [ this->ppu.scroll.last_frame.count ]
