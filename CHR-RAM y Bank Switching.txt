@@ -1,0 +1,50 @@
+
+>>> Backlog / Roadmap para CHR-RAM y bank switching para soportar primeros mappers.
+
+Los mappers más simples de implementar, 2, 3, 7 y 11, agregarían soporte para 245 juevos nuevos al emulador.
+Estos mappers requieren que se implemente CHR-RAM, CHR-ROM switching y PRG-ROM switching.
+
+
+> Actualmente el proceso es:
+
+- Nes_LoadRom() 
+	Se mallocan y cargan CHR-ROM y PRG-ROM.
+	
+- Nes_UnpackChrRom() 
+	Se convierten los CHR bit patterns en un cache de 1 byte-per-pixel.
+	
+- ModNES::renderPatterns()
+	Se renderea el CHR unpacked cache a las CHR pattern surfaces.
+
+- ModNES::loop() -> ModNES::render()
+	Se blitean los tiles de Pattern surface a Nametables surface.
+
+
+>> To do:
+	Puedo hacer cada item como una iteración, un módulo completo y cerrado. En este orden.
+	Brancheo de master un branch que se llame Mappers. De ahí voy brancheando en secuencia, PRGswitch, CHRswitch, CHR_RAM.
+
+> PRG-ROM switching
+	Al escribir a la zona de PRG-ROM, $8000-FFFF se switchea el bank correspondiente al número del byte escrito.
+	Simplemente cargar todos los bankos y manejar el switching correctamente.
+	Mapper 2: usa 3 bits para seleccionar bank, o sea hasta 8 bancos. El banco switcheable es un banco de 16 kB que va en el espacio $8000-$BFFF.
+		El espacio $C000-$FFFF es un banco PRG-ROM fijo de 16 kB. El primer banco del cartucho se carga en $8000, y el último se carga fijo en $C000.
+	Mapper 7: 2, 4 u 8 bancos de 32 kB PRG-ROM ocupan todo el espacio $8000-$FFFF.
+	Mapper 11: hasta 4 bancos de 32 kB PRG-ROM ocupan todo el espacio $8000-$FFFF.
+		Mappers 7 y 11: el primer banco del cartucho se carga en $8000 al inciiar.
+
+> CHR-ROM switching
+	Hay que cargar los bancos y manejar el switching.
+	Agregar puntero a chr_bank seleccionado.
+	Cada chr_bank tiene dos pattern tables, una de sprites y una de fondo, seleccionables por PPU ports.
+	Eliminar el CHR bit pattern unpacking, que la pattern surface se blitee directo del bit pattern del CHR-ROM.
+	Hay que crear un pattern surface por cada CHR-ROM bank que haya. Cuando se switchea el banco también se switchea la surface.
+	Aplicarle la paleta correspondiente luego de switchear.
+
+> CHR-RAM
+	Manejar la escritura a CHR bank normalmente. Leer del header la cantidad de CHR banks, si es 0, significa CHR-RAM.
+	Hará falta un flag que indique CHR RAM/ROM ?
+	Refactorear referencias a CHR_ROM y cambiarlo simplemente por CHR o CHR_BANK.
+	El CHR unpacking se eliminó. Hacer sistema de invalidación de caché para el pattern surface.
+	Cada vez que se escribe a un tile en los pattern, marcar ese tile como dirty. Para eso tiene que haber una dirty table.
+	Antes de hacer el render, se vuelven a blittear desde CHR-RAM los tiles dirty. Setear la paleta en este momento.
