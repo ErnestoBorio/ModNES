@@ -39,6 +39,8 @@ enum Nes_Strobe {
 typedef struct // Nes
 {
     Cpu6502 *cpu;
+    
+    int mapper; // number of iNES mapper
 
     byte *chr_rom; // Chunk with all CHR-ROM banks
     int chr_rom_count; // How many 8kB CHR-ROM banks are present
@@ -47,6 +49,8 @@ typedef struct // Nes
 
     byte *prg_rom; // Chunk with all PRG-ROM banks
     int prg_rom_count; // How many 16kB PRG-ROM banks are present
+    byte *prg_rom_low_bank; // pointer to start of currently selected switchable PRG-ROM
+    byte *prg_rom_high_bank; // pointer to start of high 16kB PRG ROM bank hardwired
 
     byte ram[0x800]; // Built-in 2kB of RAM
     byte save_ram[0x2000]; // Battery backed 8kB RAM

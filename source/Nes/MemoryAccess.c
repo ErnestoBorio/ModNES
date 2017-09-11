@@ -40,18 +40,6 @@ void write_save_ram( void *sys, word address, byte value )
 }
 
 // -------------------------------------------------------------------------------
-// $8000..$FFFF PRG-ROM
-byte read_prg_rom( void *sys, word address )
-{
-	address -= 0x8000; // make address zero-based ( $0..$7FFF )
-	if( NES->prg_rom_count == 1 ) // WIP bankswitching hell here in the future
-	{
-		address &= 0x3FFF; // Convert mirror in actual ROM address ( $0..$3FFF )		
-	}
-	return NES->prg_rom[address];
-}
-
-// -------------------------------------------------------------------------------
 // $2000
 void write_ppu_control1( void *sys, word address, byte value )
 {
@@ -282,6 +270,58 @@ void write_gamepad( void *sys, word address, byte value )
       // else: Some games write $C0 here for APU thingies. Ignore for now WIP
    }
 }
+
+// -------------------------------------------------------------------------------
+void write_prg_switch_16kB( void *sys, word address )
+{
+	WIP: escribir acá la lógica de PRG bank switching
+}
+
+void write_prg_switch_32kB( void *sys, word address );
+{
+}
+
+// -------------------------------------------------------------------------------
+byte read_prg_rom_low_bank( void *sys, word address )
+{
+	// Depending on what PRG bank switching there is, this could access only low 16 kB $8000-$BFFF
+	// or whole PRG 32 kB $8000-$FFFF
+	
+	assert( address >= 0xC000 );
+	assert( this->mapper );
+	
+	address &= 0x7FFF; // make address zero-based ( $8000..$FFFF to $0..$7FFF )
+	return NES->prg_rom_low_bank[address];
+}
+
+// -------------------------------------------------------------------------------
+byte read_prg_rom_high_bank( void *sys, word address )
+{
+	// Only should be called for reads to high 16 kB of PRG ROM, switchable or not
+	assert(( address >= 0xC000 ) && ( address <= 0xFFFF ));
+	address &= 0x3FFF; // make address zero-based ( $C000..$BFFF to $0..$3FFF )
+	return NES->prg_rom_high_bank[address];
+}
+
+// -------------------------------------------------------------------------------
+byte read_prg_rom_high_mirror( void *sys, word address )
+{
+	// Only should be called for reads to high 16 kB of PRG ROM, switchable or not
+	assert(( address >= 0xC000 ) && ( address <= 0xFFFF ));
+	address &= 0x3FFF; // Make address zero-based and convert mirror in actual ROM address ( $0..$3FFF )
+	// Address points to high PRG but return low PRG because it's a mirror.
+	return NES->prg_rom_low_bank[address];
+}
+
+
+
+
+
+
+
+
+
+
 // -------------------------------------------------------------------------------
 byte read_unimplemented( void *sys, word address )
 {

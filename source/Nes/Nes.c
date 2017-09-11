@@ -39,7 +39,9 @@ const byte Nes_rgb[64][3] =
 #ifdef _Cpu6502_Disassembler
     static byte read_memory_disasm( void *parent_system, word address );
 #endif
-static void init_builtin_memory_handlers( Nes *this );
+
+static void init_memory_handlers( Nes *this ); // Memory I/O handlers that are set at startup.
+static void  set_memory_handlers( Nes *this ); // Memory I/O handlers that depend on the ROM's mapper
 
 // -------------------------------------------------------------------------------
 static void initialize( Nes *this )
@@ -103,6 +105,7 @@ Nes *Nes_Create()
         this->cpu->read_memory_disasm = read_memory_disasm;
     #endif
     
+    this->mapper = 0;
     this->prg_rom_count = 0;
     this->prg_rom = NULL;
     this->chr_rom_count = 0;
@@ -120,7 +123,7 @@ Nes *Nes_Create()
     this->chr_unpacked = NULL;
 
     initialize( this );
-    init_builtin_memory_handlers( this );
+    init_memory_handlers( this );
     
     return this;
 }
@@ -330,6 +333,12 @@ int Nes_LoadRom( Nes *this, FILE *rom_file )
     int trainer = ( header[6] & (1<<2) ) > 0; 
     int offset = 16 + ( trainer ? 512 : 0 ); // skip 16 bytes header + optional 512 bytes trainer
     
+    this->mapper = ( header[7] & 0xF0 ) | (( header[6] & 0xF0 ) >>4 );
+    switch( this->mapper ) {
+    	case 0: case 2: case 3: case 7: case 11: break;
+    	default: assert( "Currently ModNES only supports mappers 0, 2, 3, 7 & 11." && false );
+    }
+    
     // Read PRG-ROM banks
     this->prg_rom_count = (int) header[4];
     this->prg_rom = (byte*) malloc( this->prg_rom_count * PRG_ROM_bank_size );
@@ -392,6 +401,8 @@ int Nes_LoadRom( Nes *this, FILE *rom_file )
     if( ! feof( rom_file ) || ( remaining != 0 ) ) {
         fprintf( stderr, "The rom file didn't end after CHR-ROM banks as expected.\n" );
     }
+    
+    set_memory_handlers( this );
         
     return true;
     
@@ -432,7 +443,7 @@ byte read_ignore( void *sys, word address ) {
 void write_ignore( void *sys, word address, byte value ) {
 }
 
-static void init_builtin_memory_handlers( Nes *this )
+static void init_memory_handlers( Nes *this )
 {
     int i;
 // RAM
@@ -502,9 +513,50 @@ static void init_builtin_memory_handlers( Nes *this )
     }
 // PRG ROM
     for( i=0x8000; i<=0xFFFF; ++i ) {
-        this->cpu->read_memory[i]  = read_prg_rom;
-        this->cpu->write_memory[i] = write_ignore;
+        // Reads from PRG are set on set_memory_handlers(), they depend on the mapper
+        this->cpu->write_memory[i] = write_switch_prg;
     }
+}
+
+static void set_memory_handlers( Nes *this )
+{
+	int i;
+	// PRG handlers
+	switch( this->mapper ) 
+	{
+		case 0: // NROM, no mapper, high 16 kB is a mirror of low 16 kB, $C000 = $8000
+			for( i=0x8000; i<=0xBFFF; ++i ) {
+				this->cpu->read_memory[i]  = read_prg_rom_low_bank;
+			}
+			for( i=0xC000; i<=0xFFFF; ++i ) {
+				this->cpu->read_memory[i]  = read_prg_rom_high_mirror;
+			}
+			break;
+		
+		case 2: // UNROM - Switchable PRG low 16 kB bank at $8000, hardwired high 16 kB bank at $C000
+			for( i=0x8000; i<=0xBFFF; ++i ) {
+				this->cpu->read_memory[i]  = read_prg_rom_low_bank;
+			}
+			for( i=0xC000; i<=0xFFFF; ++i ) {
+				this->cpu->read_memory[i]  = read_prg_rom_high_bank;
+			}
+			break;
+		
+		case 7:  // AOROM
+		case 11: // Color Dreams - Both have a single switchable 32 kB PRG bank at $8000
+			for( i=0x8000; i<=0xFFFF; ++i ) {
+				this->cpu->read_memory[i]  = read_prg_rom_low_bank;
+				// actually not only low but the whole 32 kB PRG ROM
+			}
+			break;
+			
+		case 3: // CNROM, no PRG switching at all
+			assert( "Mapper 3-CNROM can have 16 kB or 32 kB PRG, not sure how to tell.\nCould try both with each rom and see what happens" && false );
+			// Could try both with each rom and see what happens.
+			break;
+		default:
+			assert( "Currently ModNES only supports mappers 0, 2, 3, 7 & 11." && false );
+	}
 }
 
 // -------------------------------------------------------------------------------

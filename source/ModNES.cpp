@@ -323,6 +323,9 @@ void ModNES::loadCartridge( char *path )
     if( ! Nes_LoadRom( this->nes, romFile )) {
         SDL_Log( "Rom image couldn't be loaded: %s\n", path );
     }
+    else {
+    	set_memory_handlers( this->nes );
+    }
     fclose( romFile );
     
     printf( "Loaded %s\n", strrchr( path, '/' ) +1 );
