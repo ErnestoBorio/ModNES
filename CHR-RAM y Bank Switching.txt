@@ -31,8 +31,8 @@ Estos mappers requieren que se implemente CHR-RAM, CHR-ROM switching y PRG-ROM s
 		El espacio $C000-$FFFF es un banco PRG-ROM fijo de 16 kB. El primer banco del cartucho se carga en $8000, y el último se carga fijo en $C000.
 	Mapper 7: 2, 4 u 8 bancos de 32 kB PRG-ROM ocupan todo el espacio $8000-$FFFF.
 	Mapper 11: hasta 4 bancos de 32 kB PRG-ROM ocupan todo el espacio $8000-$FFFF.
-		Mappers 7 y 11: el primer banco del cartucho se carga en $8000 al inciiar.
-
+		Mappers 7 y 11: el primer banco del cartucho se carga en $8000 al iniciar.
+	
 > CHR-ROM switching
 	Hay que cargar los bancos y manejar el switching.
 	Agregar puntero a chr_bank seleccionado.
