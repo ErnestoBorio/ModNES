@@ -1,24 +1,30 @@
 
+>> 2017-09-25
+
+"Averiguar si 3-CNROM usa 16kB con mirror o 32kB PRG, pregunté en nesdev."
+- Obviamente la respuesta estaba en el header iNES, 
+http://forums.nesdev.com/viewtopic.php?f=3&t=16478
+
+
 >> 2017-09-10
 
 Empecé el PRG-ROM switching para poder soportar los mappers 2, 7 y 11.
 Agregué a Nes el número de mapper y punteros a los low y high 16kB PRG banks. El puntero a high es fijo y solo se usa para el mapper 2 que switchea sólo la mitad del PRG, y para el mapper 0 en que el high PRG es un mirror del low PRG.
 El puntero a low es switcheable y selecciona el banco PRG activo, en mapper 2 apunta al low 16kB y en los mappers 7 y 11 apunta a los 32kB completos del PRG.
 
-Dividí la asignación de punteros de acceso a memory en init_ y set_ ya que ahora los punteros de accesso a PRG-ROM varían según el mapper del ROM que se cargue entonces hay que setearlos cuando se carga el ROM y no al inicio.
+Dividí la asignación de punteros de acceso a memory en init_memory_handlers() y set_memory_handlers() ya que ahora los punteros de accesso a PRG-ROM varían según el mapper del ROM que se cargue entonces hay que setearlos cuando se carga el ROM y no al inicio.
 
 Falta: 
 Escribir el switcheo de los bancos de PRG sea en bancos de 16kB o 32kB.
 Setear el puntero prg_rom_high_bank al último PRG bank leído de la ROM en el caso del mapper 2.
-Averiguar si 3-CNROM usa 16kB con mirror o 32kB PRG, pregunté en nesde.
+Averiguar si 3-CNROM usa 16kB con mirror o 32kB PRG, pregunté en nesdev.
 Chequear la NesDev wiki y los docs de Disch sobre los mappers 2, 3, 7 y 11 a ver si se me escapó algo de los PRG-ROM que no sabía.
 
 
 >> 2016-10-08
 
 Sólo le estuve pegando una mirada a estos docs y un poco al código.
-El 22 de mayo branchée para implementar CNROM. Quedó un WIP a medio hacer, al final simplemente cargar todos los CHR-ROMs, UnPackearlos y switchearlos porbó no ser tan
-trivial como me imaginaba.
+El 22 de mayo branchée para implementar CNROM. Quedó un WIP a medio hacer, al final simplemente cargar todos los CHR-ROMs, UnPackearlos y switchearlos porbó no ser tan trivial como me imaginaba.
 Me tengo que sentar tranquilo con un café, mirar el estado de todo, quizás reempezar el branch y diseñar una buena solución para esto antes de empezar a codear.
 
 
