@@ -2,7 +2,7 @@
 >> 2017-09-25
 
 "Averiguar si 3-CNROM usa 16kB con mirror o 32kB PRG, pregunté en nesdev."
-- Obviamente la respuesta estaba en el header iNES, 
+- Obviamente la respuesta estaba en el header iNES, si dice 1 PRG banks, es un bank de 16kB y el high es mirror.
 http://forums.nesdev.com/viewtopic.php?f=3&t=16478
 
 
