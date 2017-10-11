@@ -15,8 +15,9 @@ El puntero a low es switcheable y selecciona el banco PRG activo, en mapper 2 ap
 Dividí la asignación de punteros de acceso a memory en init_memory_handlers() y set_memory_handlers() ya que ahora los punteros de accesso a PRG-ROM varían según el mapper del ROM que se cargue entonces hay que setearlos cuando se carga el ROM y no al inicio.
 
 Falta: 
-Escribir el switcheo de los bancos de PRG sea en bancos de 16kB o 32kB.
-Setear el puntero prg_rom_high_bank al último PRG bank leído de la ROM en el caso del mapper 2.
+- Setear el puntero prg_rom_high_bank al último PRG bank leído de la ROM en el caso del mapper 2.
+- Escribir el switcheo de los bancos de PRG sea en bancos de 16kB o 32kB.
+
 Averiguar si 3-CNROM usa 16kB con mirror o 32kB PRG, pregunté en nesdev.
 Chequear la NesDev wiki y los docs de Disch sobre los mappers 2, 3, 7 y 11 a ver si se me escapó algo de los PRG-ROM que no sabía.
 

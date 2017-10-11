@@ -1,4 +1,22 @@
 
+
+>>> Para PRG switching
+
+- Setear el puntero prg_rom_high_bank al último PRG bank leído de la ROM en el caso del mapper 2.
+- Escribir el switcheo de los bancos de PRG sea en bancos de 16kB o 32kB.
+
+Tengo que diferenciar los 16kB chunks de PRG ROM cuya cantidad me informa iNES, mal llamados banks, de los verdaderos PRG banks.
+Según el mapper, el PRG se puede switchear de a 16kB o 32kB chunks, estos son los verdaderos banks, y por lo tanto esos son los verdaderos PRG bank sizes.
+
+A lo que informa iNES debería llamarlo 16kB chunks, y por lo tanto el size siempre es 16kB.
+A las unidades mínimas switcheables de PRG debería llamarla banks, cuyo size es 16kB o 32kB, y actuar acorde.
+
+
+
+---
+
+
+
 Próximos pasos:
 
 > El próximo paso es implementar CHR-ROM switching para mappers 3 y 11 (106 juegos), y CHR-RAM para mappers 2 y 7 (139 juegos incluído el G'nG) (y además PRG switching)
