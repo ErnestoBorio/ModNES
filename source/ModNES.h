@@ -30,6 +30,7 @@ public:
             } pos;
         } patterns_win, nametables_win, screen_win;
         char romFileName[1024];
+        char  lastRomDir[1024];
     } config;
     static const std::string config_filename;
     
@@ -68,7 +69,7 @@ public:
     int init();
     void loop();
     
-    void loadCartridge( char *path );
+    bool loadCartridge( char *path );
     
     void render();
     void renderPatterns();

@@ -3,17 +3,14 @@
 #include <string.h>
 @import AppKit;
 
-char* openFile( char *path, int length )
+char* openFile( char *dir, char *path, int length )
 {
     NSOpenPanel *openPanel = [NSOpenPanel openPanel];
-    // openPanel.canChooseFiles = YES;
-    // openPanel.allowsOtherFileTypes = YES;
-    // openPanel.message = @"a message on the panel body";
     openPanel.resolvesAliases = YES;
     openPanel.canChooseDirectories = NO;
     openPanel.allowsMultipleSelection = NO;
     openPanel.title = @"Open NES ROM";
-    openPanel.directoryURL = [NSURL URLWithString:@"file:///Volumes/Archive/Emulators/NES/NES 1089 ROMS/!Mapper0"];
+    openPanel.directoryURL = [NSURL URLWithString: [NSString stringWithUTF8String: dir]];
         
     if( [openPanel runModal] == NSOKButton )
     {

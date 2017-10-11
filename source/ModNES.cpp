@@ -6,7 +6,7 @@ using namespace std;
 
 const string ModNES::config_filename = "ModNES_config";
 extern const byte Nes_rgb[64][3];
-extern "C" char* openFile( char* path, int length );
+extern "C" char* openFile( char *dir, char *path, int length );
 
 //------------------------------------------------------------------------------------------------------------
 ModNES::ModNES()
@@ -40,6 +40,7 @@ void ModNES::read_config()
         this->config.screen_win.pos.y = 20;
         
         memset( this->config.romFileName, 0, 1024 );
+        memset( this->config.lastRomDir, 0, 1024 );
         
         config_file.write( (const char*)&this->config, sizeof( this->config ));
     }
@@ -104,7 +105,7 @@ int ModNES::init()
     this->nes = Nes_Create();
     
     if( *config.romFileName != '\0' ) {
-        loadCartridge( config.romFileName );
+        this->loadCartridge( config.romFileName );
     }
     
     stats.second = { 0,0,0,0 };
@@ -164,7 +165,7 @@ void ModNES::loop()
                             break;
                             
                         case SDLK_o:
-                            openFile( path, 1024 );
+                            openFile( this->config.lastRomDir, path, 1024 );
                             if( path[0] ) {
                                 this->loadCartridge( path );
                             }
@@ -314,21 +315,35 @@ void ModNES::loop()
     }
 }
 //------------------------------------------------------------------------------------------------------------
-void ModNES::loadCartridge( char *path )
+bool ModNES::loadCartridge( char *path )
 {
     FILE *romFile = fopen( path, "rb" );
-    if( ! romFile ) {
-        SDL_Log( "Rom file couldn't be opened: %s\n", path );
-    }
-    if( ! Nes_LoadRom( this->nes, romFile )) {
-        SDL_Log( "Rom image couldn't be loaded: %s\n", path );
-    }
-    else {
-    	set_memory_handlers( this->nes );
-    }
+    try {
+	    if( ! romFile ) {
+	        SDL_Log( "Rom file couldn't be opened: %s\n", path );
+	        throw 0;
+	        
+	    }
+	    if( ! Nes_LoadRom( this->nes, romFile )) {
+	        SDL_Log( "Rom image couldn't be loaded: %s\n", path );
+	        throw 0;
+	    }
+	}
+	catch(...) {
+		this->config.romFileName[0] = '\0';
+        this->write_config();
+        fclose( romFile );
+        return false;
+	}
     fclose( romFile );
     
-    printf( "Loaded %s\n", strrchr( path, '/' ) +1 );
+    // Store dir path from where the last ROM was successfully loaded
+    char *dirEnd = strrchr( path, '/' );
+    int dirLength = dirEnd - path;
+    strncpy( this->config.lastRomDir, path, dirLength );
+    this->config.lastRomDir[ dirLength ] = '\0';
+    
+    printf( "Loaded %s\n", dirEnd + 1 );
     strncpy( this->config.romFileName, path, 1024 );
     this->write_config();
     
@@ -339,6 +354,7 @@ void ModNES::loadCartridge( char *path )
     if( ! this->running ) {
         this->running = true;
     }
+    return true;
 }
 
 //------------------------------------------------------------------------------------------------------------
@@ -760,4 +776,3 @@ void ModNES::renderSprites( int priority )
     SDL_FreeSurface( temp_surf );
     SDL_SetClipRect( screen_surf, NULL );
 }
-//------------------------------------------------------------------------------------------------------------
