@@ -350,7 +350,8 @@ int Nes_LoadRom( Nes *this, FILE *rom_file )
     if( read_count != this->prg_rom_count ) {
         goto Exception;
     }
-    
+	this->prg_rom_low_bank = this->prg_rom; // First loaded PRG bank is first active bank.
+
     // The CHR-ROM banks immediately follow the PRG-ROM banks, no fseek() needed
     this->chr_rom_count = (int) header[5];
     
@@ -514,15 +515,15 @@ static void init_memory_handlers( Nes *this )
 // PRG ROM
     for( i=0x8000; i<=0xFFFF; ++i ) {
         // Reads from PRG are set on set_memory_handlers(), they depend on the mapper
-        this->cpu->write_memory[i] = write_switch_prg;
+        this->cpu->write_memory[i] = write_prg_switch;
     }
 }
 
 static void set_memory_handlers( Nes *this )
 {
 	int i;
-	// PRG handlers
-	switch( this->mapper ) 
+	// PRG read handlers
+	switch( this->mapper )
 	{
 		case 0: // NROM, no mapper, high 16 kB is a mirror of low 16 kB, $C000 = $8000
 			for( i=0x8000; i<=0xBFFF; ++i ) {

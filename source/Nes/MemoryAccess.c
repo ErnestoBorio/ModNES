@@ -272,13 +272,21 @@ void write_gamepad( void *sys, word address, byte value )
 }
 
 // -------------------------------------------------------------------------------
-void write_prg_switch_16kB( void *sys, word address )
-{
-	WIP: escribir acá la lógica de PRG bank switching
-}
+// void write_prg_switch_16kB( void *sys, word address )
+// {
+// }
 
-void write_prg_switch_32kB( void *sys, word address );
+// void write_prg_switch_32kB( void *sys, word address )
+// {
+// }
+
+void write_prg_switch( void *sys, word address, byte value )
 {
+	// WIP hardcoded for mapper 11. Hacer genérico.
+	if( NES->mapper == 11 )
+	{
+		NES->prg_rom_low_bank = NES->prg_rom + 0x8000 * value; // 0x8000 is 32kB
+	}
 }
 
 // -------------------------------------------------------------------------------
@@ -287,8 +295,8 @@ byte read_prg_rom_low_bank( void *sys, word address )
 	// Depending on what PRG bank switching there is, this could access only low 16 kB $8000-$BFFF
 	// or whole PRG 32 kB $8000-$FFFF
 	
-	assert( address >= 0xC000 );
-	assert( this->mapper );
+	// assert( address >= 0xC000 );
+	// assert( NES->mapper );
 	
 	address &= 0x7FFF; // make address zero-based ( $8000..$FFFF to $0..$7FFF )
 	return NES->prg_rom_low_bank[address];
