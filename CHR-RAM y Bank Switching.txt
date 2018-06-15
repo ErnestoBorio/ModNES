@@ -1,4 +1,48 @@
 
+
+>>> Para PRG switching
+
+- Setear el puntero prg_rom_high_bank al último PRG bank leído de la ROM en el caso del mapper 2.
+- Escribir el switcheo de los bancos de PRG sea en bancos de 16kB o 32kB.
+
+Tengo que diferenciar los 16kB chunks de PRG ROM cuya cantidad me informa iNES, mal llamados banks, de los verdaderos PRG banks.
+Según el mapper, el PRG se puede switchear de a 16kB o 32kB chunks, estos son los verdaderos banks, y por lo tanto esos son los verdaderos PRG bank sizes.
+
+A lo que informa iNES debería llamarlo 16kB chunks, y por lo tanto el size siempre es 16kB.
+A las unidades mínimas switcheables de PRG debería llamarla banks, cuyo size es 16kB o 32kB, y actuar acorde.
+
+---
+
+> El próximo paso es implementar CHR-ROM switching para mappers 3 y 11 (106 juegos), y CHR-RAM para mappers 2 y 7 (139 juegos incluído el G'nG) (y además PRG switching)
+
+>> Para CHR-RAM se puede implementar fácil haciendo que cada vez que se escribe al CHR-RAM, se re blitee el tile correspondiente a la surface de patterns.
+Esto puede producir un gran overhead porque para reescribir un tile completo hacen falta 16 escrituras, y se estaría re bliteando el tile 16 veces, entonces se puede optimizar haciendo una lista de tiles dirty por cada frame.
+Antes del render, se re blitean sólo los tiles dirty.
+
+>> Para CHR-ROM con switching, se podría hacer lo mismo que para CHR-RAM pero declarando todo el pattern table dirty cuando se switchea de banco, haciendo que se re blitee todo el pattern entero, lo que puede llegar a ser ineficiente.
+Para optimizar esto se podrían pre blitear completos todos los CHR-ROM y switchearlos cuando hiciera falta.
+
+Necesito sentarme tranca 2 o 3 horas para arrancar esto.
+También debería tener en mente que implementar CHR-ROM switching y CHR-RAM es solo para implementar los mappers 2, 3, 7 y 11, que en realidad me darían 245 juegos más con los que testear. Es una buena cantidad.
+
+
+> Mappers!
+    Easiest and most popular first:
+    3-CNROM:  78 games: Solomon's Key, Gradius, and Hudson's Adventure Island (CHR switching only)
+    11-Color Dreams: 28 games: Crystal Mines, Metal Fighter (CHR & PRG switching)
+    2-UNROM: 106 games: Castlevania, MegaMan, Ghosts & Goblins. (CHR-RAM & PRG switching)
+    7-AOROM:  33 games: Battletoads, Marble Madness, and Solar Jetman. (CHR-RAM & PRG switching)
+    4-MMC3:  310 games: Super Mario Bros. 2 and 3, MegaMan 3, 4, 5, and 6, and Crystalis
+    1-MMC1:  251 games: Final Fantasy, Mega Man 2, Metroid, Zelda, Zelda 2, Castlevania 2
+    
+    Estos 5 mappers más NROM suman 891 juegos, el 81% de los juegos publicados oficialmente para NES.
+    Todos los demás mappers tienen pocos juegos y poco conocidos, no vale la pena implementarlos.
+    * Corrección posterior: estos 6 mappers.
+    
+
+------------------------------------------------------------------------------------------------------------------------------
+
+
 >>> Backlog / Roadmap para CHR-RAM y bank switching para soportar primeros mappers.
 
 Los mappers más simples de implementar, 2, 3, 7 y 11, agregarían soporte para 245 juevos nuevos al emulador.
@@ -31,8 +75,8 @@ Estos mappers requieren que se implemente CHR-RAM, CHR-ROM switching y PRG-ROM s
 		El espacio $C000-$FFFF es un banco PRG-ROM fijo de 16 kB. El primer banco del cartucho se carga en $8000, y el último se carga fijo en $C000.
 	Mapper 7: 2, 4 u 8 bancos de 32 kB PRG-ROM ocupan todo el espacio $8000-$FFFF.
 	Mapper 11: hasta 4 bancos de 32 kB PRG-ROM ocupan todo el espacio $8000-$FFFF.
-		Mappers 7 y 11: el primer banco del cartucho se carga en $8000 al inciiar.
-
+		Mappers 7 y 11: el primer banco del cartucho se carga en $8000 al iniciar.
+	
 > CHR-ROM switching
 	Hay que cargar los bancos y manejar el switching.
 	Agregar puntero a chr_bank seleccionado.

@@ -1,34 +1,13 @@
 
 Próximos pasos:
 
-> El próximo paso es implementar CHR-ROM switching para mappers 3 y 11 (106 juegos), y CHR-RAM para mappers 2 y 7 (139 juegos incluído el G'nG) (y además PRG switching)
-
->> Para CHR-RAM se puede implementar fácil haciendo que cada vez que se escribe al CHR-RAM, se re blitee el tile correspondiente a la surface de patterns.
-Esto puede producir un gran overhead porque para reescribir un tile completo hacen falta 16 escrituras, y se estaría re bliteando el tile 16 veces, entonces se puede optimizar haciendo una lista de tiles dirty por cada frame.
-Antes del render, se re blitean sólo los tiles dirty.
-
->> Para CHR-ROM con switching, se podría hacer lo mismo que para CHR-RAM pero declarando todo el pattern table dirty cuando se switchea de banco, haciendo que se re blitee todo el pattern entero, lo que puede llegar a ser ineficiente.
-Para optimizar esto se podrían pre blitear completos todos los CHR-ROM y switchearlos cuando hiciera falta.
-
-Necesito sentarme tranca 2 o 3 horas para arrancar esto.
-También debería tener en mente que implementar CHR-ROM switching y CHR-RAM es solo para implementar los mappers 2, 3, 7 y 11, que en realidad me darían 245 juegos más con los que testear. Es una buena cantidad.
+> Implementar audio. Empezar por pulse wave, triangle y noise. Samples después vemos.
+http://forums.nesdev.com/viewtopic.php?f=3&t=13749&start=15#p162874
 
 
-> Mappers!
-    Easiest and most popular first:
-    3-CNROM:  78 games: Solomon's Key, Gradius, and Hudson's Adventure Island (CHR switching only)
-    11-Color Dreams: 28 games: Crystal Mines, Metal Fighter (CHR & PRG switching)
-    2-UNROM: 106 games: Castlevania, MegaMan, Ghosts & Goblins. (CHR-RAM & PRG switching)
-    7-AOROM:  33 games: Battletoads, Marble Madness, and Solar Jetman. (CHR-RAM & PRG switching)
-    4-MMC3:  310 games: Super Mario Bros. 2 and 3, MegaMan 3, 4, 5, and 6, and Crystalis
-    1-MMC1:  251 games: Final Fantasy, Mega Man 2, Metroid, Zelda, Zelda 2, Castlevania 2
-    
-    Estos 5 mappers más NROM suman 891 juegos, el 81% de los juegos publicados oficialmente para NES.
-    Todos los demás mappers tienen pocos juegos y poco conocidos, no vale la pena implementarlos.
-    * Corrección posterior: estos 6 mappers.
+> Todas las anotaciones de CHR RAM y CHR & PRG switching para mappers, los pasé al archivo CHR-RAM y Bank Switching.txt
 
 > Hacer que OAM DMA empiece en OAM ADDR 2003 (sólo si algún juego escribe !=0 en OAM ADDR)
-> Visual debugger, si es que hace falta. (Cocoa nativo GUI? implementar alguna SDL GUI? GUI propia?) 
 > Hacer accurate sprite 0 hit
 
 > El scroll vertical no está bien en Xevious. En ciertos momentos se desincroniza y la actualización del background se ve en las 3 o 4 filas de abajo, esto no debería superar una fila de tiles.
@@ -57,7 +36,7 @@ Ya hice esto con MemoryAccess.c, quedan Instructions.c y Addressing.c
 > $2002.4 "VRAM write enable/disable" según una Doc, que las demás contradicen. Averiguar qué onda.
 (Por ahora lo ignoro olímpicamente)
 
-> Implementar audio.
+> Visual debugger, si es que hace falta. (Cocoa nativo GUI? implementar alguna SDL GUI? GUI propia?) No, creo que no hace falta.
 
 --- done
 
